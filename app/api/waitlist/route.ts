@@ -31,16 +31,16 @@ export async function POST(req: NextRequest) {
 
     // Send notifikation til Emil
     await resend.emails.send({
-      from: "TradeSpark <noreply@tradespark.io>",
+      from: "PietPilot <noreply@pietpilot.com>",
       to: process.env.NOTIFICATION_EMAIL!,
       subject: `🔥 Ny tilmelding: ${email}`,
       html: `
         <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
-          <h2 style="color: #ff6b2b; margin-bottom: 8px;">Ny tilmelding til TradeSpark</h2>
+          <h2 style="color: #ff6b2b; margin-bottom: 8px;">Ny tilmelding til PietPilot</h2>
           <p style="color: #333; font-size: 18px; font-weight: bold;">${email}</p>
           <p style="color: #666; font-size: 14px;">Er landet på waitlisten. Følg op inden for 24 timer.</p>
           <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
-          <p style="color: #999; font-size: 12px;">TradeSpark — ${new Date().toLocaleString("da-DK")}</p>
+          <p style="color: #999; font-size: 12px;">PietPilot — ${new Date().toLocaleString("da-DK")}</p>
         </div>
       `,
     });

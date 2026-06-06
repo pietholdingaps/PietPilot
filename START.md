@@ -1,22 +1,15 @@
-# Sådan starter du landingssiden
+# Sådan starter du PietPilot lokalt
 
-## Trin 1 — Installer Node.js (kun første gang)
-Gå til: https://nodejs.org
-Klik "Download Node.js (LTS)" og installer den.
-
-## Trin 2 — Åbn Terminal
+## Trin 1 — Åbn Terminal
 Windows: Tryk Win + R → skriv "cmd" → Enter
 
-## Trin 3 — Naviger til mappen
+## Trin 2 — Naviger til mappen
 cd C:\Users\piet\Desktop\James\tradespark
 
-## Trin 4 — Installer pakker
-npm install
-
-## Trin 5 — Start siden
+## Trin 3 — Start siden
 npm run dev
 
-## Trin 6 — Åbn i browser
+## Trin 4 — Åbn i browser
 Gå til: http://localhost:3000
 
-Det er det! 🎉
+Live site: https://pietpilot.com

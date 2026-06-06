@@ -134,7 +134,7 @@ const plans = [
 
 const testimonials = [
   {
-    quote: "I was paying my agency $1,200 a month and getting maybe 3 leads. First month with TradeSpark I got 11 calls. Complete no-brainer.",
+    quote: "I was paying my agency $1,200 a month and getting maybe 3 leads. First month with PietPilot I got 11 calls. Complete no-brainer.",
     name: "Mike T.",
     role: "Plumber · Phoenix, AZ",
     avatar: "MT",
@@ -162,7 +162,7 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 backdrop-blur-xl bg-[#080808]/80">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <span className="text-lg font-bold tracking-tight">
-            Trade<span className="gradient-text">Spark</span>
+            Piet<span className="gradient-text">Pilot</span>
           </span>
           <div className="hidden md:flex items-center gap-8 text-sm text-white/50">
             <a href="#how-it-works" className="hover:text-white transition-colors">How it works</a>
@@ -203,7 +203,7 @@ export default function Home() {
           </h1>
 
           <p className="text-lg md:text-xl text-white/40 max-w-2xl mx-auto mb-12 leading-relaxed font-light">
-            TradeSpark replaces your marketing agency with AI. Professional website,
+            PietPilot replaces your marketing agency with AI. Professional website,
             Google Ads, and automated lead follow-up — for a fraction of the cost.
           </p>
 
@@ -234,7 +234,7 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
               ["$2.1M+", "In leads generated"],
-              ["500+", "Tradespeople using TradeSpark"],
+              ["500+", "Tradespeople using PietPilot"],
               ["11x", "Average leads vs. agency"],
               ["< 5 min", "From signup to live site"],
             ].map(([stat, label], i) => (
@@ -297,12 +297,12 @@ export default function Home() {
               </div>
             </ScrollReveal>
 
-            {/* TradeSpark */}
+            {/* PietPilot */}
             <ScrollReveal delay={120}>
               <div className="rounded-2xl bg-[#ff6b2b]/5 border border-[#ff6b2b]/20 p-8 h-full glow-orange-sm">
                 <div className="text-sm font-semibold text-[#ff6b2b] mb-6 flex items-center gap-2">
                   <span className="w-5 h-5 rounded-full bg-[#ff6b2b]/10 border border-[#ff6b2b]/30 flex items-center justify-center text-[#ff6b2b] text-xs">✓</span>
-                  TradeSpark
+                  PietPilot
                 </div>
                 <ul className="space-y-4">
                   {[
@@ -558,10 +558,10 @@ export default function Home() {
       {/* ── FOOTER ── */}
       <footer className="py-8 px-6 border-t border-white/5 text-center">
         <span className="text-base font-bold text-white/60">
-          Trade<span className="gradient-text">Spark</span>
+          Piet<span className="gradient-text">Pilot</span>
         </span>
         <p className="text-white/15 text-xs mt-2">
-          © 2026 TradeSpark · Built for tradespeople, by people who get it.
+          © 2026 PietPilot · pietpilot.com
         </p>
       </footer>
     </div>
