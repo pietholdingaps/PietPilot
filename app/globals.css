@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #080808;
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Gradient text utility */
+.gradient-text {
+  background: linear-gradient(135deg, #ff6b2b 0%, #ff9f00 50%, #ffcc00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-subtle {
+  background: linear-gradient(135deg, #fff 0%, #999 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Noise overlay for premium depth */
+.noise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Glow effects */
+.glow-orange {
+  box-shadow: 0 0 60px -10px rgba(255, 107, 43, 0.4);
+}
+
+.glow-orange-sm {
+  box-shadow: 0 0 30px -5px rgba(255, 107, 43, 0.3);
+}
+
+/* Grid background */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Card border glow on hover */
+.card-hover {
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.card-hover:hover {
+  border-color: rgba(255, 107, 43, 0.3);
+  box-shadow: 0 0 40px -10px rgba(255, 107, 43, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Shimmer animation */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+
+/* Pulse dot */
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+.pulse-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #ff6b2b;
+  animation: pulse-ring 1.5s ease-out infinite;
+}
+
+/* Scroll fade-in (JS adds .visible) */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
