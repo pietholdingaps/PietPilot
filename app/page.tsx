@@ -22,6 +22,10 @@ export default function Home() {
           <span className="text-2xl font-extrabold tracking-tight">
             Piet<span className="text-[#f59e0b]">Pilot</span>
           </span>
+          <div className="hidden sm:flex items-center gap-8">
+            <a href="#pricing" className="text-white/55 hover:text-white text-sm font-medium transition-colors">Pricing</a>
+            <a href="#faq" className="text-white/55 hover:text-white text-sm font-medium transition-colors">FAQ</a>
+          </div>
           <a href="/onboarding" className="bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] text-sm font-bold px-5 py-2.5 rounded-lg transition-colors">
             Get Started
           </a>
