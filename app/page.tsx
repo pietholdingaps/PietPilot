@@ -1,5 +1,4 @@
 import ScrollReveal from "./components/ScrollReveal";
-import WaitlistForm from "./components/WaitlistForm";
 import Faq from "./components/Faq";
 
 const IconCheck = () => (
@@ -294,9 +293,13 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <div className="max-w-sm mx-auto">
-                <WaitlistForm />
-              </div>
+              <a
+                href="mailto:pietholdingaps@gmail.com?subject=Start my free trial&body=Hi! I'd like to start my 14-day free trial of PietPilot. Here's a bit about my business:%0D%0A%0D%0ABusiness name:%0D%0ALocation:%0D%0AService (e.g. plumbing, electrical, roofing):"
+                className="inline-flex items-center justify-center gap-2 bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-extrabold text-base px-9 py-4 rounded-xl shadow-[0_8px_30px_-6px_rgba(245,158,11,0.45)] transition-all hover:scale-[1.03]"
+              >
+                Start Your Free Trial <IconArrow />
+              </a>
+              <p className="text-sm text-white/30 mt-4">14 days free · No credit card required · Cancel anytime</p>
             </div>
           </ScrollReveal>
         </div>
