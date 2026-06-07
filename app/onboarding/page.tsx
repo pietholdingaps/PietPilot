@@ -98,6 +98,13 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen bg-[#0b1220] text-[#eef1f6] flex flex-col">
+      {/* logo */}
+      <div className="px-6 pt-6">
+        <a href="/" className="text-2xl font-extrabold tracking-tight">
+          Piet<span className="text-[#f59e0b]">Pilot</span>
+        </a>
+      </div>
+
       {/* progress bar */}
       {accountDone && step <= questions.length && (
         <div className="h-1 bg-white/[0.06]">
