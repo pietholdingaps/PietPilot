@@ -40,6 +40,7 @@ function OnboardingInner() {
   const [account, setAccount] = useState({ name: "", email: "", password: "" });
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
+  const [generatedSiteId, setGeneratedSiteId] = useState<string | null>(null);
 
   // If we're returning from Stripe Checkout, restore the saved account info and skip ahead
   useEffect(() => {
@@ -112,12 +113,25 @@ function OnboardingInner() {
       setBuildMsgIndex(i);
     }, 1400);
 
+    let siteId: string | null = null;
     try {
-      await fetch("/api/onboarding", {
+      const res = await fetch("/api/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...data, template: id, accountName: account.name, accountEmail: account.email }),
       });
+      const json = await res.json();
+      siteId = json?.id || null;
+      setGeneratedSiteId(siteId);
+
+      if (siteId) {
+        // fire off the AI copy generation — don't block the building animation on it
+        fetch("/api/generate-site", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: siteId }),
+        }).catch(() => {});
+      }
     } catch {
       // even if saving fails, keep the user moving — we don't want to block the experience
     }
@@ -395,12 +409,24 @@ function OnboardingInner() {
               <p className="text-white/45 text-base mb-10 max-w-sm mx-auto">
                 {data.businessName ? `${data.businessName}'s` : "Your"} new site is live and already optimized to be found locally. You can edit anything, anytime.
               </p>
-              <button
-                onClick={() => router.push("/dashboard")}
-                className="inline-flex items-center justify-center gap-2 bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-extrabold text-base px-9 py-4 rounded-xl shadow-[0_8px_30px_-6px_rgba(245,158,11,0.45)] transition-all hover:scale-[1.03]"
-              >
-                Go to my dashboard →
-              </button>
+              <div className="flex items-center justify-center gap-4">
+                {generatedSiteId && (
+                  <a
+                    href={`/site/${generatedSiteId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white/60 hover:text-white text-sm font-semibold transition-colors"
+                  >
+                    View my website ↗
+                  </a>
+                )}
+                <button
+                  onClick={() => router.push(`/dashboard${generatedSiteId ? `?site=${generatedSiteId}` : ""}`)}
+                  className="inline-flex items-center justify-center gap-2 bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-extrabold text-base px-9 py-4 rounded-xl shadow-[0_8px_30px_-6px_rgba(245,158,11,0.45)] transition-all hover:scale-[1.03]"
+                >
+                  Go to my dashboard →
+                </button>
+              </div>
             </div>
           )}
 

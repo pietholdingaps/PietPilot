@@ -1,4 +1,6 @@
-export default function Dashboard() {
+export default async function Dashboard({ searchParams }: { searchParams: Promise<{ site?: string }> }) {
+  const { site } = await searchParams;
+
   return (
     <div className="min-h-screen bg-[#0b1220] text-[#eef1f6] px-6 py-12">
       <div className="max-w-5xl mx-auto">
@@ -22,9 +24,18 @@ export default function Dashboard() {
             <p className="text-white/45 text-sm leading-relaxed mb-4">
               Your site is online and optimized for local search.
             </p>
-            <button className="text-[#f59e0b] text-sm font-semibold hover:text-[#fbbf24] transition-colors">
-              View my website →
-            </button>
+            {site ? (
+              <a
+                href={`/site/${site}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#f59e0b] text-sm font-semibold hover:text-[#fbbf24] transition-colors"
+              >
+                View my website ↗
+              </a>
+            ) : (
+              <span className="text-white/30 text-sm">No website yet</span>
+            )}
           </div>
 
           <div className="card rounded-2xl p-7">

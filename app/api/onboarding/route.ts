@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
       accountName, accountEmail,
     } = body;
 
-    const { error: dbError } = await supabase.from("onboarding_submissions").insert({
+    const { data: inserted, error: dbError } = await supabase.from("onboarding_submissions").insert({
       business_name: businessName || null,
       trade: trade || null,
       area: area || null,
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       account_name: accountName || null,
       account_email: accountEmail || null,
       created_at: new Date().toISOString(),
-    });
+    }).select("id").single();
 
     if (dbError) {
       console.error("Supabase onboarding error:", dbError);
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
       `,
     });
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, id: inserted?.id || null });
   } catch (err) {
     console.error("Onboarding error:", err);
     return NextResponse.json({ error: "Server error." }, { status: 500 });
