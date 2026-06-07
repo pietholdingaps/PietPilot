@@ -47,10 +47,13 @@ export default function Home() {
               A professional website built to rank locally, plus Google Ads that bring
               in real customers — done for you, with zero tech skills required.
             </p>
-            <div className="max-w-md">
-              <WaitlistForm />
-            </div>
-            <p className="text-sm text-white/30 mt-4">14-day free trial · $149/month after · Cancel anytime</p>
+            <a
+              href="#pricing"
+              className="inline-flex items-center justify-center gap-2 bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-extrabold text-base px-9 py-4 rounded-xl shadow-[0_8px_30px_-6px_rgba(245,158,11,0.45)] transition-all hover:scale-[1.03]"
+            >
+              Start Your Free Trial <IconArrow />
+            </a>
+            <p className="text-sm text-white/30 mt-4">14 days free · No credit card required · Cancel anytime</p>
           </div>
 
           {/* Right: mock browser/phone preview */}
@@ -70,17 +73,39 @@ export default function Home() {
                   <div className="h-9 w-28 rounded-lg bg-[#f59e0b]" />
                   <div className="h-9 w-28 rounded-lg border border-white/15" />
                 </div>
-                <div className="grid grid-cols-3 gap-3 mt-6">
-                  <div className="h-20 rounded-lg bg-white/[0.05] border border-white/[0.06]" />
-                  <div className="h-20 rounded-lg bg-white/[0.05] border border-white/[0.06]" />
-                  <div className="h-20 rounded-lg bg-white/[0.05] border border-white/[0.06]" />
+
+                {/* mini results bar chart */}
+                <div className="rounded-xl bg-white/[0.04] border border-white/[0.06] p-4 mt-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs text-white/40">Leads this month</span>
+                    <span className="text-xs font-bold text-[#f59e0b]">▲ 32%</span>
+                  </div>
+                  <div className="flex items-end gap-2 h-16">
+                    {[40, 55, 35, 70, 50, 85, 65].map((h, idx) => (
+                      <div key={idx} className="flex-1 rounded-t bg-[#f59e0b]" style={{ height: `${h}%`, opacity: 0.35 + (idx / 7) * 0.65 }} />
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
+
             {/* floating stat card */}
             <div className="absolute -bottom-6 -left-6 bg-[#121b2e] border border-white/10 rounded-xl px-5 py-4 shadow-xl hidden sm:block">
               <div className="text-xs text-white/40 mb-1">Local search ranking</div>
               <div className="text-2xl font-extrabold text-[#f59e0b]">#1</div>
+            </div>
+
+            {/* floating notification bubble */}
+            <div className="absolute -top-5 -right-4 bg-[#121b2e] border border-white/10 rounded-xl px-4 py-3 shadow-xl hidden sm:flex items-center gap-3">
+              <span className="w-9 h-9 rounded-full bg-[#f59e0b]/15 border border-[#f59e0b]/30 flex items-center justify-center text-[#f59e0b]">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+              </span>
+              <div>
+                <div className="text-xs font-semibold text-white">New lead just called</div>
+                <div className="text-[11px] text-white/35">2 minutes ago</div>
+              </div>
             </div>
           </div>
         </div>

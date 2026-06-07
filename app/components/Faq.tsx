@@ -26,7 +26,7 @@ const items = [
 ];
 
 export default function Faq() {
-  const [open, setOpen] = useState<number | null>(0);
+  const [open, setOpen] = useState<number | null>(null);
 
   return (
     <div className="max-w-2xl mx-auto divide-y divide-white/[0.06] rounded-2xl border border-white/10 overflow-hidden">
