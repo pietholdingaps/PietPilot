@@ -40,8 +40,8 @@ export default function WaitlistForm() {
   if (status === "success") {
     return (
       <div className="flex flex-col items-center gap-3 py-4">
-        <div className="w-12 h-12 rounded-full bg-[#38bdf8]/15 border border-[#38bdf8]/30 flex items-center justify-center">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <div className="w-12 h-12 rounded-full bg-[#f59e0b]/15 border border-[#f59e0b]/30 flex items-center justify-center">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="20 6 9 17 4 12"/>
           </svg>
         </div>
@@ -63,12 +63,12 @@ export default function WaitlistForm() {
           placeholder="your@email.com"
           required
           disabled={status === "loading"}
-          className="flex-1 bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/30 text-sm outline-none focus:border-[#38bdf8]/50 focus:bg-white/[0.08] transition-all disabled:opacity-50"
+          className="flex-1 bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/30 text-sm outline-none focus:border-[#f59e0b]/50 focus:bg-white/[0.08] transition-all disabled:opacity-50"
         />
         <button
           type="submit"
           disabled={status === "loading" || !email}
-          className="bg-[#38bdf8] hover:bg-[#b44f30] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-sm px-6 py-3.5 rounded-xl transition-all whitespace-nowrap"
+          className="bg-[#f59e0b] hover:bg-[#fbbf24] disabled:opacity-50 disabled:cursor-not-allowed text-[#0b1220] font-bold text-sm px-6 py-3.5 rounded-xl transition-all whitespace-nowrap"
         >
           {status === "loading" ? (
             <span className="flex items-center gap-2">

@@ -42,9 +42,9 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.06] backdrop-blur-xl bg-[#0b1220]/80">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <span className="text-lg font-bold tracking-tight">
-            Piet<span className="text-[#38bdf8]">Pilot</span>
+            Piet<span className="text-[#f59e0b]">Pilot</span>
           </span>
-          <a href="#pricing" className="bg-[#38bdf8] hover:bg-[#5cc8fa] text-[#0b1220] text-sm font-bold px-5 py-2.5 rounded-lg transition-colors">
+          <a href="#pricing" className="bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] text-sm font-bold px-5 py-2.5 rounded-lg transition-colors">
             Get Started
           </a>
         </div>
@@ -56,13 +56,13 @@ export default function Home() {
           {/* Left: copy */}
           <div>
             <div className="inline-flex items-center gap-2.5 bg-white/[0.05] border border-white/10 text-white/55 text-xs font-medium px-4 py-2 rounded-full mb-8">
-              <span className="w-2 h-2 rounded-full bg-[#38bdf8]" />
+              <span className="w-2 h-2 rounded-full bg-[#f59e0b]" />
               For plumbers, electricians, HVAC &amp; roofers
             </div>
             <h1 className="text-4xl md:text-5xl font-extrabold leading-[1.12] tracking-tight mb-6">
               Your phone should be ringing.
               <br />
-              <span className="text-[#38bdf8]">We make sure it does.</span>
+              <span className="text-[#f59e0b]">We make sure it does.</span>
             </h1>
             <p className="text-lg text-white/50 mb-10 leading-relaxed max-w-md">
               A professional website and Google Ads that actually bring in jobs —
@@ -88,7 +88,7 @@ export default function Home() {
                 <div className="h-3 w-full rounded bg-white/[0.06]" />
                 <div className="h-3 w-5/6 rounded bg-white/[0.06]" />
                 <div className="flex gap-3 mt-5">
-                  <div className="h-9 w-28 rounded-lg bg-[#38bdf8]" />
+                  <div className="h-9 w-28 rounded-lg bg-[#f59e0b]" />
                   <div className="h-9 w-28 rounded-lg border border-white/15" />
                 </div>
                 <div className="grid grid-cols-3 gap-3 mt-6">
@@ -101,7 +101,7 @@ export default function Home() {
             {/* floating stat card */}
             <div className="absolute -bottom-6 -left-6 bg-[#121b2e] border border-white/10 rounded-xl px-5 py-4 shadow-xl hidden sm:block">
               <div className="text-xs text-white/40 mb-1">New leads this week</div>
-              <div className="text-2xl font-extrabold text-[#38bdf8]">+18</div>
+              <div className="text-2xl font-extrabold text-[#f59e0b]">+18</div>
             </div>
           </div>
         </div>
@@ -136,7 +136,7 @@ export default function Home() {
             {/* big card spanning 2 cols */}
             <ScrollReveal className="md:col-span-2">
               <div className="card rounded-2xl p-8 h-full">
-                <div className="text-xs font-bold uppercase tracking-widest text-[#38bdf8] mb-3">Website</div>
+                <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-3">Website</div>
                 <h3 className="text-2xl font-bold text-white mb-3">Live in days, not months</h3>
                 <p className="text-white/45 text-base leading-relaxed max-w-md">
                   Tell us about your business and we build a site that's written to turn
@@ -147,7 +147,7 @@ export default function Home() {
 
             <ScrollReveal delay={80}>
               <div className="card rounded-2xl p-8 h-full">
-                <div className="text-xs font-bold uppercase tracking-widest text-[#38bdf8] mb-3">Ads</div>
+                <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-3">Ads</div>
                 <h3 className="text-lg font-bold text-white mb-2">Show up first</h3>
                 <p className="text-white/45 text-sm leading-relaxed">
                   Google Ads set up and managed so you appear when locals search for your service.
@@ -157,7 +157,7 @@ export default function Home() {
 
             <ScrollReveal delay={140}>
               <div className="card rounded-2xl p-8 h-full">
-                <div className="text-xs font-bold uppercase tracking-widest text-[#38bdf8] mb-3">Follow-up</div>
+                <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-3">Follow-up</div>
                 <h3 className="text-lg font-bold text-white mb-2">Never miss a lead</h3>
                 <p className="text-white/45 text-sm leading-relaxed">
                   Missed call on the job? An automatic text fires off in seconds, every time.
@@ -167,7 +167,7 @@ export default function Home() {
 
             <ScrollReveal delay={200} className="md:col-span-2">
               <div className="card rounded-2xl p-8 h-full">
-                <div className="text-xs font-bold uppercase tracking-widest text-[#38bdf8] mb-3">Dashboard</div>
+                <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-3">Dashboard</div>
                 <h3 className="text-2xl font-bold text-white mb-3">One place for everything</h3>
                 <p className="text-white/45 text-base leading-relaxed max-w-md">
                   Leads, ad spend, results — all in plain English, in one simple dashboard.
@@ -196,7 +196,7 @@ export default function Home() {
             ].map(([title, desc], i) => (
               <ScrollReveal key={title} delay={i * 100}>
                 <div className="text-center px-6 relative">
-                  <div className="w-12 h-12 rounded-full bg-[#38bdf8] text-[#0b1220] font-extrabold flex items-center justify-center mx-auto mb-5 relative z-10">
+                  <div className="w-12 h-12 rounded-full bg-[#f59e0b] text-[#0b1220] font-extrabold flex items-center justify-center mx-auto mb-5 relative z-10">
                     {i + 1}
                   </div>
                   <h3 className="text-base font-bold text-white mb-2">{title}</h3>
@@ -224,9 +224,9 @@ export default function Home() {
             <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/[0.06]">
               {plans.map(({ name, price, tagline, features: feats, highlight }, i) => (
                 <ScrollReveal key={name} delay={i * 80}>
-                  <div className={`p-8 h-full flex flex-col ${highlight ? "bg-[#38bdf8]/[0.06]" : ""}`}>
+                  <div className={`p-8 h-full flex flex-col ${highlight ? "bg-[#f59e0b]/[0.06]" : ""}`}>
                     {highlight && (
-                      <span className="self-start bg-[#38bdf8] text-[#0b1220] text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-4">
+                      <span className="self-start bg-[#f59e0b] text-[#0b1220] text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-4">
                         Most Popular
                       </span>
                     )}
@@ -239,7 +239,7 @@ export default function Home() {
                     <ul className="space-y-3 mb-8 flex-1">
                       {feats.map((f) => (
                         <li key={f} className="flex items-start gap-3 text-sm">
-                          <span className={`mt-0.5 flex-shrink-0 ${highlight ? "text-[#38bdf8]" : "text-white/30"}`}><IconCheck /></span>
+                          <span className={`mt-0.5 flex-shrink-0 ${highlight ? "text-[#f59e0b]" : "text-white/30"}`}><IconCheck /></span>
                           <span className="text-white/65">{f}</span>
                         </li>
                       ))}
@@ -247,7 +247,7 @@ export default function Home() {
                     <a
                       href="#get-started"
                       className={`flex items-center justify-center gap-2 text-center text-sm font-bold py-3 rounded-xl transition-all ${
-                        highlight ? "bg-[#38bdf8] hover:bg-[#5cc8fa] text-[#0b1220]" : "bg-white/[0.06] hover:bg-white/10 text-white/70 hover:text-white border border-white/10"
+                        highlight ? "bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220]" : "bg-white/[0.06] hover:bg-white/10 text-white/70 hover:text-white border border-white/10"
                       }`}
                     >
                       Get Started <IconArrow />
@@ -263,8 +263,8 @@ export default function Home() {
       {/* ── EARLY ACCESS strip ── */}
       <section className="px-6 py-16 border-t border-white/[0.06]">
         <ScrollReveal>
-          <div className="max-w-4xl mx-auto rounded-2xl border border-[#38bdf8]/25 bg-[#38bdf8]/[0.06] p-10 text-center">
-            <div className="text-xs font-bold uppercase tracking-widest text-[#38bdf8] mb-3">Early Access</div>
+          <div className="max-w-4xl mx-auto rounded-2xl border border-[#f59e0b]/25 bg-[#f59e0b]/[0.06] p-10 text-center">
+            <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-3">Early Access</div>
             <h3 className="text-2xl md:text-3xl font-extrabold mb-3">We're onboarding our first tradespeople now</h3>
             <p className="text-white/50 max-w-xl mx-auto">
               PietPilot is brand new — early members get priority setup, direct access
@@ -291,7 +291,7 @@ export default function Home() {
 
       <footer className="py-8 px-6 border-t border-white/[0.06] text-center">
         <span className="text-base font-bold text-white/70">
-          Piet<span className="text-[#38bdf8]">Pilot</span>
+          Piet<span className="text-[#f59e0b]">Pilot</span>
         </span>
         <p className="text-white/30 text-xs mt-2">© 2026 PietPilot · pietpilot.com</p>
       </footer>
