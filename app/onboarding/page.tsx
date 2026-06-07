@@ -99,10 +99,12 @@ export default function Onboarding() {
   return (
     <div className="min-h-screen bg-[#0b1220] text-[#eef1f6] flex flex-col">
       {/* logo */}
-      <div className="px-6 pt-6">
-        <a href="/" className="text-2xl font-extrabold tracking-tight">
-          Piet<span className="text-[#f59e0b]">Pilot</span>
-        </a>
+      <div className="border-b border-white/[0.06]">
+        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center">
+          <a href="/" className="text-2xl font-extrabold tracking-tight">
+            Piet<span className="text-[#f59e0b]">Pilot</span>
+          </a>
+        </div>
       </div>
 
       {/* progress bar */}
