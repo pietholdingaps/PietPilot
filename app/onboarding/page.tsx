@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const STEPS_TOTAL = 9;
 
@@ -33,10 +33,45 @@ const buildingMessages = [
 
 type FormData = Record<string, string>;
 
-export default function Onboarding() {
+function OnboardingInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [accountDone, setAccountDone] = useState(false);
   const [account, setAccount] = useState({ name: "", email: "", password: "" });
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
+
+  // If we're returning from Stripe Checkout, restore the saved account info and skip ahead
+  useEffect(() => {
+    if (searchParams.get("account") === "done") {
+      const saved = sessionStorage.getItem("pp_account");
+      if (saved) setAccount(JSON.parse(saved));
+      setAccountDone(true);
+    }
+  }, [searchParams]);
+
+  async function startCheckout() {
+    setCheckoutError("");
+    setCheckoutLoading(true);
+    sessionStorage.setItem("pp_account", JSON.stringify(account));
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: account.name, email: account.email }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) {
+        setCheckoutError(data.error || "Something went wrong. Try again.");
+        setCheckoutLoading(false);
+        return;
+      }
+      window.location.href = data.url;
+    } catch {
+      setCheckoutError("Something went wrong. Try again.");
+      setCheckoutLoading(false);
+    }
+  }
   const [step, setStep] = useState(0); // 0..8 questions, 9 = template choice, 10 = preview, 11 = building, 12 = ready
   const [data, setData] = useState<FormData>({});
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
@@ -130,7 +165,7 @@ export default function Onboarding() {
                   type="text"
                   value={account.name}
                   onChange={(e) => setAccount((a) => ({ ...a, name: e.target.value }))}
-                  onKeyDown={(e) => { if (e.key === "Enter" && account.name && account.email && account.password) setAccountDone(true); }}
+                  onKeyDown={(e) => { if (e.key === "Enter" && account.name && account.email && account.password) startCheckout(); }}
                   placeholder="Your name"
                   className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 text-sm outline-none focus:border-[#f59e0b]/50 focus:bg-white/[0.08] transition-all"
                 />
@@ -138,7 +173,7 @@ export default function Onboarding() {
                   type="email"
                   value={account.email}
                   onChange={(e) => setAccount((a) => ({ ...a, email: e.target.value }))}
-                  onKeyDown={(e) => { if (e.key === "Enter" && account.name && account.email && account.password) setAccountDone(true); }}
+                  onKeyDown={(e) => { if (e.key === "Enter" && account.name && account.email && account.password) startCheckout(); }}
                   placeholder="Your email"
                   className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 text-sm outline-none focus:border-[#f59e0b]/50 focus:bg-white/[0.08] transition-all"
                 />
@@ -146,19 +181,24 @@ export default function Onboarding() {
                   type="password"
                   value={account.password}
                   onChange={(e) => setAccount((a) => ({ ...a, password: e.target.value }))}
-                  onKeyDown={(e) => { if (e.key === "Enter" && account.name && account.email && account.password) setAccountDone(true); }}
+                  onKeyDown={(e) => { if (e.key === "Enter" && account.name && account.email && account.password) startCheckout(); }}
                   placeholder="Choose a password"
                   className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 text-sm outline-none focus:border-[#f59e0b]/50 focus:bg-white/[0.08] transition-all"
                 />
               </div>
 
-              <div className="flex justify-end mt-8">
+              <p className="text-white/30 text-xs mt-4">
+                Next, you'll add your card to start your 14-day free trial — you won't be charged until the trial ends.
+              </p>
+              {checkoutError && <p className="text-red-400 text-xs mt-3">{checkoutError}</p>}
+
+              <div className="flex justify-end mt-6">
                 <button
-                  onClick={() => setAccountDone(true)}
-                  disabled={!account.name || !account.email || !account.password}
+                  onClick={startCheckout}
+                  disabled={!account.name || !account.email || !account.password || checkoutLoading}
                   className="bg-[#f59e0b] hover:bg-[#fbbf24] disabled:opacity-40 disabled:cursor-not-allowed text-[#0b1220] font-bold text-sm px-7 py-3 rounded-xl transition-all hover:scale-[1.02]"
                 >
-                  Continue →
+                  {checkoutLoading ? "Redirecting to checkout..." : "Continue to payment →"}
                 </button>
               </div>
             </div>
@@ -367,5 +407,13 @@ export default function Onboarding() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Onboarding() {
+  return (
+    <Suspense fallback={null}>
+      <OnboardingInner />
+    </Suspense>
   );
 }
