@@ -39,13 +39,14 @@ export default function Home() {
               For Tradesmen
             </div>
             <h1 className="text-4xl md:text-5xl font-extrabold leading-[1.12] tracking-tight mb-6">
-              More leads. More jobs.
+              Customers are searching for you
               <br />
-              <span className="text-[#f59e0b]">Without lifting a finger.</span>
+              <span className="text-[#f59e0b]">on Google right now.</span>
             </h1>
             <p className="text-lg text-white/50 mb-10 leading-relaxed max-w-md">
-              A professional website built to rank locally, plus Google Ads that bring
-              in real customers — done for you, with zero tech skills required.
+              Can they find you? We build your website, run your ads, and make sure
+              every lead gets followed up — so the phone rings more, without you
+              touching a computer.
             </p>
             <a
               href="#pricing"
@@ -209,6 +210,50 @@ export default function Home() {
                 </div>
               </ScrollReveal>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── WHY NOT AN AGENCY / WIX ── */}
+      <section className="py-24 px-6 border-t border-white/[0.06] bg-white/[0.02]">
+        <div className="max-w-5xl mx-auto">
+          <ScrollReveal>
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-center mb-3">
+              "Why not just use Wix, or hire an agency?"
+            </h2>
+            <p className="text-white/45 text-base text-center max-w-xl mx-auto mb-14">
+              Fair question. Here's the honest difference.
+            </p>
+          </ScrollReveal>
+          <div className="grid md:grid-cols-3 gap-4">
+            <ScrollReveal>
+              <div className="card rounded-2xl p-7 h-full">
+                <h3 className="text-base font-bold text-white mb-2">Wix / Squarespace</h3>
+                <p className="text-white/45 text-sm leading-relaxed">
+                  You get a website — but you still have to write it, design it, optimize
+                  it for local search, and figure out ads yourself. It's a tool, not a result.
+                </p>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal delay={80}>
+              <div className="card rounded-2xl p-7 h-full">
+                <h3 className="text-base font-bold text-white mb-2">A marketing agency</h3>
+                <p className="text-white/45 text-sm leading-relaxed">
+                  Does the work for you — for $800–$2,000/month, with slow turnarounds
+                  and reports full of jargon you didn't ask for.
+                </p>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal delay={160}>
+              <div className="card rounded-2xl p-7 h-full border-[#f59e0b]/30 bg-[#f59e0b]/[0.04]">
+                <h3 className="text-base font-bold text-[#f59e0b] mb-2">PietPilot</h3>
+                <p className="text-white/55 text-sm leading-relaxed">
+                  All the work an agency does — website, SEO, ads, follow-up — for a
+                  fraction of the price, with no contracts and a dashboard that actually
+                  makes sense.
+                </p>
+              </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
