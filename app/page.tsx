@@ -19,9 +19,9 @@ export default function Home() {
       {/* ── NAV ── */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.06] backdrop-blur-xl bg-[#0b1220]/80">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="text-2xl font-extrabold tracking-tight">
+          <a href="#" className="text-2xl font-extrabold tracking-tight">
             Piet<span className="text-[#f59e0b]">Pilot</span>
-          </span>
+          </a>
           <div className="hidden sm:flex items-center gap-8">
             <a href="#pricing" className="text-white/55 hover:text-white text-sm font-medium transition-colors">Pricing</a>
             <a href="#faq" className="text-white/55 hover:text-white text-sm font-medium transition-colors">FAQ</a>
