@@ -45,9 +45,9 @@ export default function WaitlistForm() {
             <polyline points="20 6 9 17 4 12"/>
           </svg>
         </div>
-        <p className="text-white font-semibold text-lg">You&apos;re on the list.</p>
+        <p className="text-white font-semibold text-lg">You&apos;re in!</p>
         <p className="text-white/45 text-sm text-center max-w-xs">
-          We&apos;ll reach out personally before you&apos;re charged anything. Expect to hear from us within 24 hours.
+          We&apos;ll reach out personally to get your free trial set up. Expect to hear from us within 24 hours.
         </p>
       </div>
     );
@@ -78,7 +78,7 @@ export default function WaitlistForm() {
               Sending...
             </span>
           ) : (
-            "Get Early Access →"
+            "Start Free Trial →"
           )}
         </button>
       </div>
@@ -86,7 +86,7 @@ export default function WaitlistForm() {
         <p className="text-red-400 text-xs mt-3 text-center">{errorMsg}</p>
       )}
       <p className="text-white/30 text-xs text-center mt-3">
-        No credit card. No spam. We&apos;ll reach out personally.
+        No credit card required · Cancel anytime · We&apos;ll reach out personally
       </p>
     </form>
   );
