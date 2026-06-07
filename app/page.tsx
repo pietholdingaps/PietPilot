@@ -48,7 +48,7 @@ export default function Home() {
               touching a computer.
             </p>
             <a
-              href="#pricing"
+              href="/onboarding"
               className="inline-flex items-center justify-center gap-2 bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-extrabold text-base px-9 py-4 rounded-xl shadow-[0_8px_30px_-6px_rgba(245,158,11,0.45)] transition-all hover:scale-[1.03]"
             >
               Start Your Free Trial <IconArrow />
