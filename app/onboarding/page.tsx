@@ -59,9 +59,13 @@ export default function Onboarding() {
     if (step > 0) setStep(step - 1);
   }
 
-  async function chooseTemplate(id: string) {
+  function previewTemplate(id: string) {
     setSelectedTemplate(id);
-    setStep(questions.length + 1); // building screen
+    setStep(questions.length + 1); // preview screen
+  }
+
+  async function confirmTemplate(id: string) {
+    setStep(questions.length + 2); // building screen
     setSubmitting(true);
 
     // cycle through fun building messages
@@ -84,7 +88,7 @@ export default function Onboarding() {
     setTimeout(() => {
       clearInterval(interval);
       setSubmitting(false);
-      setStep(questions.length + 2); // ready screen
+      setStep(questions.length + 3); // ready screen
     }, buildingMessages.length * 1400 + 600);
   }
 
@@ -169,7 +173,7 @@ export default function Onboarding() {
                 {templates.map((t) => (
                   <button
                     key={t.id}
-                    onClick={() => chooseTemplate(t.id)}
+                    onClick={() => previewTemplate(t.id)}
                     className="card rounded-2xl p-5 text-left hover:-translate-y-1 transition-transform"
                   >
                     <div className="rounded-lg overflow-hidden border border-white/10 mb-4 bg-[#0b1220]">
@@ -199,8 +203,73 @@ export default function Onboarding() {
             </div>
           )}
 
+          {/* ── TEMPLATE PREVIEW ── */}
+          {step === questions.length + 1 && selectedTemplate && (
+            <div>
+              {(() => {
+                const t = templates.find((x) => x.id === selectedTemplate)!;
+                return (
+                  <>
+                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-center">
+                      Here's a look at the "{t.name}" style
+                    </h1>
+                    <p className="text-white/40 text-sm mb-8 text-center max-w-md mx-auto">
+                      This is just a preview of the look and feel — your real site will be filled
+                      with content written specifically for {data.businessName || "your business"}.
+                    </p>
+
+                    <div className="rounded-2xl border border-white/10 bg-[#121b2e] overflow-hidden shadow-2xl mb-3">
+                      <div className="flex items-center gap-1.5 px-4 py-3 border-b border-white/[0.06]">
+                        <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
+                        <span className="ml-3 text-xs text-white/30">{(data.businessName || "yourcompany").toLowerCase().replace(/\s+/g, "")}.com</span>
+                      </div>
+                      <div className="p-7 space-y-4">
+                        <div className="h-6 w-2/3 rounded" style={{ background: t.accent, opacity: 0.85 }} />
+                        <div className="h-3 w-full rounded bg-white/[0.08]" />
+                        <div className="h-3 w-5/6 rounded bg-white/[0.08]" />
+                        <div className="flex gap-3 mt-5">
+                          <div className="h-9 w-32 rounded-lg" style={{ background: t.accent }} />
+                          <div className="h-9 w-32 rounded-lg border border-white/15" />
+                        </div>
+                        <div className="grid grid-cols-3 gap-3 mt-6">
+                          {[0, 1, 2].map((i) => (
+                            <div key={i} className="rounded-lg border border-white/[0.06] p-3 space-y-2">
+                              <div className="h-12 rounded" style={{ background: `${t.accent}33` }} />
+                              <div className="h-2 w-3/4 rounded bg-white/[0.08]" />
+                              <div className="h-2 w-1/2 rounded bg-white/[0.06]" />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-[#f59e0b] text-xs font-semibold text-center mb-10">
+                      Remember — you can always edit this design or switch to another later. You're never locked in.
+                    </p>
+
+                    <div className="flex items-center justify-center gap-4">
+                      <button
+                        onClick={() => setStep(questions.length)}
+                        className="text-white/50 hover:text-white text-sm font-semibold transition-colors"
+                      >
+                        ← Try a different design
+                      </button>
+                      <button
+                        onClick={() => confirmTemplate(t.id)}
+                        className="inline-flex items-center justify-center gap-2 bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-extrabold text-sm px-7 py-3.5 rounded-xl shadow-[0_8px_30px_-6px_rgba(245,158,11,0.45)] transition-all hover:scale-[1.03]"
+                      >
+                        Use this design →
+                      </button>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          )}
+
           {/* ── BUILDING SCREEN ── */}
-          {step === questions.length + 1 && (
+          {step === questions.length + 2 && (
             <div className="text-center">
               <div className="w-16 h-16 mx-auto mb-8 relative">
                 <div className="absolute inset-0 rounded-full border-2 border-white/10" />
@@ -212,7 +281,7 @@ export default function Onboarding() {
           )}
 
           {/* ── READY SCREEN ── */}
-          {step === questions.length + 2 && (
+          {step === questions.length + 3 && (
             <div className="text-center">
               <div className="w-14 h-14 rounded-full bg-[#f59e0b]/15 border border-[#f59e0b]/30 flex items-center justify-center mx-auto mb-6">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
