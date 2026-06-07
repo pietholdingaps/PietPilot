@@ -9,7 +9,7 @@ const items = [
   },
   {
     q: "How does the 14-day free trial work?",
-    a: "You get full access for 14 days, no credit card required upfront. If it's not for you, simply don't continue — no charges, no hassle.",
+    a: "You get full access for 14 days. We'll ask for a card to set up your account, but you won't be charged until the trial ends — and you can cancel anytime before then with no charge at all.",
   },
   {
     q: "What happens if I cancel?",

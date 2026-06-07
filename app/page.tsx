@@ -53,7 +53,7 @@ export default function Home() {
             >
               Start Your Free Trial <IconArrow />
             </a>
-            <p className="text-sm text-white/30 mt-4">14 days free · No credit card required · Cancel anytime</p>
+            <p className="text-sm text-white/30 mt-4">14 days free · Cancel anytime</p>
           </div>
 
           {/* Right: mock browser/phone preview */}
@@ -278,7 +278,7 @@ export default function Home() {
                 <span className="text-5xl font-extrabold text-white">$149</span>
                 <span className="text-white/40 text-base mb-1.5">/month after trial</span>
               </div>
-              <p className="text-white/50 text-sm mb-8">No credit card required to start. No contracts. Cancel anytime.</p>
+              <p className="text-white/50 text-sm mb-8">Card required to start your trial — you won't be charged for 14 days. No contracts. Cancel anytime.</p>
               <ul className="text-left max-w-xs mx-auto space-y-3 mb-9">
                 {[
                   "A professional website built & hosted for you",
@@ -299,7 +299,7 @@ export default function Home() {
               >
                 Start Your Free Trial <IconArrow />
               </a>
-              <p className="text-sm text-white/30 mt-4">14 days free · No credit card required · Cancel anytime</p>
+              <p className="text-sm text-white/30 mt-4">14 days free · Cancel anytime</p>
             </div>
           </ScrollReveal>
         </div>

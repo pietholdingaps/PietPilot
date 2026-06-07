@@ -86,7 +86,7 @@ export default function WaitlistForm() {
         <p className="text-red-400 text-xs mt-3 text-center">{errorMsg}</p>
       )}
       <p className="text-white/30 text-xs text-center mt-3">
-        No credit card required · Cancel anytime · We&apos;ll reach out personally
+        Card required to start trial — no charge for 14 days · Cancel anytime
       </p>
     </form>
   );
