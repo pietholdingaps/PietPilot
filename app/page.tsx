@@ -194,58 +194,41 @@ export default function Home() {
           </div>
 
           {/* Headline */}
-          <h1 className="text-6xl md:text-7xl lg:text-[88px] font-black leading-[0.95] tracking-tighter mb-8">
-            <span className="gradient-text-subtle">Stop paying agencies</span>
+          <h1 className="text-5xl md:text-6xl lg:text-[72px] font-black leading-[1.05] tracking-tight mb-6 text-white">
+            A website that brings in customers.
             <br />
-            <span className="gradient-text">$1,000 a month</span>
-            <br />
-            <span className="gradient-text-subtle">for zero results.</span>
+            <span className="text-[#ff6b2b]">Google Ads that bring in jobs.</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-white/40 max-w-2xl mx-auto mb-12 leading-relaxed font-light">
-            PietPilot replaces your marketing agency with AI. Professional website,
-            Google Ads, and automated lead follow-up — for a fraction of the cost.
+          <p className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto mb-12 leading-relaxed">
+            We build your website and run your Google Ads — done for you,
+            for one simple monthly price. No agency. No tech skills needed.
           </p>
 
+          {/* What you get — dead simple */}
+          <div className="flex flex-col sm:flex-row items-stretch justify-center gap-4 mb-12 max-w-2xl mx-auto">
+            <div className="flex-1 rounded-xl bg-white/[0.03] border border-white/10 px-6 py-5 text-left">
+              <div className="flex items-center gap-2 text-[#ff6b2b] font-bold text-sm mb-1">
+                <IconGlobe /> A professional website
+              </div>
+              <p className="text-white/40 text-sm">Live in days. Hosted and updated for you.</p>
+            </div>
+            <div className="flex-1 rounded-xl bg-white/[0.03] border border-white/10 px-6 py-5 text-left">
+              <div className="flex items-center gap-2 text-[#ff6b2b] font-bold text-sm mb-1">
+                <IconTrendingUp /> Google Ads, up and running
+              </div>
+              <p className="text-white/40 text-sm">Set up and managed for you. Real customers, real jobs.</p>
+            </div>
+          </div>
+
           {/* CTA */}
-          <div className="mb-14">
+          <div className="mb-6">
             <WaitlistForm />
           </div>
 
-          {/* Social proof mini */}
-          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/30">
-            <div className="flex items-center gap-1.5">
-              <div className="flex">{[1,2,3,4,5].map(i => <IconStar key={i} />)}</div>
-              <span>4.9 / 5 rating</span>
-            </div>
-            <div className="w-px h-4 bg-white/10" />
-            <span>500+ tradespeople</span>
-            <div className="w-px h-4 bg-white/10" />
-            <span>Live in &lt; 5 minutes</span>
-            <div className="w-px h-4 bg-white/10" />
-            <span>No contracts</span>
-          </div>
-        </div>
-      </section>
-
-      {/* ── STATS ── */}
-      <section className="py-16 border-y border-white/5">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              ["$2.1M+", "In leads generated"],
-              ["500+", "Tradespeople using PietPilot"],
-              ["11x", "Average leads vs. agency"],
-              ["< 5 min", "From signup to live site"],
-            ].map(([stat, label], i) => (
-              <ScrollReveal key={label} delay={i * 80}>
-                <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-black gradient-text mb-2">{stat}</div>
-                  <div className="text-xs text-white/30 leading-snug">{label}</div>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
+          <p className="text-sm text-white/25">
+            From $149/month · No contracts · Cancel anytime
+          </p>
         </div>
       </section>
 
