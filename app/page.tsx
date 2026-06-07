@@ -12,28 +12,6 @@ const IconArrow = () => (
   </svg>
 );
 
-const plans = [
-  {
-    name: "Starter",
-    price: "$149",
-    tagline: "Get a professional site online",
-    features: ["Website built for your business", "Local SEO from day one", "Booking & contact form", "Hosted & kept up to date"],
-  },
-  {
-    name: "Growth",
-    price: "$249",
-    tagline: "Get found by people searching now",
-    features: ["Everything in Starter", "Google Ads set up & managed", "Campaigns improved over time", "Simple results dashboard"],
-    highlight: true,
-  },
-  {
-    name: "Pro",
-    price: "$399",
-    tagline: "Never lose a lead again",
-    features: ["Everything in Growth", "Automatic SMS & email follow-up", "Missed-call auto-text", "Full lead history & tracking"],
-  },
-];
-
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#0b1220] text-[#eef1f6] overflow-x-hidden">
@@ -41,7 +19,7 @@ export default function Home() {
       {/* ── NAV ── */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.06] backdrop-blur-xl bg-[#0b1220]/80">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="text-lg font-bold tracking-tight">
+          <span className="text-2xl font-extrabold tracking-tight">
             Piet<span className="text-[#f59e0b]">Pilot</span>
           </span>
           <a href="#pricing" className="bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] text-sm font-bold px-5 py-2.5 rounded-lg transition-colors">
@@ -57,21 +35,21 @@ export default function Home() {
           <div>
             <div className="inline-flex items-center gap-2.5 bg-white/[0.05] border border-white/10 text-white/55 text-xs font-medium px-4 py-2 rounded-full mb-8">
               <span className="w-2 h-2 rounded-full bg-[#f59e0b]" />
-              For plumbers, electricians, HVAC &amp; roofers
+              For Tradesmen
             </div>
             <h1 className="text-4xl md:text-5xl font-extrabold leading-[1.12] tracking-tight mb-6">
-              Your phone should be ringing.
+              More leads. More jobs.
               <br />
-              <span className="text-[#f59e0b]">We make sure it does.</span>
+              <span className="text-[#f59e0b]">Without lifting a finger.</span>
             </h1>
             <p className="text-lg text-white/50 mb-10 leading-relaxed max-w-md">
-              A professional website and Google Ads that actually bring in jobs —
-              built and run for you. No agency. No tech skills. One simple price.
+              A professional website built to rank locally, plus Google Ads that bring
+              in real customers — done for you, with zero tech skills required.
             </p>
             <div className="max-w-md">
               <WaitlistForm />
             </div>
-            <p className="text-sm text-white/30 mt-4">From $149/month · No contracts · Cancel anytime</p>
+            <p className="text-sm text-white/30 mt-4">$149/month · No contracts · Cancel anytime</p>
           </div>
 
           {/* Right: mock browser/phone preview */}
@@ -100,8 +78,8 @@ export default function Home() {
             </div>
             {/* floating stat card */}
             <div className="absolute -bottom-6 -left-6 bg-[#121b2e] border border-white/10 rounded-xl px-5 py-4 shadow-xl hidden sm:block">
-              <div className="text-xs text-white/40 mb-1">New leads this week</div>
-              <div className="text-2xl font-extrabold text-[#f59e0b]">+18</div>
+              <div className="text-xs text-white/40 mb-1">Local search ranking</div>
+              <div className="text-2xl font-extrabold text-[#f59e0b]">#1</div>
             </div>
           </div>
         </div>
@@ -136,11 +114,12 @@ export default function Home() {
             {/* big card spanning 2 cols */}
             <ScrollReveal className="md:col-span-2">
               <div className="card rounded-2xl p-8 h-full">
-                <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-3">Website</div>
-                <h3 className="text-2xl font-bold text-white mb-3">Live in days, not months</h3>
+                <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-3">Website &amp; SEO</div>
+                <h3 className="text-2xl font-bold text-white mb-3">Built to be found locally</h3>
                 <p className="text-white/45 text-base leading-relaxed max-w-md">
-                  Tell us about your business and we build a site that's written to turn
-                  visitors into phone calls — with local SEO baked in from the start.
+                  We're SEO specialists — every site we build is optimized from day one
+                  to rank when people nearby search for your service. No tech skills
+                  needed on your end. We handle all of it.
                 </p>
               </div>
             </ScrollReveal>
@@ -208,70 +187,48 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── PRICING — comparison columns ── */}
+      {/* ── PRICING — single offer ── */}
       <section id="pricing" className="py-24 px-6 border-t border-white/[0.06]">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-2xl mx-auto">
           <ScrollReveal>
             <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-center mb-3">
-              One simple price. Pick what you need.
+              One plan. Everything included.
             </h2>
-            <p className="text-white/45 text-base text-center max-w-xl mx-auto mb-16">
-              No setup fees, no contracts — switch or cancel anytime. Save 2 months with annual billing.
+            <p className="text-white/45 text-base text-center max-w-md mx-auto mb-12">
+              No tiers to compare, no add-ons to figure out. Just one straightforward price.
             </p>
           </ScrollReveal>
 
-          <div className="rounded-2xl border border-white/10 overflow-hidden">
-            <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/[0.06]">
-              {plans.map(({ name, price, tagline, features: feats, highlight }, i) => (
-                <ScrollReveal key={name} delay={i * 80}>
-                  <div className={`p-8 h-full flex flex-col ${highlight ? "bg-[#f59e0b]/[0.06]" : ""}`}>
-                    {highlight && (
-                      <span className="self-start bg-[#f59e0b] text-[#0b1220] text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-4">
-                        Most Popular
-                      </span>
-                    )}
-                    <div className="text-sm font-bold uppercase tracking-widest text-white/40 mb-2">{name}</div>
-                    <div className="flex items-end gap-1 mb-2">
-                      <span className="text-4xl font-extrabold text-white">{price}</span>
-                      <span className="text-white/35 text-sm mb-1">/mo</span>
-                    </div>
-                    <p className="text-white/45 text-sm mb-6">{tagline}</p>
-                    <ul className="space-y-3 mb-8 flex-1">
-                      {feats.map((f) => (
-                        <li key={f} className="flex items-start gap-3 text-sm">
-                          <span className={`mt-0.5 flex-shrink-0 ${highlight ? "text-[#f59e0b]" : "text-white/30"}`}><IconCheck /></span>
-                          <span className="text-white/65">{f}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <a
-                      href="#get-started"
-                      className={`flex items-center justify-center gap-2 text-center text-sm font-bold py-3 rounded-xl transition-all ${
-                        highlight ? "bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220]" : "bg-white/[0.06] hover:bg-white/10 text-white/70 hover:text-white border border-white/10"
-                      }`}
-                    >
-                      Get Started <IconArrow />
-                    </a>
-                  </div>
-                </ScrollReveal>
-              ))}
+          <ScrollReveal>
+            <div className="rounded-2xl border-2 border-[#f59e0b] bg-[#f59e0b]/[0.06] p-10 text-center">
+              <div className="flex items-end justify-center gap-1 mb-2">
+                <span className="text-5xl font-extrabold text-white">$149</span>
+                <span className="text-white/40 text-base mb-1.5">/month</span>
+              </div>
+              <p className="text-white/50 text-sm mb-8">No contracts. No setup fees. Cancel anytime.</p>
+              <ul className="text-left max-w-xs mx-auto space-y-3 mb-9">
+                {[
+                  "A professional website built & hosted for you",
+                  "SEO built in — so locals can find you",
+                  "Google Ads set up and managed",
+                  "Simple dashboard for leads & results",
+                  "Hands-on support, zero tech skills needed",
+                ].map((f) => (
+                  <li key={f} className="flex items-start gap-3 text-sm">
+                    <span className="mt-0.5 flex-shrink-0 text-[#f59e0b]"><IconCheck /></span>
+                    <span className="text-white/65">{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="#get-started"
+                className="inline-flex items-center justify-center gap-2 text-sm font-bold py-3.5 px-10 rounded-xl bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] transition-all"
+              >
+                Get Started <IconArrow />
+              </a>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
-      </section>
-
-      {/* ── EARLY ACCESS strip ── */}
-      <section className="px-6 py-16 border-t border-white/[0.06]">
-        <ScrollReveal>
-          <div className="max-w-4xl mx-auto rounded-2xl border border-[#f59e0b]/25 bg-[#f59e0b]/[0.06] p-10 text-center">
-            <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-3">Early Access</div>
-            <h3 className="text-2xl md:text-3xl font-extrabold mb-3">We're onboarding our first tradespeople now</h3>
-            <p className="text-white/50 max-w-xl mx-auto">
-              PietPilot is brand new — early members get priority setup, direct access
-              to us, and pricing that won't change as we grow.
-            </p>
-          </div>
-        </ScrollReveal>
       </section>
 
       {/* ── FINAL CTA ── */}
