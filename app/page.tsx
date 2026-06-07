@@ -22,7 +22,7 @@ export default function Home() {
           <span className="text-2xl font-extrabold tracking-tight">
             Piet<span className="text-[#f59e0b]">Pilot</span>
           </span>
-          <a href="#pricing" className="bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] text-sm font-bold px-5 py-2.5 rounded-lg transition-colors">
+          <a href="/onboarding" className="bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] text-sm font-bold px-5 py-2.5 rounded-lg transition-colors">
             Get Started
           </a>
         </div>
@@ -294,7 +294,7 @@ export default function Home() {
                 ))}
               </ul>
               <a
-                href="mailto:pietholdingaps@gmail.com?subject=Start my free trial&body=Hi! I'd like to start my 14-day free trial of PietPilot. Here's a bit about my business:%0D%0A%0D%0ABusiness name:%0D%0ALocation:%0D%0AService (e.g. plumbing, electrical, roofing):"
+                href="/onboarding"
                 className="inline-flex items-center justify-center gap-2 bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-extrabold text-base px-9 py-4 rounded-xl shadow-[0_8px_30px_-6px_rgba(245,158,11,0.45)] transition-all hover:scale-[1.03]"
               >
                 Start Your Free Trial <IconArrow />
