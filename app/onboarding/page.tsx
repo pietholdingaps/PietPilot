@@ -121,6 +121,7 @@ export default function Onboarding() {
                   type="text"
                   value={account.name}
                   onChange={(e) => setAccount((a) => ({ ...a, name: e.target.value }))}
+                  onKeyDown={(e) => { if (e.key === "Enter" && account.name && account.email && account.password) setAccountDone(true); }}
                   placeholder="Your name"
                   className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 text-sm outline-none focus:border-[#f59e0b]/50 focus:bg-white/[0.08] transition-all"
                 />
@@ -128,6 +129,7 @@ export default function Onboarding() {
                   type="email"
                   value={account.email}
                   onChange={(e) => setAccount((a) => ({ ...a, email: e.target.value }))}
+                  onKeyDown={(e) => { if (e.key === "Enter" && account.name && account.email && account.password) setAccountDone(true); }}
                   placeholder="Your email"
                   className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 text-sm outline-none focus:border-[#f59e0b]/50 focus:bg-white/[0.08] transition-all"
                 />
@@ -135,6 +137,7 @@ export default function Onboarding() {
                   type="password"
                   value={account.password}
                   onChange={(e) => setAccount((a) => ({ ...a, password: e.target.value }))}
+                  onKeyDown={(e) => { if (e.key === "Enter" && account.name && account.email && account.password) setAccountDone(true); }}
                   placeholder="Choose a password"
                   className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 text-sm outline-none focus:border-[#f59e0b]/50 focus:bg-white/[0.08] transition-all"
                 />
@@ -163,16 +166,21 @@ export default function Onboarding() {
                 <textarea
                   value={data[current.key] || ""}
                   onChange={(e) => updateField(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) next(); }}
                   rows={5}
                   className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 text-sm outline-none focus:border-[#f59e0b]/50 focus:bg-white/[0.08] transition-all resize-none"
                   placeholder="Type your answer here..."
                 />
+              )}
+              {current.type === "textarea" && (
+                <p className="text-white/25 text-xs mt-2">Press {typeof window !== "undefined" && /Mac/.test(navigator.platform) ? "⌘" : "Ctrl"}+Enter to continue</p>
               )}
               {current.type === "text" && (
                 <input
                   type="text"
                   value={data[current.key] || ""}
                   onChange={(e) => updateField(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") next(); }}
                   className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 text-sm outline-none focus:border-[#f59e0b]/50 focus:bg-white/[0.08] transition-all"
                   placeholder="Type your answer here..."
                 />
