@@ -9,24 +9,21 @@ html {
 }
 
 body {
-  background: #f7f2ec;
-  color: #1b2430;
+  background: #0b1220;
+  color: #eef1f6;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Card hover lift */
-.card-hover {
-  transition: all 0.25s ease;
-  border: 1px solid rgba(27, 36, 48, 0.08);
+.card {
+  background: #121b2e;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: border-color 0.2s ease, transform 0.2s ease;
 }
-
-.card-hover:hover {
-  border-color: rgba(199, 93, 60, 0.35);
-  box-shadow: 0 8px 30px -10px rgba(27, 36, 48, 0.15);
+.card:hover {
+  border-color: rgba(56, 189, 248, 0.35);
   transform: translateY(-2px);
 }
 
-/* Scroll fade-in (JS adds .visible) */
 .reveal {
   opacity: 0;
   transform: translateY(20px);
