@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
     const {
       businessName, trade, area, phone, hours,
       services, experience, about, template,
+      accountName, accountEmail,
     } = body;
 
     const { error: dbError } = await supabase.from("onboarding_submissions").insert({
@@ -26,6 +27,8 @@ export async function POST(req: NextRequest) {
       experience: experience || null,
       about: about || null,
       template: template || null,
+      account_name: accountName || null,
+      account_email: accountEmail || null,
       created_at: new Date().toISOString(),
     });
 
@@ -40,6 +43,8 @@ export async function POST(req: NextRequest) {
       html: `
         <div style="font-family: sans-serif; max-width: 520px; margin: 0 auto; padding: 32px;">
           <h2 style="color: #f59e0b; margin-bottom: 8px;">Ny onboarding gennemført</h2>
+          <p style="color: #333; font-size: 16px;"><b>Navn:</b> ${accountName || "—"}</p>
+          <p style="color: #333; font-size: 16px;"><b>Email:</b> ${accountEmail || "—"}</p>
           <p style="color: #333; font-size: 16px;"><b>Virksomhed:</b> ${businessName || "—"}</p>
           <p style="color: #333; font-size: 16px;"><b>Branche:</b> ${trade || "—"}</p>
           <p style="color: #333; font-size: 16px;"><b>Område:</b> ${area || "—"}</p>

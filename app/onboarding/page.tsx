@@ -35,7 +35,9 @@ type FormData = Record<string, string>;
 
 export default function Onboarding() {
   const router = useRouter();
-  const [step, setStep] = useState(0); // 0..8 questions, 9 = template choice, 10 = building, 11 = ready
+  const [accountDone, setAccountDone] = useState(false);
+  const [account, setAccount] = useState({ name: "", email: "", password: "" });
+  const [step, setStep] = useState(0); // 0..8 questions, 9 = template choice, 10 = preview, 11 = building, 12 = ready
   const [data, setData] = useState<FormData>({});
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [buildMsgIndex, setBuildMsgIndex] = useState(0);
@@ -79,7 +81,7 @@ export default function Onboarding() {
       await fetch("/api/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, template: id }),
+        body: JSON.stringify({ ...data, template: id, accountName: account.name, accountEmail: account.email }),
       });
     } catch {
       // even if saving fails, keep the user moving — we don't want to block the experience
@@ -97,7 +99,7 @@ export default function Onboarding() {
   return (
     <div className="min-h-screen bg-[#0b1220] text-[#eef1f6] flex flex-col">
       {/* progress bar */}
-      {step <= questions.length && (
+      {accountDone && step <= questions.length && (
         <div className="h-1 bg-white/[0.06]">
           <div className="h-full bg-[#f59e0b] transition-all duration-300" style={{ width: `${progressPct}%` }} />
         </div>
@@ -106,8 +108,52 @@ export default function Onboarding() {
       <div className="flex-1 flex items-center justify-center px-6 py-16">
         <div className="w-full max-w-xl">
 
+          {/* ── ACCOUNT CREATION ── */}
+          {!accountDone && (
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">Let's create your account</h1>
+              <p className="text-white/40 text-sm mb-8">
+                Just the basics — we'll ask about your business next.
+              </p>
+
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  value={account.name}
+                  onChange={(e) => setAccount((a) => ({ ...a, name: e.target.value }))}
+                  placeholder="Your name"
+                  className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 text-sm outline-none focus:border-[#f59e0b]/50 focus:bg-white/[0.08] transition-all"
+                />
+                <input
+                  type="email"
+                  value={account.email}
+                  onChange={(e) => setAccount((a) => ({ ...a, email: e.target.value }))}
+                  placeholder="Your email"
+                  className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 text-sm outline-none focus:border-[#f59e0b]/50 focus:bg-white/[0.08] transition-all"
+                />
+                <input
+                  type="password"
+                  value={account.password}
+                  onChange={(e) => setAccount((a) => ({ ...a, password: e.target.value }))}
+                  placeholder="Choose a password"
+                  className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 text-sm outline-none focus:border-[#f59e0b]/50 focus:bg-white/[0.08] transition-all"
+                />
+              </div>
+
+              <div className="flex justify-end mt-8">
+                <button
+                  onClick={() => setAccountDone(true)}
+                  disabled={!account.name || !account.email || !account.password}
+                  className="bg-[#f59e0b] hover:bg-[#fbbf24] disabled:opacity-40 disabled:cursor-not-allowed text-[#0b1220] font-bold text-sm px-7 py-3 rounded-xl transition-all hover:scale-[1.02]"
+                >
+                  Continue →
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* ── QUESTIONS ── */}
-          {step < questions.length && (
+          {accountDone && step < questions.length && (
             <div>
               <p className="text-white/35 text-sm mb-3">Question {step + 1} of {questions.length}</p>
               <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">{current.label}</h1>
@@ -157,7 +203,7 @@ export default function Onboarding() {
           )}
 
           {/* ── TEMPLATE CHOICE ── */}
-          {step === questions.length && (
+          {accountDone && step === questions.length && (
             <div>
               <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-center">
                 Pick a starting look for your site
@@ -204,7 +250,7 @@ export default function Onboarding() {
           )}
 
           {/* ── TEMPLATE PREVIEW ── */}
-          {step === questions.length + 1 && selectedTemplate && (
+          {accountDone && step === questions.length + 1 && selectedTemplate && (
             <div>
               {(() => {
                 const t = templates.find((x) => x.id === selectedTemplate)!;
@@ -269,7 +315,7 @@ export default function Onboarding() {
           )}
 
           {/* ── BUILDING SCREEN ── */}
-          {step === questions.length + 2 && (
+          {accountDone && step === questions.length + 2 && (
             <div className="text-center">
               <div className="w-16 h-16 mx-auto mb-8 relative">
                 <div className="absolute inset-0 rounded-full border-2 border-white/10" />
@@ -281,7 +327,7 @@ export default function Onboarding() {
           )}
 
           {/* ── READY SCREEN ── */}
-          {step === questions.length + 3 && (
+          {accountDone && step === questions.length + 3 && (
             <div className="text-center">
               <div className="w-14 h-14 rounded-full bg-[#f59e0b]/15 border border-[#f59e0b]/30 flex items-center justify-center mx-auto mb-6">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
