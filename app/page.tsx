@@ -33,11 +33,6 @@ const IconArrowRight = () => (
     <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
   </svg>
 );
-const IconStar = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="#ff6b2b" stroke="none">
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-  </svg>
-);
 const IconShield = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
@@ -72,14 +67,14 @@ const features = [
   },
   {
     icon: <IconShield />,
-    title: "Built-in Lock-in (For Them)",
-    desc: "Your site, your ads history, your leads — all live in our system. Agencies wish they had this kind of retention.",
+    title: "Everything in One Place",
+    desc: "Your site, your ad performance, and your leads — all together, so you always know exactly what's working.",
     tag: "All plans",
   },
   {
     icon: <IconCheck />,
-    title: "No Contracts. No Agency BS.",
-    desc: "Month-to-month. Cancel anytime. No 12-month lock-in, no account manager who goes silent after the sale.",
+    title: "Month to Month",
+    desc: "No contracts, no setup fees. Cancel whenever you want — we'd rather earn your business every month.",
     tag: "All plans",
   },
 ];
@@ -129,27 +124,6 @@ const plans = [
     ],
     cta: "Get Started",
     highlight: false,
-  },
-];
-
-const testimonials = [
-  {
-    quote: "I was paying my agency $1,200 a month and getting maybe 3 leads. First month with PietPilot I got 11 calls. Complete no-brainer.",
-    name: "Mike T.",
-    role: "Plumber · Phoenix, AZ",
-    avatar: "MT",
-  },
-  {
-    quote: "Setup took less than 10 minutes. My site looked better than competitors who've had agencies for years. Clients actually comment on it.",
-    name: "Jason R.",
-    role: "Electrician · Dallas, TX",
-    avatar: "JR",
-  },
-  {
-    quote: "The auto follow-up text is insane. I used to miss calls on job sites constantly. Now every lead gets a reply in seconds. My close rate doubled.",
-    name: "Carlos M.",
-    role: "HVAC · Miami, FL",
-    avatar: "CM",
   },
 ];
 
@@ -251,62 +225,17 @@ export default function Home() {
             </p>
           </ScrollReveal>
 
-          <div className="grid md:grid-cols-2 gap-4">
-            {/* Old way */}
-            <ScrollReveal delay={0}>
-              <div className="rounded-2xl bg-white/[0.02] border border-white/5 p-8 h-full">
-                <div className="text-sm font-semibold text-red-400/80 mb-6 flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 text-xs">✕</span>
-                  The Old Way (Marketing Agency)
-                </div>
-                <ul className="space-y-4">
-                  {[
-                    ["$800–$2,000/month", "And it goes up every year"],
-                    ["Weeks to go live", "\"We're working on it...\""],
-                    ["You don't own your site", "Cancel and it disappears"],
-                    ["Zero visibility on ads", "Trust us, it's working"],
-                    ["Missed calls = lost jobs", "Nobody follows up"],
-                    ["12-month contracts", "Try getting out of one"],
-                  ].map(([bad, sub]) => (
-                    <li key={bad} className="flex items-start gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-red-500/50 mt-2 flex-shrink-0" />
-                      <div>
-                        <div className="text-white/70 text-sm font-medium">{bad}</div>
-                        <div className="text-white/25 text-xs mt-0.5">{sub}</div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+          <div className="grid sm:grid-cols-3 gap-6 text-center">
+            {[
+              ["$800–$2,000/mo", "for a website you don't even own"],
+              ["Weeks of waiting", "for changes that should take minutes"],
+              ["No idea what's working", "just a PDF report once a month"],
+            ].map(([title, sub]) => (
+              <div key={title} className="px-4">
+                <div className="text-white/80 text-lg font-bold mb-1">{title}</div>
+                <div className="text-white/35 text-sm">{sub}</div>
               </div>
-            </ScrollReveal>
-
-            {/* PietPilot */}
-            <ScrollReveal delay={120}>
-              <div className="rounded-2xl bg-[#ff6b2b]/5 border border-[#ff6b2b]/20 p-8 h-full glow-orange-sm">
-                <div className="text-sm font-semibold text-[#ff6b2b] mb-6 flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-[#ff6b2b]/10 border border-[#ff6b2b]/30 flex items-center justify-center text-[#ff6b2b] text-xs">✓</span>
-                  PietPilot
-                </div>
-                <ul className="space-y-4">
-                  {[
-                    ["$149–$399/month", "Everything included, nothing hidden"],
-                    ["Live in under 5 minutes", "Seriously. We timed it."],
-                    ["Professional site built for you", "AI writes every word"],
-                    ["Full dashboard, real numbers", "See every dollar working"],
-                    ["Every lead followed up automatically", "Even missed calls"],
-                    ["Cancel anytime", "No contracts, no catch"],
-                  ].map(([good, sub]) => (
-                    <li key={good} className="flex items-start gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#ff6b2b] mt-2 flex-shrink-0" />
-                      <div>
-                        <div className="text-white/80 text-sm font-medium">{good}</div>
-                        <div className="text-white/30 text-xs mt-0.5">{sub}</div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </ScrollReveal>
+            ))}
           </div>
         </div>
       </section>
@@ -477,42 +406,20 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ── */}
+      {/* ── EARLY ACCESS ── */}
       <section className="py-28 px-6 border-t border-white/5">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-3xl mx-auto text-center">
           <ScrollReveal>
-            <div className="text-center mb-4">
-              <span className="text-xs font-semibold uppercase tracking-widest text-[#ff6b2b]">Results</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-black text-center tracking-tight mb-20">
-              Real tradespeople.{" "}
-              <span className="gradient-text">Real results.</span>
+            <div className="text-xs font-semibold uppercase tracking-widest text-[#ff6b2b] mb-4">Early Access</div>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-6">
+              We&apos;re onboarding our first tradespeople now.
             </h2>
+            <p className="text-white/40 text-lg leading-relaxed">
+              PietPilot is brand new — and that&apos;s good news for you. Early members
+              get priority setup, direct access to us, and pricing that won&apos;t
+              change as we grow.
+            </p>
           </ScrollReveal>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {testimonials.map(({ quote, name, role, avatar }, i) => (
-              <ScrollReveal key={name} delay={i * 100}>
-                <div className="card-hover rounded-2xl bg-white/[0.02] p-8 h-full flex flex-col">
-                  <div className="flex gap-0.5 mb-6">
-                    {[1,2,3,4,5].map(j => <IconStar key={j} />)}
-                  </div>
-                  <p className="text-white/60 text-sm leading-relaxed mb-8 flex-1">
-                    &ldquo;{quote}&rdquo;
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-[#ff6b2b]/20 border border-[#ff6b2b]/30 flex items-center justify-center text-[#ff6b2b] text-xs font-bold">
-                      {avatar}
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold text-white">{name}</div>
-                      <div className="text-xs text-white/30">{role}</div>
-                    </div>
-                  </div>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
         </div>
       </section>
 
