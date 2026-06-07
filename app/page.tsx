@@ -1,5 +1,6 @@
 import ScrollReveal from "./components/ScrollReveal";
 import WaitlistForm from "./components/WaitlistForm";
+import Faq from "./components/Faq";
 
 const IconCheck = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
@@ -49,7 +50,7 @@ export default function Home() {
             <div className="max-w-md">
               <WaitlistForm />
             </div>
-            <p className="text-sm text-white/30 mt-4">$149/month · No contracts · Cancel anytime</p>
+            <p className="text-sm text-white/30 mt-4">14-day free trial · $149/month after · Cancel anytime</p>
           </div>
 
           {/* Right: mock browser/phone preview */}
@@ -201,11 +202,14 @@ export default function Home() {
 
           <ScrollReveal>
             <div className="rounded-2xl border-2 border-[#f59e0b] bg-[#f59e0b]/[0.06] p-10 text-center">
+              <span className="inline-block bg-[#f59e0b] text-[#0b1220] text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-5">
+                14-Day Free Trial
+              </span>
               <div className="flex items-end justify-center gap-1 mb-2">
                 <span className="text-5xl font-extrabold text-white">$149</span>
-                <span className="text-white/40 text-base mb-1.5">/month</span>
+                <span className="text-white/40 text-base mb-1.5">/month after trial</span>
               </div>
-              <p className="text-white/50 text-sm mb-8">No contracts. No setup fees. Cancel anytime.</p>
+              <p className="text-white/50 text-sm mb-8">No credit card required to start. No contracts. Cancel anytime.</p>
               <ul className="text-left max-w-xs mx-auto space-y-3 mb-9">
                 {[
                   "A professional website built & hosted for you",
@@ -224,9 +228,26 @@ export default function Home() {
                 href="#get-started"
                 className="inline-flex items-center justify-center gap-2 text-sm font-bold py-3.5 px-10 rounded-xl bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] transition-all"
               >
-                Get Started <IconArrow />
+                Start Your Free Trial <IconArrow />
               </a>
             </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section id="faq" className="py-24 px-6 border-t border-white/[0.06]">
+        <div className="max-w-3xl mx-auto">
+          <ScrollReveal>
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-center mb-3">
+              Questions? We&apos;ve got answers.
+            </h2>
+            <p className="text-white/45 text-base text-center max-w-md mx-auto mb-12">
+              Still unsure about something? Reach out anytime — we reply personally.
+            </p>
+          </ScrollReveal>
+          <ScrollReveal>
+            <Faq />
           </ScrollReveal>
         </div>
       </section>
@@ -239,7 +260,7 @@ export default function Home() {
               Your next customer is searching right now.
             </h2>
             <p className="text-white/45 text-lg mb-10 max-w-lg mx-auto">
-              Get a professional website live in under 5 minutes — no agency, no contract.
+              Start your 14-day free trial — no credit card required, no contract, cancel anytime.
             </p>
             <WaitlistForm />
           </ScrollReveal>

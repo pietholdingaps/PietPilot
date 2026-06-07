@@ -1,0 +1,58 @@
+"use client";
+
+import { useState } from "react";
+
+const items = [
+  {
+    q: "Do I need any technical skills to use PietPilot?",
+    a: "No. We build and run everything for you — the website, the SEO, the ads. You don't need to touch a line of code or learn any new software.",
+  },
+  {
+    q: "How does the 14-day free trial work?",
+    a: "You get full access for 14 days, no credit card required upfront. If it's not for you, simply don't continue — no charges, no hassle.",
+  },
+  {
+    q: "What happens if I cancel?",
+    a: "You can cancel anytime, month to month — no contracts. If you cancel, your hosted website comes down at the end of your billing period.",
+  },
+  {
+    q: "How long does it take to get my website live?",
+    a: "Most businesses are live within a few days of signing up. We handle the setup, copywriting, and SEO — you just tell us about your business.",
+  },
+  {
+    q: "Will my site actually show up in local Google searches?",
+    a: "That's our specialty. Every site is built with local SEO from day one, so when someone nearby searches for your service, you have a real shot at showing up.",
+  },
+];
+
+export default function Faq() {
+  const [open, setOpen] = useState<number | null>(0);
+
+  return (
+    <div className="max-w-2xl mx-auto divide-y divide-white/[0.06] rounded-2xl border border-white/10 overflow-hidden">
+      {items.map(({ q, a }, i) => (
+        <div key={q} className="bg-[#121b2e]">
+          <button
+            onClick={() => setOpen(open === i ? null : i)}
+            className="w-full flex items-center justify-between gap-4 text-left px-6 py-5 text-white font-semibold text-sm sm:text-base"
+          >
+            {q}
+            <span className={`flex-shrink-0 text-[#f59e0b] transition-transform duration-200 ${open === i ? "rotate-45" : ""}`}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </span>
+          </button>
+          <div
+            className="grid transition-all duration-200 ease-in-out"
+            style={{ gridTemplateRows: open === i ? "1fr" : "0fr" }}
+          >
+            <div className="overflow-hidden">
+              <p className="px-6 pb-5 text-white/50 text-sm leading-relaxed">{a}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
