@@ -249,12 +249,9 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <a
-                href="#get-started"
-                className="inline-flex items-center justify-center gap-2 text-sm font-bold py-3.5 px-10 rounded-xl bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] transition-all"
-              >
-                Start Your Free Trial <IconArrow />
-              </a>
+              <div className="max-w-sm mx-auto">
+                <WaitlistForm />
+              </div>
             </div>
           </ScrollReveal>
         </div>
@@ -273,21 +270,6 @@ export default function Home() {
           </ScrollReveal>
           <ScrollReveal>
             <Faq />
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* ── FINAL CTA ── */}
-      <section id="get-started" className="py-24 px-6 border-t border-white/[0.06]">
-        <div className="max-w-2xl mx-auto text-center">
-          <ScrollReveal>
-            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight mb-5">
-              Your next customer is searching right now.
-            </h2>
-            <p className="text-white/45 text-lg mb-10 max-w-lg mx-auto">
-              Start your 14-day free trial — no credit card required, no contract, cancel anytime.
-            </p>
-            <WaitlistForm />
           </ScrollReveal>
         </div>
       </section>
