@@ -46,7 +46,10 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
   "servicesIntro": "one short sentence introducing the services list",
   "services": ["4 to 6 short service names, each 2-5 words"],
   "ctaText": "short call-to-action button text (e.g. 'Get a Free Quote')",
-  "trustLine": "one short credibility line using their experience info, e.g. '15+ years serving Austin homeowners'"
+  "trustLine": "one short credibility line using their experience info, e.g. '15+ years serving Austin homeowners'",
+  "responsePromise": "a short reassuring line about how fast they respond, e.g. 'We respond within 24 hours — guaranteed.' (invent a reasonable promise if not stated)",
+  "guaranteeLine": "a short trust/insurance/guarantee line, e.g. 'Fully licensed & insured for your peace of mind.' (invent something reasonable and trade-appropriate if not stated)",
+  "process": "an array of exactly 4 objects, each with a short 'title' (2-4 words, e.g. 'Reach out', 'Free assessment', 'We get to work', 'Job done, guaranteed') and a one-sentence 'description' explaining that step of working with this business"
 }`;
 
     const message = await anthropic.messages.create({

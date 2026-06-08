@@ -100,7 +100,9 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
           <span className="hidden sm:inline w-1 h-1 rounded-full" style={{ background: `${theme.muted}66` }} />
           <p className="text-sm font-semibold tracking-wide" style={{ color: theme.muted }}>{data.hours}</p>
           <span className="hidden sm:inline w-1 h-1 rounded-full" style={{ background: `${theme.muted}66` }} />
-          <p className="text-sm font-semibold tracking-wide" style={{ color: theme.muted }}>Licensed & insured</p>
+          <p className="text-sm font-semibold tracking-wide" style={{ color: theme.muted }}>{copy.responsePromise}</p>
+          <span className="hidden sm:inline w-1 h-1 rounded-full" style={{ background: `${theme.muted}66` }} />
+          <p className="text-sm font-semibold tracking-wide" style={{ color: theme.muted }}>{copy.guaranteeLine}</p>
         </div>
       </section>
 
@@ -142,6 +144,31 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
         </div>
       </section>
 
+      {/* PROCESS */}
+      <section className="py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-14">
+            <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: theme.accent }}>How it works</div>
+            <h2 className="text-3xl md:text-4xl font-extrabold mb-4 tracking-tight">Working with {data.businessName}</h2>
+            <p className="max-w-xl mx-auto text-base" style={{ color: theme.muted }}>{copy.responsePromise}</p>
+          </div>
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-5">
+            {copy.process.map((step, i) => (
+              <div key={i} className="relative rounded-2xl p-7" style={{ background: theme.card, border: `1px solid ${theme.text}12` }}>
+                <div
+                  className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 font-extrabold text-base"
+                  style={{ background: `${theme.accent}1a`, color: theme.accent, border: `1px solid ${theme.accent}40` }}
+                >
+                  {i + 1}
+                </div>
+                <p className="font-bold text-base mb-1.5">{step.title}</p>
+                <p className="text-sm leading-relaxed" style={{ color: theme.muted }}>{step.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* GALLERY */}
       <section className="py-24 px-6">
         <div className="max-w-6xl mx-auto">
@@ -174,7 +201,8 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
           <div className="relative">
             <h2 className="text-3xl md:text-4xl font-extrabold mb-3 tracking-tight">Ready to get started?</h2>
             <p className="mb-1.5 text-base" style={{ color: theme.muted }}>Proudly serving {data.area}</p>
-            <p className="mb-9 text-base" style={{ color: theme.muted }}>{data.hours}</p>
+            <p className="mb-1.5 text-base" style={{ color: theme.muted }}>{data.hours} · {copy.responsePromise}</p>
+            <p className="mb-9 text-base" style={{ color: theme.muted }}>{copy.guaranteeLine}</p>
             <a
               href={`tel:${data.phone}`}
               style={{ background: theme.accent, color: theme.accentText }}
