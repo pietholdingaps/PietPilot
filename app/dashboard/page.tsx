@@ -59,13 +59,7 @@ function DashboardInner() {
                 View my website ↗
               </a>
             ) : (
-              <span className="text-white/30 text-sm">
-                Couldn't find your site —{" "}
-                <a href="/contact" className="text-[#f59e0b] hover:text-[#fbbf24] font-semibold">
-                  contact us
-                </a>{" "}
-                and we'll sort it.
-              </span>
+              <span className="text-white/30 text-sm">No website yet</span>
             )}
           </div>
 
