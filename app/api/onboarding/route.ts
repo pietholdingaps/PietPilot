@@ -27,8 +27,6 @@ export async function POST(req: NextRequest) {
       experience: experience || null,
       about: about || null,
       template: template || null,
-      account_name: accountName || null,
-      account_email: accountEmail || null,
       created_at: new Date().toISOString(),
     }).select("id").single();
 
