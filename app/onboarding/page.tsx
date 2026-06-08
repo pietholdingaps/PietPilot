@@ -139,6 +139,7 @@ function OnboardingInner() {
       const json = await res.json();
       siteId = json?.id || null;
       setGeneratedSiteId(siteId);
+      if (siteId) localStorage.setItem("pietpilot_site_id", siteId);
 
       if (siteId) {
         // fire off the AI copy generation — don't block the building animation on it

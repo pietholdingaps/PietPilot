@@ -1,5 +1,30 @@
-export default async function Dashboard({ searchParams }: { searchParams: Promise<{ site?: string }> }) {
-  const { site } = await searchParams;
+"use client";
+
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+
+export default function Dashboard() {
+  return (
+    <Suspense fallback={null}>
+      <DashboardInner />
+    </Suspense>
+  );
+}
+
+function DashboardInner() {
+  const searchParams = useSearchParams();
+  const [site, setSite] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fromUrl = searchParams.get("site");
+    if (fromUrl) {
+      setSite(fromUrl);
+      localStorage.setItem("pietpilot_site_id", fromUrl);
+    } else {
+      const stored = localStorage.getItem("pietpilot_site_id");
+      if (stored) setSite(stored);
+    }
+  }, [searchParams]);
 
   return (
     <div className="min-h-screen bg-[#0b1220] text-[#eef1f6] px-6 py-12">
@@ -34,7 +59,13 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
                 View my website ↗
               </a>
             ) : (
-              <span className="text-white/30 text-sm">No website yet</span>
+              <span className="text-white/30 text-sm">
+                Couldn't find your site —{" "}
+                <a href="/contact" className="text-[#f59e0b] hover:text-[#fbbf24] font-semibold">
+                  contact us
+                </a>{" "}
+                and we'll sort it.
+              </span>
             )}
           </div>
 
