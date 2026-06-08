@@ -2,39 +2,57 @@ import { SiteData } from "@/lib/siteTypes";
 import { getPhotosForTrade } from "@/lib/stockPhotos";
 
 const themes: Record<string, {
-  bg: string; text: string; muted: string; card: string; accent: string; accentText: string; heroOverlay: string; font: string;
+  bg: string; text: string; muted: string; card: string; accent: string; accentText: string; heroOverlay: string; navBg: string;
 }> = {
   classic: {
-    bg: "#ffffff", text: "#10182b", muted: "#5b6472", card: "#f5f7fa",
-    accent: "#1d4ed8", accentText: "#ffffff", heroOverlay: "rgba(16,24,43,0.55)", font: "font-sans",
+    bg: "#ffffff", text: "#0f1729", muted: "#5b6472", card: "#f6f8fb",
+    accent: "#1d4ed8", accentText: "#ffffff", heroOverlay: "linear-gradient(115deg, rgba(15,23,41,0.82) 0%, rgba(15,23,41,0.45) 55%, rgba(15,23,41,0.25) 100%)",
+    navBg: "rgba(255,255,255,0.85)",
   },
   bold: {
-    bg: "#0b0b10", text: "#f5f5f7", muted: "#a3a3ad", card: "#17171f",
-    accent: "#f59e0b", accentText: "#0b0b10", heroOverlay: "rgba(11,11,16,0.6)", font: "font-sans",
+    bg: "#0a0a0f", text: "#f5f5f7", muted: "#9d9da8", card: "#15151d",
+    accent: "#f59e0b", accentText: "#0a0a0f", heroOverlay: "linear-gradient(115deg, rgba(10,10,15,0.88) 0%, rgba(10,10,15,0.5) 55%, rgba(10,10,15,0.25) 100%)",
+    navBg: "rgba(10,10,15,0.75)",
   },
   warm: {
-    bg: "#fdf6ee", text: "#3a2e26", muted: "#7a6a5d", card: "#f4e9dc",
-    accent: "#e2725b", accentText: "#ffffff", heroOverlay: "rgba(58,46,38,0.45)", font: "font-sans",
+    bg: "#fdf6ee", text: "#3a2e26", muted: "#8a7a6d", card: "#f6ebdd",
+    accent: "#e2725b", accentText: "#ffffff", heroOverlay: "linear-gradient(115deg, rgba(58,46,38,0.78) 0%, rgba(58,46,38,0.42) 55%, rgba(58,46,38,0.2) 100%)",
+    navBg: "rgba(253,246,238,0.85)",
   },
 };
 
 export default function GeneratedSite({ data }: { data: SiteData }) {
   const theme = themes[data.template] || themes.classic;
-  const photos = getPhotosForTrade(data.trade);
+  const photos = getPhotosForTrade(data.trade, data.businessName || "site");
   const { copy } = data;
+  const initials = (data.businessName || "P P").split(/\s+/).slice(0, 2).map((w) => w[0]?.toUpperCase()).join("");
 
   return (
-    <div style={{ background: theme.bg, color: theme.text }} className={`min-h-screen ${theme.font}`}>
+    <div style={{ background: theme.bg, color: theme.text }} className="min-h-screen font-sans antialiased">
       {/* NAV */}
-      <nav className="border-b" style={{ borderColor: `${theme.text}14` }}>
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="text-xl font-extrabold tracking-tight">{data.businessName}</span>
+      <nav className="sticky top-0 z-30 backdrop-blur-xl border-b" style={{ borderColor: `${theme.text}10`, background: theme.navBg }}>
+        <div className="max-w-6xl mx-auto px-6 h-[72px] flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div
+              className="w-9 h-9 rounded-lg flex items-center justify-center font-extrabold text-sm"
+              style={{ background: theme.accent, color: theme.accentText }}
+            >
+              {initials || "PP"}
+            </div>
+            <span className="text-lg font-extrabold tracking-tight">{data.businessName}</span>
+          </div>
+          <div className="hidden sm:flex items-center gap-8 text-sm font-medium" style={{ color: theme.muted }}>
+            <span>About</span>
+            <span>Services</span>
+            <span>Work</span>
+            <span>Contact</span>
+          </div>
           <a
             href={`tel:${data.phone}`}
             style={{ background: theme.accent, color: theme.accentText }}
-            className="text-sm font-bold px-5 py-2.5 rounded-lg"
+            className="text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm hover:opacity-90 transition-opacity"
           >
-            Call {data.phone}
+            {data.phone}
           </a>
         </div>
       </nav>
@@ -42,58 +60,82 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
       {/* HERO */}
       <section className="relative">
         <div
-          className="relative h-[480px] bg-cover bg-center flex items-center"
+          className="relative min-h-[620px] bg-cover bg-center flex items-end"
           style={{ backgroundImage: `url(${photos.hero})` }}
         >
           <div className="absolute inset-0" style={{ background: theme.heroOverlay }} />
-          <div className="relative max-w-6xl mx-auto px-6 w-full">
-            <div className="max-w-xl">
-              <h1 className="text-4xl md:text-5xl font-extrabold leading-tight mb-4 text-white">
-                {copy.headline}
-              </h1>
-              <p className="text-lg text-white/80 mb-8">{copy.subheadline}</p>
+          <div className="relative max-w-6xl mx-auto px-6 w-full pb-20 pt-32">
+            <div
+              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest px-3.5 py-1.5 rounded-full mb-6"
+              style={{ background: `${theme.accent}26`, color: "#fff", border: `1px solid ${theme.accent}55` }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: theme.accent }} />
+              Serving {data.area || "your area"}
+            </div>
+            <h1 className="text-[2.6rem] sm:text-5xl md:text-6xl font-extrabold leading-[1.05] tracking-tight mb-5 text-white max-w-2xl">
+              {copy.headline}
+            </h1>
+            <p className="text-lg text-white/80 mb-9 max-w-xl leading-relaxed">{copy.subheadline}</p>
+            <div className="flex flex-wrap items-center gap-4">
               <a
                 href={`tel:${data.phone}`}
                 style={{ background: theme.accent, color: theme.accentText }}
-                className="inline-flex items-center justify-center font-bold text-base px-8 py-4 rounded-xl"
+                className="inline-flex items-center justify-center gap-2 font-bold text-base px-8 py-4 rounded-xl shadow-[0_12px_40px_-8px_rgba(0,0,0,0.5)] hover:scale-[1.02] transition-transform"
               >
                 {copy.ctaText}
+                <span aria-hidden>→</span>
+              </a>
+              <a href={`tel:${data.phone}`} className="text-white font-semibold text-base hover:text-white/80 transition-colors">
+                {data.phone}
               </a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* TRUST LINE */}
-      <section className="py-6 px-6 border-b" style={{ borderColor: `${theme.text}10`, background: theme.card }}>
-        <p className="max-w-6xl mx-auto text-center text-sm font-semibold" style={{ color: theme.muted }}>
-          {copy.trustLine}
-        </p>
+      {/* TRUST BAR */}
+      <section className="py-5 px-6 border-b" style={{ borderColor: `${theme.text}0d`, background: theme.card }}>
+        <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-x-10 gap-y-2 text-center">
+          <p className="text-sm font-semibold tracking-wide" style={{ color: theme.muted }}>{copy.trustLine}</p>
+          <span className="hidden sm:inline w-1 h-1 rounded-full" style={{ background: `${theme.muted}66` }} />
+          <p className="text-sm font-semibold tracking-wide" style={{ color: theme.muted }}>{data.hours}</p>
+          <span className="hidden sm:inline w-1 h-1 rounded-full" style={{ background: `${theme.muted}66` }} />
+          <p className="text-sm font-semibold tracking-wide" style={{ color: theme.muted }}>Licensed & insured</p>
+        </div>
       </section>
 
       {/* ABOUT */}
-      <section className="py-20 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl md:text-3xl font-extrabold mb-5">About {data.businessName}</h2>
-          <p className="text-base leading-relaxed" style={{ color: theme.muted }}>{copy.about}</p>
+      <section className="py-24 px-6">
+        <div className="max-w-3xl mx-auto text-center">
+          <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: theme.accent }}>About us</div>
+          <h2 className="text-3xl md:text-4xl font-extrabold mb-6 tracking-tight">The team behind {data.businessName}</h2>
+          <p className="text-lg leading-relaxed" style={{ color: theme.muted }}>{copy.about}</p>
         </div>
       </section>
 
       {/* SERVICES */}
-      <section className="py-20 px-6" style={{ background: theme.card }}>
+      <section className="py-24 px-6" style={{ background: theme.card }}>
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-extrabold mb-3 text-center">Our Services</h2>
-          <p className="text-center mb-12 max-w-xl mx-auto" style={{ color: theme.muted }}>{copy.servicesIntro}</p>
+          <div className="text-center mb-14">
+            <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: theme.accent }}>What we do</div>
+            <h2 className="text-3xl md:text-4xl font-extrabold mb-4 tracking-tight">Our services</h2>
+            <p className="max-w-xl mx-auto text-base" style={{ color: theme.muted }}>{copy.servicesIntro}</p>
+          </div>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
             {copy.services.map((s, i) => (
-              <div key={i} className="rounded-2xl p-6" style={{ background: theme.bg, border: `1px solid ${theme.text}12` }}>
+              <div
+                key={i}
+                className="group rounded-2xl p-7 transition-all hover:-translate-y-1"
+                style={{ background: theme.bg, border: `1px solid ${theme.text}12` }}
+              >
                 <div
-                  className="w-9 h-9 rounded-lg flex items-center justify-center mb-4 font-bold text-sm"
-                  style={{ background: theme.accent, color: theme.accentText }}
+                  className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 font-extrabold text-base transition-transform group-hover:scale-110"
+                  style={{ background: `${theme.accent}1a`, color: theme.accent, border: `1px solid ${theme.accent}40` }}
                 >
-                  {i + 1}
+                  {String(i + 1).padStart(2, "0")}
                 </div>
-                <p className="font-semibold text-sm">{s}</p>
+                <p className="font-bold text-base mb-1.5">{s}</p>
+                <p className="text-sm" style={{ color: theme.muted }}>Done right, on time, every time.</p>
               </div>
             ))}
           </div>
@@ -101,14 +143,18 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
       </section>
 
       {/* GALLERY */}
-      <section className="py-20 px-6">
+      <section className="py-24 px-6">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-extrabold mb-10 text-center">Recent Work</h2>
+          <div className="text-center mb-14">
+            <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: theme.accent }}>Our work</div>
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">Recent projects</h2>
+          </div>
           <div className="grid sm:grid-cols-3 gap-5">
             {photos.gallery.map((src, i) => (
-              <div key={i} className="aspect-[4/3] rounded-2xl overflow-hidden">
+              <div key={i} className="group aspect-[4/3] rounded-2xl overflow-hidden relative">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src} alt={`${data.trade} work example`} className="w-full h-full object-cover" />
+                <img src={src} alt={`${data.trade || "Project"} example ${i + 1}`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.45), transparent 60%)" }} />
               </div>
             ))}
           </div>
@@ -116,24 +162,33 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
       </section>
 
       {/* CONTACT / CTA */}
-      <section className="py-20 px-6" style={{ background: theme.card }}>
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl md:text-3xl font-extrabold mb-3">Ready to get started?</h2>
-          <p className="mb-2" style={{ color: theme.muted }}>Serving {data.area}</p>
-          <p className="mb-8" style={{ color: theme.muted }}>{data.hours}</p>
-          <a
-            href={`tel:${data.phone}`}
-            style={{ background: theme.accent, color: theme.accentText }}
-            className="inline-flex items-center justify-center font-bold text-base px-9 py-4 rounded-xl"
-          >
-            Call now: {data.phone}
-          </a>
+      <section className="py-24 px-6" style={{ background: theme.card }}>
+        <div
+          className="max-w-4xl mx-auto rounded-3xl p-12 md:p-16 text-center relative overflow-hidden"
+          style={{ background: theme.bg, border: `1px solid ${theme.text}14` }}
+        >
+          <div
+            className="absolute -top-24 -right-24 w-64 h-64 rounded-full blur-3xl opacity-20"
+            style={{ background: theme.accent }}
+          />
+          <div className="relative">
+            <h2 className="text-3xl md:text-4xl font-extrabold mb-3 tracking-tight">Ready to get started?</h2>
+            <p className="mb-1.5 text-base" style={{ color: theme.muted }}>Proudly serving {data.area}</p>
+            <p className="mb-9 text-base" style={{ color: theme.muted }}>{data.hours}</p>
+            <a
+              href={`tel:${data.phone}`}
+              style={{ background: theme.accent, color: theme.accentText }}
+              className="inline-flex items-center justify-center gap-2 font-bold text-base px-10 py-4.5 rounded-xl shadow-[0_12px_40px_-10px_rgba(0,0,0,0.4)] hover:scale-[1.02] transition-transform"
+            >
+              Call now: {data.phone}
+            </a>
+          </div>
         </div>
       </section>
 
-      <footer className="py-8 px-6 text-center border-t" style={{ borderColor: `${theme.text}10` }}>
-        <p className="text-sm font-bold">{data.businessName}</p>
-        <p className="text-xs mt-1" style={{ color: theme.muted }}>
+      <footer className="py-10 px-6 text-center border-t" style={{ borderColor: `${theme.text}10` }}>
+        <p className="text-base font-extrabold tracking-tight mb-1">{data.businessName}</p>
+        <p className="text-xs" style={{ color: theme.muted }}>
           Website by PietPilot · © {new Date().getFullYear()}
         </p>
       </footer>
