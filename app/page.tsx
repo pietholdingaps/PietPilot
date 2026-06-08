@@ -26,9 +26,14 @@ export default function Home() {
             <a href="#pricing" className="text-white/55 hover:text-white text-sm font-medium transition-colors">Pricing</a>
             <a href="#faq" className="text-white/55 hover:text-white text-sm font-medium transition-colors">FAQ</a>
           </div>
-          <a href="/onboarding" className="bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] text-sm font-bold px-5 py-2.5 rounded-lg transition-colors">
-            Get Started
-          </a>
+          <div className="flex items-center gap-4">
+            <a href="/login" className="text-white/55 hover:text-white text-sm font-medium transition-colors">
+              Log in
+            </a>
+            <a href="/onboarding" className="bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] text-sm font-bold px-5 py-2.5 rounded-lg transition-colors">
+              Get Started
+            </a>
+          </div>
         </div>
       </nav>
 
