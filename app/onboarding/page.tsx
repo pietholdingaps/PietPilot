@@ -2,6 +2,8 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import GeneratedSite from "@/app/components/GeneratedSite";
+import { GeneratedSiteCopy } from "@/lib/siteTypes";
 
 const STEPS_TOTAL = 9;
 
@@ -78,6 +80,8 @@ function OnboardingInner() {
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [buildMsgIndex, setBuildMsgIndex] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [previewCopy, setPreviewCopy] = useState<GeneratedSiteCopy | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
 
   const current = questions[step];
 
@@ -100,6 +104,19 @@ function OnboardingInner() {
   function previewTemplate(id: string) {
     setSelectedTemplate(id);
     setStep(questions.length + 1); // preview screen
+
+    if (!previewCopy) {
+      setPreviewLoading(true);
+      fetch("/api/preview-copy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      })
+        .then((r) => r.json())
+        .then((json) => setPreviewCopy(json.copy || null))
+        .catch(() => setPreviewCopy(null))
+        .finally(() => setPreviewLoading(false));
+    }
   }
 
   async function confirmTemplate(id: string) {
@@ -342,24 +359,31 @@ function OnboardingInner() {
                         <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
                         <span className="ml-3 text-xs text-white/30">{(data.businessName || "yourcompany").toLowerCase().replace(/\s+/g, "")}.com</span>
                       </div>
-                      <div className="p-7 space-y-4">
-                        <div className="h-6 w-2/3 rounded" style={{ background: t.accent, opacity: 0.85 }} />
-                        <div className="h-3 w-full rounded bg-white/[0.08]" />
-                        <div className="h-3 w-5/6 rounded bg-white/[0.08]" />
-                        <div className="flex gap-3 mt-5">
-                          <div className="h-9 w-32 rounded-lg" style={{ background: t.accent }} />
-                          <div className="h-9 w-32 rounded-lg border border-white/15" />
+                      {previewLoading || !previewCopy ? (
+                        <div className="p-16 flex flex-col items-center justify-center gap-3 text-white/40 text-sm">
+                          <div className="w-6 h-6 border-2 border-white/20 border-t-[#f59e0b] rounded-full animate-spin" />
+                          Writing your site's content...
                         </div>
-                        <div className="grid grid-cols-3 gap-3 mt-6">
-                          {[0, 1, 2].map((i) => (
-                            <div key={i} className="rounded-lg border border-white/[0.06] p-3 space-y-2">
-                              <div className="h-12 rounded" style={{ background: `${t.accent}33` }} />
-                              <div className="h-2 w-3/4 rounded bg-white/[0.08]" />
-                              <div className="h-2 w-1/2 rounded bg-white/[0.06]" />
-                            </div>
-                          ))}
+                      ) : (
+                        <div className="h-[480px] overflow-hidden relative">
+                          <div
+                            className="absolute top-0 left-0 origin-top-left"
+                            style={{ width: "200%", transform: "scale(0.5)" }}
+                          >
+                            <GeneratedSite
+                              data={{
+                                businessName: data.businessName || "Your Business",
+                                trade: data.trade || "",
+                                area: data.area || "",
+                                phone: data.phone || "",
+                                hours: data.hours || "",
+                                template: t.id,
+                                copy: previewCopy,
+                              }}
+                            />
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                     <p className="text-[#f59e0b] text-xs font-semibold text-center mb-10">
                       Remember — you can always edit this design or switch to another later. You're never locked in.
