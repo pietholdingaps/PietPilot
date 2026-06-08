@@ -25,6 +25,7 @@ export default function Home() {
           <div className="hidden sm:flex items-center gap-8">
             <a href="#pricing" className="text-white/55 hover:text-white text-sm font-medium transition-colors">Pricing</a>
             <a href="#faq" className="text-white/55 hover:text-white text-sm font-medium transition-colors">FAQ</a>
+            <a href="/contact" className="text-white/55 hover:text-white text-sm font-medium transition-colors">Contact us</a>
           </div>
           <div className="flex items-center gap-4">
             <a href="/login" className="text-white/55 hover:text-white text-sm font-medium transition-colors">
