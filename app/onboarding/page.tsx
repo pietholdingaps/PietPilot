@@ -161,6 +161,22 @@ function OnboardingInner() {
 
   const progressPct = step <= questions.length ? Math.round(((step + 1) / (STEPS_TOTAL + 1)) * 100) : 100;
 
+  if (accountDone && generatingPreview) {
+    return (
+      <div className="min-h-screen bg-[#0b1220] text-[#eef1f6] flex flex-col items-center justify-center px-6 text-center">
+        <a href="/" className="text-2xl font-extrabold tracking-tight mb-12">
+          Piet<span className="text-[#f59e0b]">Pilot</span>
+        </a>
+        <div className="w-12 h-12 border-2 border-white/20 border-t-[#f59e0b] rounded-full animate-spin mb-8" />
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">Generating your website...</h1>
+        <p className="text-white/40 text-sm max-w-md">
+          We're writing the headlines, copy and content for {data.businessName || "your business"} —
+          this only takes a few seconds.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#0b1220] text-[#eef1f6] flex flex-col">
       {/* logo */}
@@ -173,7 +189,7 @@ function OnboardingInner() {
       </div>
 
       {/* progress bar */}
-      {accountDone && step <= questions.length && (
+      {accountDone && !generatingPreview && step <= questions.length && (
         <div className="h-1 bg-white/[0.06]">
           <div className="h-full bg-[#f59e0b] transition-all duration-300" style={{ width: `${progressPct}%` }} />
         </div>
@@ -235,7 +251,7 @@ function OnboardingInner() {
           )}
 
           {/* ── QUESTIONS ── */}
-          {accountDone && step < questions.length && (
+          {accountDone && !generatingPreview && step < questions.length && (
             <div>
               <p className="text-white/35 text-sm mb-3">Question {step + 1} of {questions.length}</p>
               <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">{current.label}</h1>
@@ -286,18 +302,6 @@ function OnboardingInner() {
                   {step === questions.length - 1 ? "See my website options →" : "Continue →"}
                 </button>
               </div>
-            </div>
-          )}
-
-          {/* ── GENERATING WEBSITE ── */}
-          {accountDone && generatingPreview && (
-            <div className="text-center py-16">
-              <div className="w-10 h-10 border-2 border-white/20 border-t-[#f59e0b] rounded-full animate-spin mx-auto mb-6" />
-              <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">Generating your website...</h1>
-              <p className="text-white/40 text-sm max-w-md mx-auto">
-                We're writing the headlines, copy and content for {data.businessName || "your business"} —
-                this only takes a few seconds.
-              </p>
             </div>
           )}
 
