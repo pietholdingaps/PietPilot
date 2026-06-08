@@ -82,13 +82,6 @@ export default function Contact() {
             >
               {status === "loading" ? "Sending..." : "Send message"}
             </button>
-
-            <p className="text-white/35 text-sm text-center mt-6">
-              Prefer email?{" "}
-              <a href="mailto:pietholdingaps@gmail.com" className="text-[#f59e0b] hover:text-[#fbbf24] font-semibold">
-                pietholdingaps@gmail.com
-              </a>
-            </p>
           </>
         )}
       </div>

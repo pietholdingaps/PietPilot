@@ -52,7 +52,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             <p className="text-white/45 text-sm leading-relaxed mb-4">
               Questions or want to change something on your site? Just reach out.
             </p>
-            <a href="mailto:pietholdingaps@gmail.com" className="text-[#f59e0b] text-sm font-semibold hover:text-[#fbbf24] transition-colors">
+            <a href="/contact" className="text-[#f59e0b] text-sm font-semibold hover:text-[#fbbf24] transition-colors">
               Contact us →
             </a>
           </div>

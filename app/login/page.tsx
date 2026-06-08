@@ -44,8 +44,8 @@ export default function Login() {
 
         <p className="text-white/35 text-sm text-center mt-6">
           Account login is launching shortly. In the meantime, just{" "}
-          <a href="mailto:pietholdingaps@gmail.com" className="text-[#f59e0b] hover:text-[#fbbf24] font-semibold">
-            email us
+          <a href="/contact" className="text-[#f59e0b] hover:text-[#fbbf24] font-semibold">
+            contact us
           </a>{" "}
           and we'll get you sorted.
         </p>
