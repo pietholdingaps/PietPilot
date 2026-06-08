@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import GeneratedSite from "@/app/components/GeneratedSite";
 import { GeneratedSiteCopy } from "@/lib/siteTypes";
 
-const STEPS_TOTAL = 9;
+const STEPS_TOTAL = 8;
 
 const questions = [
   { key: "businessName", label: "What's your business name?", placeholder: "e.g. Johnson Plumbing", type: "text" },
@@ -14,8 +14,7 @@ const questions = [
   { key: "phone", label: "What's your business phone number?", placeholder: "e.g. (512) 555-0182", type: "text" },
   { key: "hours", label: "What are your opening hours?", placeholder: "e.g. Mon–Fri 7am–6pm, Sat 8am–2pm", type: "text" },
   { key: "services", label: "What services do you offer?", placeholder: "List as many as you'd like — e.g. drain cleaning, water heater repair, bathroom remodels...", type: "textarea" },
-  { key: "experience", label: "How long have you been in business? How many jobs have you done?", placeholder: "e.g. 12 years, 1000+ jobs completed", type: "text" },
-  { key: "about", label: "Tell us about you and your business — the more you write, the better your site will be", placeholder: "What makes you different? What do customers say about you? What do you care about on the job?", type: "textarea" },
+  { key: "about", label: "Tell us about you and your business — the more you write, the better your site will be", placeholder: "How long have you been in business? How many jobs have you done? What makes you different? What do customers say about you? What do you care about on the job?", type: "textarea" },
   { key: "photos", label: "Do you have photos of your own work?", placeholder: "You can skip this — we'll use trade-relevant stock photos instead", type: "file" },
 ];
 
