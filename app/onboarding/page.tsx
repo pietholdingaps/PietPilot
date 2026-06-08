@@ -81,7 +81,7 @@ function OnboardingInner() {
   const [buildMsgIndex, setBuildMsgIndex] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [previewCopy, setPreviewCopy] = useState<GeneratedSiteCopy | null>(null);
-  const [previewLoading, setPreviewLoading] = useState(false);
+  const [generatingPreview, setGeneratingPreview] = useState(false);
 
   const current = questions[step];
 
@@ -93,7 +93,20 @@ function OnboardingInner() {
     if (step < questions.length - 1) {
       setStep(step + 1);
     } else {
-      setStep(questions.length); // go to template choice
+      // last question — generate the site copy once, then show template choice
+      setGeneratingPreview(true);
+      fetch("/api/preview-copy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      })
+        .then((r) => r.json())
+        .then((json) => setPreviewCopy(json.copy || null))
+        .catch(() => setPreviewCopy(null))
+        .finally(() => {
+          setGeneratingPreview(false);
+          setStep(questions.length);
+        });
     }
   }
 
@@ -104,19 +117,6 @@ function OnboardingInner() {
   function previewTemplate(id: string) {
     setSelectedTemplate(id);
     setStep(questions.length + 1); // preview screen
-
-    if (!previewCopy) {
-      setPreviewLoading(true);
-      fetch("/api/preview-copy", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      })
-        .then((r) => r.json())
-        .then((json) => setPreviewCopy(json.copy || null))
-        .catch(() => setPreviewCopy(null))
-        .finally(() => setPreviewLoading(false));
-    }
   }
 
   async function confirmTemplate(id: string) {
@@ -290,8 +290,20 @@ function OnboardingInner() {
             </div>
           )}
 
+          {/* ── GENERATING WEBSITE ── */}
+          {accountDone && generatingPreview && (
+            <div className="text-center py-16">
+              <div className="w-10 h-10 border-2 border-white/20 border-t-[#f59e0b] rounded-full animate-spin mx-auto mb-6" />
+              <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">Generating your website...</h1>
+              <p className="text-white/40 text-sm max-w-md mx-auto">
+                We're writing the headlines, copy and content for {data.businessName || "your business"} —
+                this only takes a few seconds.
+              </p>
+            </div>
+          )}
+
           {/* ── TEMPLATE CHOICE ── */}
-          {accountDone && step === questions.length && (
+          {accountDone && !generatingPreview && step === questions.length && (
             <div>
               <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-center">
                 Pick a starting look for your site
@@ -359,7 +371,7 @@ function OnboardingInner() {
                         <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
                         <span className="ml-3 text-xs text-white/30">{(data.businessName || "yourcompany").toLowerCase().replace(/\s+/g, "")}.com</span>
                       </div>
-                      {previewLoading || !previewCopy ? (
+                      {!previewCopy ? (
                         <div className="p-16 flex flex-col items-center justify-center gap-3 text-white/40 text-sm">
                           <div className="w-6 h-6 border-2 border-white/20 border-t-[#f59e0b] rounded-full animate-spin" />
                           Writing your site's content...
