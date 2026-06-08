@@ -23,7 +23,7 @@ const themes: Record<string, {
 
 export default function GeneratedSite({ data }: { data: SiteData }) {
   const theme = themes[data.template] || themes.classic;
-  const photos = getPhotosForTrade(data.trade, data.businessName || "site");
+  const photos = getPhotosForTrade(data.trade);
   const { copy } = data;
   const initials = (data.businessName || "P P").split(/\s+/).slice(0, 2).map((w) => w[0]?.toUpperCase()).join("");
 
