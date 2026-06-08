@@ -169,10 +169,10 @@ function OnboardingInner() {
           Piet<span className="text-[#f59e0b]">Pilot</span>
         </a>
         <div className="w-12 h-12 border-2 border-white/20 border-t-[#f59e0b] rounded-full animate-spin mb-8" />
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">Generating your website...</h1>
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">Putting together your previews...</h1>
         <p className="text-white/40 text-sm max-w-md">
-          We're writing the headlines, copy and content for {data.businessName || "your business"} —
-          this only takes a few seconds.
+          We're writing the headlines, copy and content for {data.businessName || "your business"} so you
+          can see how each design looks with your real info — just a few seconds.
         </p>
       </div>
     );
