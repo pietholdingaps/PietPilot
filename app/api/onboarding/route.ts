@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const {
-      businessName, trade, area, phone, hours,
+      businessName, trade, area, phone, email, hours,
       services, experience, about, template,
       accountName, accountEmail,
     } = body;
@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
       trade: trade || null,
       area: area || null,
       phone: phone || null,
+      email: email || null,
       hours: hours || null,
       services: services || null,
       experience: experience || null,
@@ -47,6 +48,7 @@ export async function POST(req: NextRequest) {
           <p style="color: #333; font-size: 16px;"><b>Branche:</b> ${trade || "—"}</p>
           <p style="color: #333; font-size: 16px;"><b>Område:</b> ${area || "—"}</p>
           <p style="color: #333; font-size: 16px;"><b>Telefon:</b> ${phone || "—"}</p>
+          <p style="color: #333; font-size: 16px;"><b>Kontakt-email:</b> ${email || "—"}</p>
           <p style="color: #333; font-size: 16px;"><b>Åbningstider:</b> ${hours || "—"}</p>
           <p style="color: #333; font-size: 16px;"><b>Ydelser:</b> ${services || "—"}</p>
           <p style="color: #333; font-size: 16px;"><b>Erfaring:</b> ${experience || "—"}</p>

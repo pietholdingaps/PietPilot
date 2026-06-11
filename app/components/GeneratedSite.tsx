@@ -1,7 +1,7 @@
 import { SiteData } from "@/lib/siteTypes";
 import { getPhotosForTrade } from "@/lib/stockPhotos";
 
-const themes: Record<string, {
+export const themes: Record<string, {
   bg: string; text: string; muted: string; card: string; accent: string; accentText: string; heroOverlay: string; navBg: string;
 }> = {
   classic: {
@@ -47,13 +47,24 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
             <a href="#services" className="hover:opacity-70 transition-opacity">Services</a>
             <a href="#contact" className="hover:opacity-70 transition-opacity">Contact</a>
           </div>
-          <a
-            href={`tel:${data.phone}`}
-            style={{ background: theme.accent, color: theme.accentText }}
-            className="text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm hover:opacity-90 transition-opacity"
-          >
-            {data.phone}
-          </a>
+          <div className="flex items-center gap-3">
+            {data.email && (
+              <a
+                href={`mailto:${data.email}`}
+                className="hidden md:inline text-sm font-semibold hover:opacity-70 transition-opacity"
+                style={{ color: theme.muted }}
+              >
+                {data.email}
+              </a>
+            )}
+            <a
+              href={`tel:${data.phone}`}
+              style={{ background: theme.accent, color: theme.accentText }}
+              className="text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm hover:opacity-90 transition-opacity"
+            >
+              {data.phone}
+            </a>
+          </div>
         </div>
       </nav>
 
@@ -137,22 +148,34 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
             <p className="max-w-xl mx-auto text-base" style={{ color: theme.muted }}>{copy.servicesIntro}</p>
           </div>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
-            {servicesGrid.map((s, i) => (
-              <div
-                key={i}
-                className="group rounded-2xl p-7 transition-all hover:-translate-y-1"
-                style={{ background: theme.bg, border: `1px solid ${theme.text}12` }}
-              >
+            {servicesGrid.map((s, i) => {
+              const detail = copy.serviceDetails?.[i];
+              const href = detail?.slug ? `/site/${data.id}/services/${detail.slug}` : undefined;
+              const Card = (
                 <div
-                  className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 font-extrabold text-base transition-transform group-hover:scale-110"
-                  style={{ background: `${theme.accent}1a`, color: theme.accent, border: `1px solid ${theme.accent}40` }}
+                  className="group rounded-2xl p-7 transition-all hover:-translate-y-1 h-full"
+                  style={{ background: theme.bg, border: `1px solid ${theme.text}12` }}
                 >
-                  {String(i + 1).padStart(2, "0")}
+                  <div
+                    className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 font-extrabold text-base transition-transform group-hover:scale-110"
+                    style={{ background: `${theme.accent}1a`, color: theme.accent, border: `1px solid ${theme.accent}40` }}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </div>
+                  <p className="font-bold text-base mb-1.5">{s}</p>
+                  <p className="text-sm" style={{ color: theme.muted }}>
+                    {href ? "Learn more →" : "Done right, on time, every time."}
+                  </p>
                 </div>
-                <p className="font-bold text-base mb-1.5">{s}</p>
-                <p className="text-sm" style={{ color: theme.muted }}>Done right, on time, every time.</p>
-              </div>
-            ))}
+              );
+              return href ? (
+                <a key={i} href={href} className="block h-full">
+                  {Card}
+                </a>
+              ) : (
+                <div key={i}>{Card}</div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -218,13 +241,24 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
             <h2 className="text-3xl md:text-4xl font-extrabold mb-3 tracking-tight">Ready to get started?</h2>
             <p className="mb-1.5 text-base" style={{ color: theme.muted }}>{data.hours} · {copy.responsePromise}</p>
             <p className="mb-9 text-base" style={{ color: theme.muted }}>{copy.guaranteeLine}</p>
-            <a
-              href={`tel:${data.phone}`}
-              style={{ background: theme.accent, color: theme.accentText }}
-              className="inline-flex items-center justify-center gap-2 font-bold text-base px-10 py-4.5 rounded-xl shadow-[0_12px_40px_-10px_rgba(0,0,0,0.4)] hover:scale-[1.02] transition-transform"
-            >
-              Call now: {data.phone}
-            </a>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <a
+                href={`tel:${data.phone}`}
+                style={{ background: theme.accent, color: theme.accentText }}
+                className="inline-flex items-center justify-center gap-2 font-bold text-base px-10 py-4.5 rounded-xl shadow-[0_12px_40px_-10px_rgba(0,0,0,0.4)] hover:scale-[1.02] transition-transform"
+              >
+                Call now: {data.phone}
+              </a>
+              {data.email && (
+                <a
+                  href={`mailto:${data.email}`}
+                  style={{ borderColor: `${theme.text}25`, color: theme.text }}
+                  className="inline-flex items-center justify-center gap-2 font-bold text-base px-10 py-4.5 rounded-xl border hover:opacity-80 transition-opacity"
+                >
+                  Email us: {data.email}
+                </a>
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -247,6 +281,9 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
             <p className="text-xs font-bold uppercase tracking-[0.2em] mb-3" style={{ color: theme.accent }}>Contact</p>
             <ul className="space-y-1.5 text-sm" style={{ color: theme.muted }}>
               <li><a href={`tel:${data.phone}`} className="hover:opacity-70 transition-opacity">{data.phone}</a></li>
+              {data.email && (
+                <li><a href={`mailto:${data.email}`} className="hover:opacity-70 transition-opacity">{data.email}</a></li>
+              )}
               <li>{data.area}</li>
               <li>{data.hours}</li>
             </ul>

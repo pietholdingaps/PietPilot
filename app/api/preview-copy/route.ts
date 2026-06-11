@@ -18,6 +18,13 @@ const fallbackCopy = (businessName: string, trade: string, area: string): Genera
     { title: "We get to work", description: "Our team shows up on time and does the job right the first time." },
     { title: "Job done, guaranteed", description: "We walk you through the finished work and stand behind it." },
   ],
+  serviceDetails: [
+    "Repairs & maintenance", "New installations", "Inspections", "Emergency call-outs", "Free estimates", "Maintenance plans",
+  ].map((title) => ({
+    title,
+    slug: title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
+    description: `${businessName || "We"} provide reliable ${title.toLowerCase()} for homes and businesses across ${area || "the local area"}. Our ${trade || "experienced"} team gets the job done right, on time, and at a fair price — with clear communication every step of the way. Get in touch today for a free quote.`,
+  })),
 });
 
 export async function POST(req: NextRequest) {
@@ -56,7 +63,8 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
   "trustLine": "one short credibility line using their experience info, e.g. '15+ years serving Austin homeowners'",
   "responsePromise": "a short reassuring line about how fast they respond, e.g. 'We respond within 24 hours — guaranteed.' (invent a reasonable promise if not stated)",
   "guaranteeLine": "a short trust/insurance/guarantee line, e.g. 'Fully licensed & insured for your peace of mind.' (invent something reasonable and trade-appropriate if not stated)",
-  "process": "an array of exactly 4 objects, each with a short 'title' (2-4 words, e.g. 'Reach out', 'Free assessment', 'We get to work', 'Job done, guaranteed') and a one-sentence 'description' explaining that step of working with this business"
+  "process": "an array of exactly 4 objects, each with a short 'title' (2-4 words, e.g. 'Reach out', 'Free assessment', 'We get to work', 'Job done, guaranteed') and a one-sentence 'description' explaining that step of working with this business",
+  "serviceDetails": "an array of exactly 6 objects — one per service in the 'services' array, in the same order — each with: 'title' (same as the service name), 'slug' (lowercase, hyphenated, URL-safe version of the title, e.g. 'drain-cleaning'), and 'description' (a unique, SEO-friendly 3-4 sentence paragraph about this specific service for this business — mention the trade, the local area, and what the customer gets, written naturally for search engines and real readers)"
 }`;
 
     const message = await anthropic.messages.create({

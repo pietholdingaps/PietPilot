@@ -21,6 +21,13 @@ const fallbackCopy = (businessName: string, trade: string, area: string): Genera
     { title: "We get to work", description: "Our team shows up on time and does the job right the first time." },
     { title: "Job done, guaranteed", description: "We walk you through the finished work and stand behind it." },
   ],
+  serviceDetails: [
+    "Repairs & maintenance", "New installations", "Inspections", "Emergency call-outs", "Free estimates", "Maintenance plans",
+  ].map((title) => ({
+    title,
+    slug: title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
+    description: `${businessName || "We"} provide reliable ${title.toLowerCase()} for homes and businesses across ${area || "the local area"}. Our ${trade || "experienced"} team gets the job done right, on time, and at a fair price — with clear communication every step of the way. Get in touch today for a free quote.`,
+  })),
 });
 
 export default async function GeneratedSitePage({ params }: { params: Promise<{ id: string }> }) {
@@ -45,10 +52,12 @@ export default async function GeneratedSitePage({ params }: { params: Promise<{ 
   return (
     <GeneratedSite
       data={{
+        id,
         businessName: submission.business_name || "Your Business",
         trade: submission.trade || "",
         area: submission.area || "",
         phone: submission.phone || "",
+        email: submission.email || "",
         hours: submission.hours || "",
         template: submission.template || "classic",
         copy,

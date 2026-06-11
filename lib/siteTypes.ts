@@ -9,13 +9,16 @@ export type GeneratedSiteCopy = {
   responsePromise: string;
   guaranteeLine: string;
   process: { title: string; description: string }[];
+  serviceDetails: { title: string; slug: string; description: string }[];
 };
 
 export type SiteData = {
+  id: string;
   businessName: string;
   trade: string;
   area: string;
   phone: string;
+  email?: string;
   hours: string;
   template: string;
   copy: GeneratedSiteCopy;
