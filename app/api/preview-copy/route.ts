@@ -28,9 +28,11 @@ const fallbackCopy = (businessName: string, trade: string, area: string): Genera
 });
 
 export async function POST(req: NextRequest) {
+  let businessName = "", trade = "", area = "";
   try {
     const body = await req.json();
-    const { businessName, trade, area, hours, services, experience, about } = body;
+    ({ businessName, trade, area } = body);
+    const { hours, services, experience, about } = body;
 
     if (!process.env.ANTHROPIC_API_KEY) {
       return NextResponse.json({ copy: fallbackCopy(businessName, trade, area) });
@@ -87,6 +89,7 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
     return NextResponse.json({ copy: copy || fallbackCopy(businessName, trade, area) });
   } catch (err) {
     console.error("Preview copy error:", err);
-    return NextResponse.json({ copy: null }, { status: 500 });
+    // Always return usable copy so the user never gets stuck on a loading screen.
+    return NextResponse.json({ copy: fallbackCopy(businessName, trade, area) });
   }
 }

@@ -7,6 +7,34 @@ import { GeneratedSiteCopy } from "@/lib/siteTypes";
 
 const STEPS_TOTAL = 9;
 
+// Used only if /api/preview-copy fails outright (e.g. network error), so the
+// preview screen never gets stuck on "Writing your site's content..." forever.
+function localFallbackCopy(businessName: string, trade: string, area: string): GeneratedSiteCopy {
+  const services = ["Repairs & maintenance", "New installations", "Inspections", "Emergency call-outs", "Free estimates", "Maintenance plans"];
+  return {
+    headline: `${trade || "Trusted local"} services you can count on`,
+    subheadline: `${businessName || "We"} proudly serve ${area || "the local area"} with fast, reliable work and honest pricing.`,
+    about: `${businessName || "Our team"} is a local, trusted name for ${trade || "trade"} work in ${area || "the area"}. We focus on doing the job right the first time, with clear communication every step of the way.`,
+    servicesIntro: "Here's what we can help you with:",
+    services,
+    ctaText: "Get a Free Quote",
+    trustLine: `Proudly serving ${area || "your area"}`,
+    responsePromise: "We respond within 24 hours — guaranteed.",
+    guaranteeLine: "Fully licensed & insured for your peace of mind.",
+    process: [
+      { title: "Reach out", description: "Call, message, or fill out our form and tell us what you need." },
+      { title: "Free assessment", description: "We visit (or review your details) and give you a clear, honest quote." },
+      { title: "We get to work", description: "Our team shows up on time and does the job right the first time." },
+      { title: "Job done, guaranteed", description: "We walk you through the finished work and stand behind it." },
+    ],
+    serviceDetails: services.map((title) => ({
+      title,
+      slug: title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
+      description: `${businessName || "We"} provide reliable ${title.toLowerCase()} for homes and businesses across ${area || "the local area"}. Our ${trade || "experienced"} team gets the job done right, on time, and at a fair price — with clear communication every step of the way. Get in touch today for a free quote.`,
+    })),
+  };
+}
+
 const questions = [
   { key: "businessName", label: "What's your business name?", placeholder: "e.g. Johnson Plumbing", type: "text" },
   { key: "trade", label: "What trade are you in?", placeholder: "e.g. Plumbing, electrical, roofing...", type: "text" },
@@ -101,8 +129,8 @@ function OnboardingInner() {
         body: JSON.stringify(data),
       })
         .then((r) => r.json())
-        .then((json) => setPreviewCopy(json.copy || null))
-        .catch(() => setPreviewCopy(null))
+        .then((json) => setPreviewCopy(json.copy || localFallbackCopy(data.businessName || "", data.trade || "", data.area || "")))
+        .catch(() => setPreviewCopy(localFallbackCopy(data.businessName || "", data.trade || "", data.area || "")))
         .finally(() => {
           setGeneratingPreview(false);
           setStep(questions.length);
