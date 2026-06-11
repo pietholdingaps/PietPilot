@@ -10,7 +10,7 @@ const fallbackCopy = (businessName: string, trade: string, area: string): Genera
   subheadline: `${businessName || "We"} proudly serve ${area || "the local area"} with fast, reliable work and honest pricing.`,
   about: `${businessName || "Our team"} is a local, trusted name for ${trade || "trade"} work in ${area || "the area"}. We focus on doing the job right the first time, with clear communication every step of the way.`,
   servicesIntro: "Here's what we can help you with:",
-  services: ["Repairs & maintenance", "New installations", "Inspections", "Emergency call-outs"],
+  services: ["Repairs & maintenance", "New installations", "Inspections", "Emergency call-outs", "Free estimates", "Maintenance plans"],
   ctaText: "Get a Free Quote",
   trustLine: `Proudly serving ${area || "your area"}`,
   responsePromise: "We respond within 24 hours — guaranteed.",

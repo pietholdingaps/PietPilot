@@ -25,27 +25,27 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
   const theme = themes[data.template] || themes.classic;
   const photos = getPhotosForTrade(data.trade);
   const { copy } = data;
-  const initials = (data.businessName || "P P").split(/\s+/).slice(0, 2).map((w) => w[0]?.toUpperCase()).join("");
+
+  // Always show exactly 6 services in a clean 3x2 grid. If the AI returned
+  // fewer, pad with sensible generic ones; if more, trim.
+  const fallbackExtras = ["Repairs & maintenance", "New installations", "Inspections", "Emergency call-outs", "Free estimates", "Maintenance plans"];
+  const services = [...(copy.services || [])];
+  for (const extra of fallbackExtras) {
+    if (services.length >= 6) break;
+    if (!services.includes(extra)) services.push(extra);
+  }
+  const servicesGrid = services.slice(0, 6);
 
   return (
     <div style={{ background: theme.bg, color: theme.text }} className="min-h-screen font-sans antialiased">
       {/* NAV */}
       <nav className="sticky top-0 z-30 backdrop-blur-xl border-b" style={{ borderColor: `${theme.text}10`, background: theme.navBg }}>
         <div className="max-w-6xl mx-auto px-6 h-[72px] flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div
-              className="w-9 h-9 rounded-lg flex items-center justify-center font-extrabold text-sm"
-              style={{ background: theme.accent, color: theme.accentText }}
-            >
-              {initials || "PP"}
-            </div>
-            <span className="text-lg font-extrabold tracking-tight">{data.businessName}</span>
-          </div>
+          <span className="text-lg font-extrabold tracking-tight">{data.businessName}</span>
           <div className="hidden sm:flex items-center gap-8 text-sm font-medium" style={{ color: theme.muted }}>
-            <span>About</span>
-            <span>Services</span>
-            <span>Work</span>
-            <span>Contact</span>
+            <a href="#about" className="hover:opacity-70 transition-opacity">About</a>
+            <a href="#services" className="hover:opacity-70 transition-opacity">Services</a>
+            <a href="#contact" className="hover:opacity-70 transition-opacity">Contact</a>
           </div>
           <a
             href={`tel:${data.phone}`}
@@ -101,22 +101,35 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
           <p className="text-sm font-semibold tracking-wide" style={{ color: theme.muted }}>{data.hours}</p>
           <span className="hidden sm:inline w-1 h-1 rounded-full" style={{ background: `${theme.muted}66` }} />
           <p className="text-sm font-semibold tracking-wide" style={{ color: theme.muted }}>{copy.responsePromise}</p>
-          <span className="hidden sm:inline w-1 h-1 rounded-full" style={{ background: `${theme.muted}66` }} />
-          <p className="text-sm font-semibold tracking-wide" style={{ color: theme.muted }}>{copy.guaranteeLine}</p>
         </div>
       </section>
 
       {/* ABOUT */}
-      <section className="py-24 px-6">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: theme.accent }}>About us</div>
-          <h2 className="text-3xl md:text-4xl font-extrabold mb-6 tracking-tight">The team behind {data.businessName}</h2>
-          <p className="text-lg leading-relaxed" style={{ color: theme.muted }}>{copy.about}</p>
+      <section id="about" className="py-24 px-6">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-14 items-center">
+          <div className="rounded-3xl overflow-hidden aspect-[4/3]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={photos.gallery[0]} alt={`${data.trade || "Tradesperson"} at work`} className="w-full h-full object-cover" />
+          </div>
+          <div>
+            <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: theme.accent }}>About us</div>
+            <h2 className="text-3xl md:text-4xl font-extrabold mb-6 tracking-tight">The team behind {data.businessName}</h2>
+            <p className="text-lg leading-relaxed mb-6" style={{ color: theme.muted }}>{copy.about}</p>
+            <div className="flex items-center gap-3 text-sm font-semibold" style={{ color: theme.text }}>
+              <div
+                className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{ background: `${theme.accent}1a`, color: theme.accent, border: `1px solid ${theme.accent}40` }}
+              >
+                ✓
+              </div>
+              {copy.guaranteeLine}
+            </div>
+          </div>
         </div>
       </section>
 
       {/* SERVICES */}
-      <section className="py-24 px-6" style={{ background: theme.card }}>
+      <section id="services" className="py-24 px-6" style={{ background: theme.card }}>
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14">
             <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: theme.accent }}>What we do</div>
@@ -124,7 +137,7 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
             <p className="max-w-xl mx-auto text-base" style={{ color: theme.muted }}>{copy.servicesIntro}</p>
           </div>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
-            {copy.services.map((s, i) => (
+            {servicesGrid.map((s, i) => (
               <div
                 key={i}
                 className="group rounded-2xl p-7 transition-all hover:-translate-y-1"
@@ -169,27 +182,30 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
         </div>
       </section>
 
-      {/* GALLERY */}
-      <section className="py-24 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-14">
-            <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: theme.accent }}>Our work</div>
-            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">Recent projects</h2>
+      {/* SERVICE AREA BANNER */}
+      <section className="relative py-28 px-6">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${photos.gallery[1]})` }}
+        />
+        <div className="absolute inset-0" style={{ background: theme.heroOverlay }} />
+        <div className="relative max-w-3xl mx-auto text-center">
+          <div
+            className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest px-3.5 py-1.5 rounded-full mb-6"
+            style={{ background: `${theme.accent}26`, color: "#fff", border: `1px solid ${theme.accent}55` }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full" style={{ background: theme.accent }} />
+            Service area
           </div>
-          <div className="grid sm:grid-cols-3 gap-5">
-            {photos.gallery.map((src, i) => (
-              <div key={i} className="group aspect-[4/3] rounded-2xl overflow-hidden relative">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src} alt={`${data.trade || "Project"} example ${i + 1}`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.45), transparent 60%)" }} />
-              </div>
-            ))}
-          </div>
+          <h2 className="text-3xl md:text-4xl font-extrabold mb-4 tracking-tight text-white">
+            Proudly serving {data.area || "your local area"}
+          </h2>
+          <p className="text-white/80 text-lg leading-relaxed">{copy.trustLine}</p>
         </div>
       </section>
 
       {/* CONTACT / CTA */}
-      <section className="py-24 px-6" style={{ background: theme.card }}>
+      <section id="contact" className="py-24 px-6" style={{ background: theme.card }}>
         <div
           className="max-w-4xl mx-auto rounded-3xl p-12 md:p-16 text-center relative overflow-hidden"
           style={{ background: theme.bg, border: `1px solid ${theme.text}14` }}
@@ -200,7 +216,6 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
           />
           <div className="relative">
             <h2 className="text-3xl md:text-4xl font-extrabold mb-3 tracking-tight">Ready to get started?</h2>
-            <p className="mb-1.5 text-base" style={{ color: theme.muted }}>Proudly serving {data.area}</p>
             <p className="mb-1.5 text-base" style={{ color: theme.muted }}>{data.hours} · {copy.responsePromise}</p>
             <p className="mb-9 text-base" style={{ color: theme.muted }}>{copy.guaranteeLine}</p>
             <a
@@ -214,11 +229,34 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
         </div>
       </section>
 
-      <footer className="py-10 px-6 text-center border-t" style={{ borderColor: `${theme.text}10` }}>
-        <p className="text-base font-extrabold tracking-tight mb-1">{data.businessName}</p>
-        <p className="text-xs" style={{ color: theme.muted }}>
-          Website by PietPilot · © {new Date().getFullYear()}
-        </p>
+      <footer className="py-14 px-6 border-t" style={{ borderColor: `${theme.text}10` }}>
+        <div className="max-w-6xl mx-auto grid sm:grid-cols-3 gap-10 mb-10">
+          <div>
+            <p className="text-lg font-extrabold tracking-tight mb-3">{data.businessName}</p>
+            <p className="text-sm leading-relaxed" style={{ color: theme.muted }}>{copy.guaranteeLine}</p>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] mb-3" style={{ color: theme.accent }}>Services</p>
+            <ul className="space-y-1.5 text-sm" style={{ color: theme.muted }}>
+              {servicesGrid.slice(0, 5).map((s, i) => (
+                <li key={i}>{s}</li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] mb-3" style={{ color: theme.accent }}>Contact</p>
+            <ul className="space-y-1.5 text-sm" style={{ color: theme.muted }}>
+              <li><a href={`tel:${data.phone}`} className="hover:opacity-70 transition-opacity">{data.phone}</a></li>
+              <li>{data.area}</li>
+              <li>{data.hours}</li>
+            </ul>
+          </div>
+        </div>
+        <div className="max-w-6xl mx-auto pt-8 border-t text-center" style={{ borderColor: `${theme.text}10` }}>
+          <p className="text-xs" style={{ color: theme.muted }}>
+            Website by PietPilot · © {new Date().getFullYear()}
+          </p>
+        </div>
       </footer>
     </div>
   );

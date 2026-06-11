@@ -44,7 +44,7 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
   "subheadline": "one sentence expanding on the headline, focused on the customer's benefit",
   "about": "a warm 3-4 sentence About section written in third person, based on what the owner shared",
   "servicesIntro": "one short sentence introducing the services list",
-  "services": ["4 to 6 short service names, each 2-5 words"],
+  "services": ["exactly 6 short service names, each 2-5 words"],
   "ctaText": "short call-to-action button text (e.g. 'Get a Free Quote')",
   "trustLine": "one short credibility line using their experience info, e.g. '15+ years serving Austin homeowners'",
   "responsePromise": "a short reassuring line about how fast they respond, e.g. 'We respond within 24 hours — guaranteed.' (invent a reasonable promise if not stated)",
