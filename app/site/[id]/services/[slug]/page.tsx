@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { themes } from "@/app/components/GeneratedSite";
 import { getPhotosForTrade } from "@/lib/stockPhotos";
 import { GeneratedSiteCopy } from "@/lib/siteTypes";
+import LeadForm from "@/app/components/LeadForm";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,14 @@ const fallbackCopy = (businessName: string, trade: string, area: string, license
   guaranteeLine: licenseNumber
     ? `Fully licensed & insured for your peace of mind — License #${licenseNumber}.`
     : "Fully licensed & insured for your peace of mind.",
+  whyChooseUs: {
+    title: `Why choose ${businessName || "us"}?`,
+    points: [
+      "Local, reliable, and easy to reach",
+      "Honest pricing with no surprises",
+      "Quality work, done right the first time",
+    ],
+  },
   process: [
     { title: "Reach out", description: "Call, message, or fill out our form and tell us what you need." },
     { title: "Free assessment", description: "We visit (or review your details) and give you a clear, honest quote." },
@@ -164,6 +173,54 @@ export default async function ServiceDetailPage({
               ← Back to all services
             </a>
           </div>
+        </div>
+      </section>
+
+      {/* WHY CHOOSE US */}
+      {copy.whyChooseUs?.points?.length > 0 && (
+        <section className="py-20 px-6" style={{ background: theme.card }}>
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: theme.accent }}>Why us</div>
+              <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">{copy.whyChooseUs.title}</h2>
+            </div>
+            <div className="grid sm:grid-cols-3 gap-5">
+              {copy.whyChooseUs.points.map((point, i) => (
+                <div
+                  key={i}
+                  className="rounded-2xl p-7 text-center"
+                  style={{ background: theme.bg, border: `1px solid ${theme.text}12` }}
+                >
+                  <div
+                    className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 mx-auto font-extrabold text-base"
+                    style={{ background: `${theme.accent}1a`, color: theme.accent, border: `1px solid ${theme.accent}40` }}
+                  >
+                    ✓
+                  </div>
+                  <p className="font-bold text-base">{point}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* CONTACT FORM */}
+      <section className="py-20 px-6">
+        <div className="max-w-xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-extrabold mb-3 tracking-tight">Get in touch</h2>
+            <p className="text-base" style={{ color: theme.muted }}>{copy.responsePromise}</p>
+          </div>
+          <LeadForm
+            siteId={id}
+            accent={theme.accent}
+            accentText={theme.accentText}
+            textColor={theme.text}
+            mutedColor={theme.muted}
+            cardBg={theme.card}
+            borderColor={`${theme.text}14`}
+          />
         </div>
       </section>
 

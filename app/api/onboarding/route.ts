@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const {
       businessName, trade, area, phone, email, address, license, hours,
-      services, experience, about, template,
+      services, experience, about, whyChooseUs, logoUrl, template,
       accountName, accountEmail,
     } = body;
 
@@ -30,6 +30,8 @@ export async function POST(req: NextRequest) {
       services: services || null,
       experience: experience || null,
       about: about || null,
+      why_choose_us: whyChooseUs || null,
+      logo_url: logoUrl || null,
       template: template || null,
       created_at: new Date().toISOString(),
     }).select("id").single();
@@ -58,6 +60,7 @@ export async function POST(req: NextRequest) {
           <p style="color: #333; font-size: 16px;"><b>Ydelser:</b> ${services || "—"}</p>
           <p style="color: #333; font-size: 16px;"><b>Erfaring:</b> ${experience || "—"}</p>
           <p style="color: #333; font-size: 16px;"><b>Om virksomheden:</b> ${about || "—"}</p>
+          <p style="color: #333; font-size: 16px;"><b>Hvorfor vælge dem:</b> ${whyChooseUs || "—"}</p>
           <p style="color: #333; font-size: 16px;"><b>Valgt design:</b> ${template || "—"}</p>
           <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
           <p style="color: #999; font-size: 12px;">PietPilot — ${new Date().toLocaleString("da-DK")}</p>

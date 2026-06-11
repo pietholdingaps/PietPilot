@@ -48,10 +48,35 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
       {/* NAV */}
       <nav className="sticky top-0 z-30 backdrop-blur-xl border-b" style={{ borderColor: `${theme.text}10`, background: theme.navBg }}>
         <div className="max-w-6xl mx-auto px-6 h-[72px] flex items-center justify-between">
-          <span className="text-lg font-extrabold tracking-tight">{data.businessName}</span>
+          {data.logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={data.logoUrl} alt={data.businessName} className="h-10 max-w-[180px] object-contain" />
+          ) : (
+            <span className="text-lg font-extrabold tracking-tight">{data.businessName}</span>
+          )}
           <div className="hidden sm:flex items-center gap-8 text-sm font-medium" style={{ color: theme.muted }}>
             <a href="#about" className="hover:opacity-70 transition-opacity">About</a>
-            <a href="#services" className="hover:opacity-70 transition-opacity">Services</a>
+            <details className="relative group">
+              <summary className="list-none cursor-pointer hover:opacity-70 transition-opacity flex items-center gap-1.5 select-none">
+                We offer
+                <span className="text-[10px] mt-0.5">▾</span>
+              </summary>
+              <div
+                className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-72 rounded-xl overflow-hidden shadow-2xl z-40"
+                style={{ background: theme.bg, border: `1px solid ${theme.text}14` }}
+              >
+                {(copy.serviceDetails || []).map((s, i) => (
+                  <a
+                    key={i}
+                    href={`/site/${data.id}/services/${s.slug}`}
+                    className="block px-5 py-3 text-sm font-semibold hover:opacity-70 transition-opacity border-b last:border-b-0"
+                    style={{ color: theme.text, borderColor: `${theme.text}0d` }}
+                  >
+                    {s.title}
+                  </a>
+                ))}
+              </div>
+            </details>
             <a href="#contact" className="hover:opacity-70 transition-opacity">Contact</a>
           </div>
           <div className="flex items-center gap-3">
@@ -145,6 +170,35 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
           </div>
         </div>
       </section>
+
+      {/* WHY CHOOSE US */}
+      {copy.whyChooseUs?.points?.length > 0 && (
+        <section className="py-24 px-6" style={{ background: theme.card }}>
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-14">
+              <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: theme.accent }}>Why us</div>
+              <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">{copy.whyChooseUs.title}</h2>
+            </div>
+            <div className="grid sm:grid-cols-3 gap-5">
+              {copy.whyChooseUs.points.map((point, i) => (
+                <div
+                  key={i}
+                  className="rounded-2xl p-7 text-center"
+                  style={{ background: theme.bg, border: `1px solid ${theme.text}12` }}
+                >
+                  <div
+                    className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 mx-auto font-extrabold text-base"
+                    style={{ background: `${theme.accent}1a`, color: theme.accent, border: `1px solid ${theme.accent}40` }}
+                  >
+                    ✓
+                  </div>
+                  <p className="font-bold text-base">{point}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* SERVICES */}
       <section id="services" className="py-24 px-6" style={{ background: theme.card }}>

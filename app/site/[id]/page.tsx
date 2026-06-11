@@ -21,6 +21,14 @@ const fallbackCopy = (businessName: string, trade: string, area: string, license
   guaranteeLine: licenseNumber
     ? `Fully licensed & insured for your peace of mind — License #${licenseNumber}.`
     : "Fully licensed & insured for your peace of mind.",
+  whyChooseUs: {
+    title: `Why choose ${businessName || "us"}?`,
+    points: [
+      "Local, reliable, and easy to reach",
+      "Honest pricing with no surprises",
+      "Quality work, done right the first time",
+    ],
+  },
   process: [
     { title: "Reach out", description: "Call, message, or fill out our form and tell us what you need." },
     { title: "Free assessment", description: "We visit (or review your details) and give you a clear, honest quote." },
@@ -66,6 +74,7 @@ export default async function GeneratedSitePage({ params }: { params: Promise<{ 
         email: submission.email || "",
         address: submission.address || "",
         licenseNumber: submission.license_number || "",
+        logoUrl: submission.logo_url || "",
         hours: submission.hours || "",
         template: submission.template || "classic",
         copy,

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import GeneratedSite from "@/app/components/GeneratedSite";
 import { GeneratedSiteCopy } from "@/lib/siteTypes";
 
-const STEPS_TOTAL = 11;
+const STEPS_TOTAL = 13;
 
 // Used only if /api/preview-copy fails outright (e.g. network error), so the
 // preview screen never gets stuck on "Writing your site's content..." forever.
@@ -24,6 +24,14 @@ function localFallbackCopy(businessName: string, trade: string, area: string, li
     guaranteeLine: licenseNumber
       ? `Fully licensed & insured for your peace of mind — License #${licenseNumber}.`
       : "Fully licensed & insured for your peace of mind.",
+    whyChooseUs: {
+      title: `Why choose ${businessName || "us"}?`,
+      points: [
+        "Local, reliable, and easy to reach",
+        "Honest pricing with no surprises",
+        "Quality work, done right the first time",
+      ],
+    },
     process: [
       { title: "Reach out", description: "Call, message, or fill out our form and tell us what you need." },
       { title: "Free assessment", description: "We visit (or review your details) and give you a clear, honest quote." },
@@ -49,6 +57,8 @@ const questions = [
   { key: "hours", label: "What are your opening hours?", placeholder: "e.g. Mon–Fri 7am–6pm, Sat 8am–2pm", type: "text" },
   { key: "services", label: "What services do you offer?", placeholder: "List as many as you'd like — e.g. drain cleaning, water heater repair, bathroom remodels...", type: "textarea" },
   { key: "about", label: "Tell us about you and your business — the more you write, the better your site will be", placeholder: "How long have you been in business? How many jobs have you done? What makes you different? What do customers say about you? What do you care about on the job?", type: "textarea" },
+  { key: "whyChooseUs", label: "Why should customers choose you over the competition?", placeholder: "e.g. fast response times, fair prices, years of experience, guarantees, certifications, customer reviews...", type: "textarea" },
+  { key: "logo", label: "Do you have a logo you'd like to use?", placeholder: "Optional — upload an image, or skip and we'll use your business name as text", type: "logo" },
   { key: "photos", label: "Do you have photos of your own work?", placeholder: "You can skip this — we'll use trade-relevant stock photos instead", type: "file" },
 ];
 
@@ -115,6 +125,23 @@ function OnboardingInner() {
   const [submitting, setSubmitting] = useState(false);
   const [previewCopy, setPreviewCopy] = useState<GeneratedSiteCopy | null>(null);
   const [generatingPreview, setGeneratingPreview] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string>("");
+  const [logoUploading, setLogoUploading] = useState(false);
+
+  async function handleLogoUpload(file: File) {
+    setLogoUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload-logo", { method: "POST", body: formData });
+      const json = await res.json();
+      if (json.url) setLogoUrl(json.url);
+    } catch {
+      // ignore — logo is optional, user can continue without it
+    } finally {
+      setLogoUploading(false);
+    }
+  }
 
   const current = questions[step];
 
@@ -168,7 +195,7 @@ function OnboardingInner() {
       const res = await fetch("/api/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, template: id, accountName: account.name, accountEmail: account.email }),
+        body: JSON.stringify({ ...data, logoUrl, template: id, accountName: account.name, accountEmail: account.email }),
       });
       const json = await res.json();
       siteId = json?.id || null;
@@ -321,6 +348,38 @@ function OnboardingInner() {
                   <input type="file" multiple className="text-xs text-white/40" />
                 </div>
               )}
+              {current.type === "logo" && (
+                <div className="border-2 border-dashed border-white/15 rounded-xl px-4 py-8 text-center">
+                  {logoUrl ? (
+                    <div className="flex flex-col items-center gap-3">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={logoUrl} alt="Your logo" className="max-h-20 max-w-[200px] object-contain" />
+                      <button
+                        onClick={() => setLogoUrl("")}
+                        className="text-white/40 hover:text-white text-xs font-medium transition-colors"
+                      >
+                        Remove and upload a different logo
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-white/40 text-sm mb-3">
+                        {logoUploading ? "Uploading..." : "Upload your logo, or skip this step"}
+                      </p>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        disabled={logoUploading}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleLogoUpload(file);
+                        }}
+                        className="text-xs text-white/40"
+                      />
+                    </>
+                  )}
+                </div>
+              )}
 
               <div className="flex items-center justify-between mt-10">
                 <button
@@ -430,6 +489,7 @@ function OnboardingInner() {
                                 email: data.email || "",
                                 address: data.address || "",
                                 licenseNumber: data.license || "",
+                                logoUrl: logoUrl || "",
                                 hours: data.hours || "",
                                 template: t.id,
                                 copy: previewCopy,

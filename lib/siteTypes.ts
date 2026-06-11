@@ -9,6 +9,7 @@ export type GeneratedSiteCopy = {
   trustLine: string;
   responsePromise: string;
   guaranteeLine: string;
+  whyChooseUs: { title: string; points: string[] };
   process: { title: string; description: string }[];
   serviceDetails: { title: string; slug: string; description: string }[];
 };
@@ -22,6 +23,7 @@ export type SiteData = {
   email?: string;
   address?: string;
   licenseNumber?: string;
+  logoUrl?: string;
   hours: string;
   template: string;
   copy: GeneratedSiteCopy;

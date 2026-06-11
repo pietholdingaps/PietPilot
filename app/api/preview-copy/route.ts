@@ -20,6 +20,14 @@ const fallbackCopy = (businessName: string, trade: string, area: string, license
   guaranteeLine: licenseNumber
     ? `Fully licensed & insured for your peace of mind — License #${licenseNumber}.`
     : "Fully licensed & insured for your peace of mind.",
+  whyChooseUs: {
+    title: `Why choose ${businessName || "us"}?`,
+    points: [
+      "Local, reliable, and easy to reach",
+      "Honest pricing with no surprises",
+      "Quality work, done right the first time",
+    ],
+  },
   process: [
     { title: "Reach out", description: "Call, message, or fill out our form and tell us what you need." },
     { title: "Free assessment", description: "We visit (or review your details) and give you a clear, honest quote." },
@@ -40,7 +48,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     ({ businessName, trade, area, licenseNumber } = body);
-    const { hours, services, experience, about, address } = body;
+    const { hours, services, experience, about, address, whyChooseUs } = body;
 
     if (!process.env.ANTHROPIC_API_KEY) {
       return NextResponse.json({ copy: fallbackCopy(businessName, trade, area, licenseNumber) });
@@ -60,6 +68,7 @@ Opening hours: ${hours || "—"}
 Services offered: ${services || "—"}
 Experience: ${experience || "—"}
 License/insurance number: ${licenseNumber || "—"}
+Why customers should choose them (in the owner's own words): ${whyChooseUs || "—"}
 About the business (in the owner's own words): ${about || "—"}
 
 Write in a confident, friendly, local-business tone — never generic corporate fluff. Use specific details from what the owner wrote whenever possible.
@@ -76,6 +85,7 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
   "trustLine": "one short credibility line using their experience info, e.g. '15+ years serving Austin homeowners'",
   "responsePromise": "a short reassuring line about how fast they respond, e.g. 'We respond within 24 hours — guaranteed.' (invent a reasonable promise if not stated)",
   "guaranteeLine": "a short trust/insurance/guarantee line, e.g. 'Fully licensed & insured for your peace of mind.' If a license/insurance number was provided, naturally include it (e.g. 'Fully licensed & insured — License #12345'). Otherwise invent something reasonable and trade-appropriate.",
+  "whyChooseUs": "an object with 'title' (e.g. 'Why choose [Business Name]?') and 'points' (an array of exactly 3 short, punchy reasons customers should pick this business — base these on what the owner said about why customers should choose them, and on their experience/about info; each point max 8 words)",
   "process": "an array of exactly 4 objects, each with a short 'title' (2-4 words, e.g. 'Reach out', 'Free assessment', 'We get to work', 'Job done, guaranteed') and a one-sentence 'description' explaining that step of working with this business",
   "serviceDetails": "an array of exactly 6 objects — one per service in the 'services' array, in the same order — each with: 'title' (same as the service name), 'slug' (lowercase, hyphenated, URL-safe version of the title, e.g. 'drain-cleaning'), and 'description' (a unique, SEO-friendly 3-4 sentence paragraph about this specific service for this business — mention the trade, the local area, and what the customer gets, written naturally for search engines and real readers)"
 }`;
