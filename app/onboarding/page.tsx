@@ -5,11 +5,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import GeneratedSite from "@/app/components/GeneratedSite";
 import { GeneratedSiteCopy } from "@/lib/siteTypes";
 
-const STEPS_TOTAL = 9;
+const STEPS_TOTAL = 11;
 
 // Used only if /api/preview-copy fails outright (e.g. network error), so the
 // preview screen never gets stuck on "Writing your site's content..." forever.
-function localFallbackCopy(businessName: string, trade: string, area: string): GeneratedSiteCopy {
+function localFallbackCopy(businessName: string, trade: string, area: string, licenseNumber?: string): GeneratedSiteCopy {
   const services = ["Repairs & maintenance", "New installations", "Inspections", "Emergency call-outs", "Free estimates", "Maintenance plans"];
   return {
     headline: `${trade || "Trusted local"} services you can count on`,
@@ -17,10 +17,13 @@ function localFallbackCopy(businessName: string, trade: string, area: string): G
     about: `${businessName || "Our team"} is a local, trusted name for ${trade || "trade"} work in ${area || "the area"}. We focus on doing the job right the first time, with clear communication every step of the way.`,
     servicesIntro: "Here's what we can help you with:",
     services,
+    allServices: [...services, "Upgrades & replacements", "Routine servicing"],
     ctaText: "Get a Free Quote",
     trustLine: `Proudly serving ${area || "your area"}`,
     responsePromise: "We respond within 24 hours — guaranteed.",
-    guaranteeLine: "Fully licensed & insured for your peace of mind.",
+    guaranteeLine: licenseNumber
+      ? `Fully licensed & insured for your peace of mind — License #${licenseNumber}.`
+      : "Fully licensed & insured for your peace of mind.",
     process: [
       { title: "Reach out", description: "Call, message, or fill out our form and tell us what you need." },
       { title: "Free assessment", description: "We visit (or review your details) and give you a clear, honest quote." },
@@ -41,6 +44,8 @@ const questions = [
   { key: "area", label: "What city or area do you cover?", placeholder: "e.g. Austin, TX and surrounding areas", type: "text" },
   { key: "phone", label: "What's your business phone number?", placeholder: "e.g. (512) 555-0182", type: "text" },
   { key: "email", label: "What email should customers use to reach you?", placeholder: "e.g. info@johnsonplumbing.com (optional — leave blank to skip)", type: "text" },
+  { key: "address", label: "What's your business address?", placeholder: "e.g. 123 Main St, Austin, TX 78701 (optional — leave blank to skip)", type: "text" },
+  { key: "license", label: "Do you have a license or insurance number you'd like to display?", placeholder: "e.g. License #TX-48213 (optional — builds trust with customers, leave blank to skip)", type: "text" },
   { key: "hours", label: "What are your opening hours?", placeholder: "e.g. Mon–Fri 7am–6pm, Sat 8am–2pm", type: "text" },
   { key: "services", label: "What services do you offer?", placeholder: "List as many as you'd like — e.g. drain cleaning, water heater repair, bathroom remodels...", type: "textarea" },
   { key: "about", label: "Tell us about you and your business — the more you write, the better your site will be", placeholder: "How long have you been in business? How many jobs have you done? What makes you different? What do customers say about you? What do you care about on the job?", type: "textarea" },
@@ -129,8 +134,8 @@ function OnboardingInner() {
         body: JSON.stringify(data),
       })
         .then((r) => r.json())
-        .then((json) => setPreviewCopy(json.copy || localFallbackCopy(data.businessName || "", data.trade || "", data.area || "")))
-        .catch(() => setPreviewCopy(localFallbackCopy(data.businessName || "", data.trade || "", data.area || "")))
+        .then((json) => setPreviewCopy(json.copy || localFallbackCopy(data.businessName || "", data.trade || "", data.area || "", data.license || "")))
+        .catch(() => setPreviewCopy(localFallbackCopy(data.businessName || "", data.trade || "", data.area || "", data.license || "")))
         .finally(() => {
           setGeneratingPreview(false);
           setStep(questions.length);
@@ -423,6 +428,8 @@ function OnboardingInner() {
                                 area: data.area || "",
                                 phone: data.phone || "",
                                 email: data.email || "",
+                                address: data.address || "",
+                                licenseNumber: data.license || "",
                                 hours: data.hours || "",
                                 template: t.id,
                                 copy: previewCopy,

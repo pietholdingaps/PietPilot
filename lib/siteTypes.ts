@@ -4,6 +4,7 @@ export type GeneratedSiteCopy = {
   about: string;
   servicesIntro: string;
   services: string[];
+  allServices: string[];
   ctaText: string;
   trustLine: string;
   responsePromise: string;
@@ -19,6 +20,8 @@ export type SiteData = {
   area: string;
   phone: string;
   email?: string;
+  address?: string;
+  licenseNumber?: string;
   hours: string;
   template: string;
   copy: GeneratedSiteCopy;

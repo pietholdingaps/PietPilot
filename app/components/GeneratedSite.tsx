@@ -1,5 +1,6 @@
 import { SiteData } from "@/lib/siteTypes";
 import { getPhotosForTrade } from "@/lib/stockPhotos";
+import LeadForm from "./LeadForm";
 
 export const themes: Record<string, {
   bg: string; text: string; muted: string; card: string; accent: string; accentText: string; heroOverlay: string; navBg: string;
@@ -35,6 +36,12 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
     if (!services.includes(extra)) services.push(extra);
   }
   const servicesGrid = services.slice(0, 6);
+
+  // Extra services for the full "everything we do" list — anything from
+  // allServices that isn't already shown as one of the 6 main cards.
+  const extraServices = (copy.allServices || []).filter(
+    (s) => !servicesGrid.some((g) => g.toLowerCase() === s.toLowerCase())
+  );
 
   return (
     <div style={{ background: theme.bg, color: theme.text }} className="min-h-screen font-sans antialiased">
@@ -177,6 +184,22 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
               );
             })}
           </div>
+
+          {extraServices.length > 0 && (
+            <div className="mt-12 pt-12 border-t" style={{ borderColor: `${theme.text}12` }}>
+              <p className="text-center text-sm font-bold uppercase tracking-[0.2em] mb-6" style={{ color: theme.muted }}>
+                ...and more
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 max-w-3xl mx-auto">
+                {extraServices.map((s, i) => (
+                  <div key={i} className="flex items-center gap-2 text-sm font-medium">
+                    <span style={{ color: theme.accent }}>✓</span>
+                    {s}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -229,36 +252,53 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
 
       {/* CONTACT / CTA */}
       <section id="contact" className="py-24 px-6" style={{ background: theme.card }}>
-        <div
-          className="max-w-4xl mx-auto rounded-3xl p-12 md:p-16 text-center relative overflow-hidden"
-          style={{ background: theme.bg, border: `1px solid ${theme.text}14` }}
-        >
-          <div
-            className="absolute -top-24 -right-24 w-64 h-64 rounded-full blur-3xl opacity-20"
-            style={{ background: theme.accent }}
-          />
-          <div className="relative">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-extrabold mb-3 tracking-tight">Ready to get started?</h2>
             <p className="mb-1.5 text-base" style={{ color: theme.muted }}>{data.hours} · {copy.responsePromise}</p>
-            <p className="mb-9 text-base" style={{ color: theme.muted }}>{copy.guaranteeLine}</p>
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              <a
-                href={`tel:${data.phone}`}
-                style={{ background: theme.accent, color: theme.accentText }}
-                className="inline-flex items-center justify-center gap-2 font-bold text-base px-10 py-4.5 rounded-xl shadow-[0_12px_40px_-10px_rgba(0,0,0,0.4)] hover:scale-[1.02] transition-transform"
-              >
-                Call now: {data.phone}
-              </a>
-              {data.email && (
+            <p className="text-base" style={{ color: theme.muted }}>{copy.guaranteeLine}</p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6 items-stretch">
+            <div
+              className="rounded-3xl p-10 md:p-12 relative overflow-hidden flex flex-col justify-center"
+              style={{ background: theme.bg, border: `1px solid ${theme.text}14` }}
+            >
+              <div
+                className="absolute -top-24 -right-24 w-64 h-64 rounded-full blur-3xl opacity-20"
+                style={{ background: theme.accent }}
+              />
+              <div className="relative space-y-4">
                 <a
-                  href={`mailto:${data.email}`}
-                  style={{ borderColor: `${theme.text}25`, color: theme.text }}
-                  className="inline-flex items-center justify-center gap-2 font-bold text-base px-10 py-4.5 rounded-xl border hover:opacity-80 transition-opacity"
+                  href={`tel:${data.phone}`}
+                  style={{ background: theme.accent, color: theme.accentText }}
+                  className="flex items-center justify-center gap-2 font-bold text-base px-10 py-4.5 rounded-xl shadow-[0_12px_40px_-10px_rgba(0,0,0,0.4)] hover:scale-[1.02] transition-transform"
                 >
-                  Email us: {data.email}
+                  Call now: {data.phone}
                 </a>
-              )}
+                {data.email && (
+                  <a
+                    href={`mailto:${data.email}`}
+                    style={{ borderColor: `${theme.text}25`, color: theme.text }}
+                    className="flex items-center justify-center gap-2 font-bold text-base px-10 py-4.5 rounded-xl border hover:opacity-80 transition-opacity"
+                  >
+                    Email us: {data.email}
+                  </a>
+                )}
+                {data.address && (
+                  <p className="text-sm text-center pt-2" style={{ color: theme.muted }}>{data.address}</p>
+                )}
+              </div>
             </div>
+
+            <LeadForm
+              siteId={data.id}
+              accent={theme.accent}
+              accentText={theme.accentText}
+              textColor={theme.text}
+              mutedColor={theme.muted}
+              cardBg={theme.bg}
+              borderColor={`${theme.text}14`}
+            />
           </div>
         </div>
       </section>
@@ -284,8 +324,10 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
               {data.email && (
                 <li><a href={`mailto:${data.email}`} className="hover:opacity-70 transition-opacity">{data.email}</a></li>
               )}
+              {data.address && <li>{data.address}</li>}
               <li>{data.area}</li>
               <li>{data.hours}</li>
+              {data.licenseNumber && <li>License #{data.licenseNumber}</li>}
             </ul>
           </div>
         </div>

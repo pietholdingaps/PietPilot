@@ -6,16 +6,22 @@ import { GeneratedSiteCopy } from "@/lib/siteTypes";
 
 export const dynamic = "force-dynamic";
 
-const fallbackCopy = (businessName: string, trade: string, area: string): GeneratedSiteCopy => ({
+const fallbackCopy = (businessName: string, trade: string, area: string, licenseNumber?: string): GeneratedSiteCopy => ({
   headline: `${trade || "Trusted local"} services you can count on`,
   subheadline: `${businessName || "We"} proudly serve ${area || "the local area"} with fast, reliable work and honest pricing.`,
   about: `${businessName || "Our team"} is a local, trusted name for ${trade || "trade"} work in ${area || "the area"}. We focus on doing the job right the first time, with clear communication every step of the way.`,
   servicesIntro: "Here's what we can help you with:",
   services: ["Repairs & maintenance", "New installations", "Inspections", "Emergency call-outs", "Free estimates", "Maintenance plans"],
+  allServices: [
+    "Repairs & maintenance", "New installations", "Inspections", "Emergency call-outs",
+    "Free estimates", "Maintenance plans", "Upgrades & replacements", "Routine servicing",
+  ],
   ctaText: "Get a Free Quote",
   trustLine: `Proudly serving ${area || "your area"}`,
   responsePromise: "We respond within 24 hours — guaranteed.",
-  guaranteeLine: "Fully licensed & insured for your peace of mind.",
+  guaranteeLine: licenseNumber
+    ? `Fully licensed & insured for your peace of mind — License #${licenseNumber}.`
+    : "Fully licensed & insured for your peace of mind.",
   process: [
     { title: "Reach out", description: "Call, message, or fill out our form and tell us what you need." },
     { title: "Free assessment", description: "We visit (or review your details) and give you a clear, honest quote." },
@@ -52,7 +58,7 @@ export default async function ServiceDetailPage({
   if (!submission) notFound();
 
   const copy: GeneratedSiteCopy =
-    submission.generated_copy || fallbackCopy(submission.business_name, submission.trade, submission.area);
+    submission.generated_copy || fallbackCopy(submission.business_name, submission.trade, submission.area, submission.license_number);
 
   const serviceIndex = (copy.serviceDetails || []).findIndex((s) => s.slug === slug);
   const service = copy.serviceDetails?.[serviceIndex];
