@@ -30,6 +30,14 @@ export async function POST(req: NextRequest) {
     // fall back to the account owner's email, otherwise to PietPilot so nothing gets lost.
     const to = submission.email || submission.owner_email || process.env.NOTIFICATION_EMAIL!;
 
+    // Gem leadet i databasen, så det kan vises i kundens dashboard
+    await supabase.from("leads").insert({
+      site_id: siteId,
+      name,
+      contact,
+      message,
+    });
+
     await resend.emails.send({
       from: "PietPilot <noreply@pietpilot.com>",
       to,
