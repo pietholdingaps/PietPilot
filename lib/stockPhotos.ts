@@ -18,11 +18,11 @@ function img(base: string, width: number) {
 // so we store the full base, not just an ID.
 const sets: Record<string, { hero: string; gallery: string[] }> = {
   plumbing: {
-    hero: "https://plus.unsplash.com/premium_photo-1663045495725-89f23b57cfc5",
+    hero: "https://images.unsplash.com/photo-1676210134188-4c05dd172f89",
     gallery: [
       "https://images.unsplash.com/photo-1676210133055-eab6ef033ce3",
-      "https://plus.unsplash.com/premium_photo-1664301972519-506636f0245d",
-      "https://plus.unsplash.com/premium_photo-1683141410787-c4dbd2220487",
+      "https://images.unsplash.com/photo-1607472586893-edb57bdc0e39",
+      "https://images.unsplash.com/photo-1545193329-4a052e14eb8f",
     ],
   },
   electrical: {
@@ -36,13 +36,13 @@ const sets: Record<string, { hero: string; gallery: string[] }> = {
   hvac: {
     hero: "https://images.unsplash.com/photo-1642749776312-aa42ce20c9f5",
     gallery: [
-      "https://plus.unsplash.com/premium_photo-1683134512538-7b390d0adc9e",
+      "https://images.unsplash.com/photo-1660330589827-da8ab7dd3c02",
       "https://images.unsplash.com/photo-1546079406-046e141edf3d",
       "https://images.unsplash.com/photo-1732395805034-e0bf859665e5",
     ],
   },
   roofing: {
-    hero: "https://plus.unsplash.com/premium_photo-1682617326551-4749611516f6",
+    hero: "https://images.unsplash.com/photo-1635424824849-1b09bdcc55b1",
     gallery: [
       "https://images.unsplash.com/photo-1633759593085-1eaeb724fc88",
       "https://images.unsplash.com/photo-1635424709845-3a85ad5e1f5e",
@@ -52,33 +52,33 @@ const sets: Record<string, { hero: string; gallery: string[] }> = {
   painting: {
     hero: "https://images.unsplash.com/photo-1613844044163-1ad2f2d0b152",
     gallery: [
-      "https://plus.unsplash.com/premium_photo-1721865603899-a750a71d9a6a",
-      "https://plus.unsplash.com/premium_photo-1680297036893-d6faac34ea94",
+      "https://images.unsplash.com/photo-1688372199140-cade7ae820fe",
+      "https://images.unsplash.com/photo-1742900280861-32bed068938b",
       "https://images.unsplash.com/photo-1759406066673-f76869a4e6db",
     ],
   },
   carpentry: {
-    hero: "https://plus.unsplash.com/premium_photo-1664300494539-313eac2a6095",
+    hero: "https://images.unsplash.com/photo-1608613304899-ea8098577e38",
     gallery: [
       "https://images.unsplash.com/photo-1659930087003-2d64e33181f7",
       "https://images.unsplash.com/photo-1544164560-adac3045edb2",
-      "https://plus.unsplash.com/premium_photo-1663134364102-00758ead290c",
+      "https://images.unsplash.com/photo-1590880795696-20c7dfadacde",
     ],
   },
   masonry: {
     hero: "https://images.unsplash.com/photo-1704005445445-2747074be8ac",
     gallery: [
       "https://images.unsplash.com/photo-1617720356637-6264c1c0b4bb",
-      "https://plus.unsplash.com/premium_photo-1682366278869-6c01b1517319",
-      "https://plus.unsplash.com/premium_photo-1683120839162-865f278816c0",
+      "https://images.unsplash.com/photo-1673865641469-34498379d8af",
+      "https://images.unsplash.com/photo-1701850009190-2859ba2aeea6",
     ],
   },
   landscaping: {
     hero: "https://images.unsplash.com/photo-1605117882932-f9e32b03fea9",
     gallery: [
       "https://images.unsplash.com/photo-1734079692160-fcbe4be6ab96",
-      "https://plus.unsplash.com/premium_photo-1664299231556-57f570023f87",
-      "https://plus.unsplash.com/premium_photo-1680286739871-01142bc609df",
+      "https://images.unsplash.com/photo-1734303023491-db8037a21f09",
+      "https://images.unsplash.com/photo-1597201278257-3687be27d954",
     ],
   },
   cleaning: {
@@ -86,15 +86,15 @@ const sets: Record<string, { hero: string; gallery: string[] }> = {
     gallery: [
       "https://images.unsplash.com/photo-1740657254989-42fe9c3b8cce",
       "https://images.unsplash.com/photo-1647381518264-97ff1835026f",
-      "https://plus.unsplash.com/premium_photo-1684407616442-87bf0d69e8b4",
+      "https://images.unsplash.com/photo-1563453392212-326f5e854473",
     ],
   },
   general: {
-    hero: "https://plus.unsplash.com/premium_photo-1683140705462-11ed388653cf",
+    hero: "https://images.unsplash.com/photo-1646324554833-f0b6a479fa5d",
     gallery: [
       "https://images.unsplash.com/photo-1589939705384-5185137a7f0f",
       "https://images.unsplash.com/photo-1567361808960-dec9cb578182",
-      "https://plus.unsplash.com/premium_photo-1723478480754-436a04e21412",
+      "https://images.unsplash.com/photo-1581783898377-1c85bf937427",
     ],
   },
 };
