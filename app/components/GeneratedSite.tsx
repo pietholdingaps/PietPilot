@@ -1,10 +1,13 @@
 import { SiteData } from "@/lib/siteTypes";
 import { getPhotosForTrade } from "@/lib/stockPhotos";
 import LeadForm from "./LeadForm";
+import ServicesCarousel from "./ServicesCarousel";
 
-export const themes: Record<string, {
+export type Theme = {
   bg: string; text: string; muted: string; card: string; accent: string; accentText: string; heroOverlay: string; navBg: string;
-}> = {
+};
+
+export const themes: Record<string, Theme> = {
   classic: {
     bg: "#ffffff", text: "#0f1729", muted: "#5b6472", card: "#f6f8fb",
     accent: "#1d4ed8", accentText: "#ffffff", heroOverlay: "linear-gradient(115deg, rgba(15,23,41,0.82) 0%, rgba(15,23,41,0.45) 55%, rgba(15,23,41,0.25) 100%)",
@@ -223,36 +226,19 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
             <h2 className="text-3xl md:text-4xl font-extrabold mb-4 tracking-tight">Our services</h2>
             <p className="max-w-xl mx-auto text-base" style={{ color: theme.muted }}>{copy.servicesIntro}</p>
           </div>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
-            {servicesGrid.map((s, i) => {
+          <ServicesCarousel
+            theme={theme}
+            items={servicesGrid.map((s, i) => {
               const detail = copy.serviceDetails?.[i];
-              const href = detail?.slug ? `/site/${data.id}/services/${detail.slug}` : undefined;
-              const Card = (
-                <div
-                  className="group rounded-2xl p-7 transition-all hover:-translate-y-1 h-full"
-                  style={{ background: theme.bg, border: `1px solid ${theme.text}12` }}
-                >
-                  <div
-                    className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 font-extrabold text-base transition-transform group-hover:scale-110"
-                    style={{ background: `${theme.accent}1a`, color: theme.accent, border: `1px solid ${theme.accent}40` }}
-                  >
-                    {String(i + 1).padStart(2, "0")}
-                  </div>
-                  <p className="font-bold text-base mb-1.5">{s}</p>
-                  <p className="text-sm" style={{ color: theme.muted }}>
-                    {href ? "Learn more →" : "Done right, on time, every time."}
-                  </p>
-                </div>
-              );
-              return href ? (
-                <a key={i} href={href} className="block h-full">
-                  {Card}
-                </a>
-              ) : (
-                <div key={i}>{Card}</div>
-              );
+              const allImages = [photos.hero, ...photos.gallery];
+              return {
+                title: s,
+                description: detail?.description || "Done right, on time, every time.",
+                image: allImages[i % allImages.length],
+                href: detail?.slug ? `/site/${data.id}/services/${detail.slug}` : undefined,
+              };
             })}
-          </div>
+          />
 
           {extraServices.length > 0 && (
             <div className="mt-12 pt-12 border-t" style={{ borderColor: `${theme.text}12` }}>
