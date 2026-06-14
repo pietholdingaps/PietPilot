@@ -126,3 +126,37 @@ export function getPhotosForTrade(trade: string): PhotoSet {
     gallery: set.gallery.map((base) => img(base, 800)),
   };
 }
+
+// Maps a specific service name (e.g. "New roof", "Decks & patios", "Doors & windows")
+// to a photo that actually matches that service — not just the business's general trade.
+// Checked in order, so more specific categories (e.g. decks) come before broader
+// ones (e.g. landscaping) that share keywords like "tree"/"træ".
+const serviceCategories: { keywords: string[]; images: string[] }[] = [
+  { keywords: ["roof", "shingle", "gutter", "tag"], images: [sets.roofing.hero, ...sets.roofing.gallery] },
+  { keywords: ["deck", "patio", "terrasse", "pergola", "fence", "hegn"], images: [sets.carpentry.gallery[0], sets.carpentry.gallery[2], sets.landscaping.gallery[0]] },
+  { keywords: ["door", "window", "dør", "vindue", "glas"], images: [sets.carpentry.hero, sets.general.gallery[0], sets.carpentry.gallery[1]] },
+  { keywords: ["addition", "extension", "renovat", "remodel", "tilbygning", "ombygning", "udvidelse"], images: [sets.masonry.hero, ...sets.masonry.gallery] },
+  { keywords: ["kitchen", "køkken", "cabinet"], images: [sets.carpentry.hero, sets.carpentry.gallery[1], sets.carpentry.gallery[2]] },
+  { keywords: ["bathroom", "bad"], images: [sets.plumbing.hero, ...sets.plumbing.gallery] },
+  { keywords: ["floor", "gulv"], images: [sets.carpentry.gallery[2], sets.carpentry.hero] },
+  { keywords: ["paint", "maler", "drywall"], images: [sets.painting.hero, ...sets.painting.gallery] },
+  { keywords: ["concrete", "beton", "driveway", "indkørsel", "paving", "stone", "sten"], images: [sets.masonry.hero, ...sets.masonry.gallery] },
+  { keywords: ["plumb", "vvs", "pipe", "drain", "water heater"], images: [sets.plumbing.hero, ...sets.plumbing.gallery] },
+  { keywords: ["electric", "wiring", "panel", "el-arbejde", "strøm"], images: [sets.electrical.hero, ...sets.electrical.gallery] },
+  { keywords: ["hvac", "heating", "varme", "cooling", "air condition", "furnace", "ventilation"], images: [sets.hvac.hero, ...sets.hvac.gallery] },
+  { keywords: ["clean", "rengøring", "janitor"], images: [sets.cleaning.hero, ...sets.cleaning.gallery] },
+  { keywords: ["landscap", "garden", "have", "lawn", "tree", "træ"], images: [sets.landscaping.hero, ...sets.landscaping.gallery] },
+];
+
+export function getPhotoForService(serviceName: string, trade: string, index: number): string {
+  const s = (serviceName || "").toLowerCase();
+  for (const cat of serviceCategories) {
+    if (cat.keywords.some((k) => s.includes(k))) {
+      return img(cat.images[index % cat.images.length], 800);
+    }
+  }
+  // No specific match — fall back to the business's general trade photos.
+  const tradeSet = setForTrade(trade);
+  const allImages = [tradeSet.hero, ...tradeSet.gallery];
+  return img(allImages[index % allImages.length], 800);
+}

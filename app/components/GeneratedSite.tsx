@@ -1,5 +1,5 @@
 import { SiteData } from "@/lib/siteTypes";
-import { getPhotosForTrade } from "@/lib/stockPhotos";
+import { getPhotosForTrade, getPhotoForService } from "@/lib/stockPhotos";
 import LeadForm from "./LeadForm";
 import ServicesCarousel from "./ServicesCarousel";
 
@@ -230,11 +230,10 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
             theme={theme}
             items={servicesGrid.map((s, i) => {
               const detail = copy.serviceDetails?.[i];
-              const allImages = [photos.hero, ...photos.gallery];
               return {
                 title: s,
                 description: detail?.description || "Done right, on time, every time.",
-                image: allImages[i % allImages.length],
+                image: getPhotoForService(s, data.trade, i),
                 href: detail?.slug ? `/site/${data.id}/services/${detail.slug}` : undefined,
               };
             })}

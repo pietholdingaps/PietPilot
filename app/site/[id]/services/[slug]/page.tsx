@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
 import { themes } from "@/app/components/GeneratedSite";
-import { getPhotosForTrade } from "@/lib/stockPhotos";
+import { getPhotoForService } from "@/lib/stockPhotos";
 import { GeneratedSiteCopy } from "@/lib/siteTypes";
 import LeadForm from "@/app/components/LeadForm";
 
@@ -80,9 +80,7 @@ export default async function ServiceDetailPage({
   if (!service) notFound();
 
   const theme = themes[submission.template as string] || themes.classic;
-  const photos = getPhotosForTrade(submission.trade || "");
-  const allImages = [photos.hero, ...photos.gallery];
-  const image = allImages[serviceIndex % allImages.length];
+  const image = getPhotoForService(service.title, submission.trade || "", serviceIndex);
 
   const businessName = submission.business_name || "Your Business";
   const phone = submission.phone || "";
