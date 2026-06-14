@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { siteId, businessName, phone, email, address, hours, logoUrl, headline, subheadline, about, reviewText, reviewAuthor, projectPhotos } = body;
+    const { siteId, businessName, phone, email, address, hours, logoUrl, headline, subheadline, about, reviews, projectPhotos, ownerName, ownerBio, ownerPhotoUrl } = body;
 
     if (!siteId) {
       return NextResponse.json({ error: "Missing site id" }, { status: 400 });
@@ -45,9 +45,11 @@ export async function POST(req: NextRequest) {
         address,
         hours,
         logo_url: logoUrl || null,
-        review_text: reviewText || null,
-        review_author: reviewAuthor || null,
+        reviews: reviews && reviews.length > 0 ? reviews : null,
         project_photos: projectPhotos && projectPhotos.length > 0 ? projectPhotos : null,
+        owner_name: ownerName || null,
+        owner_bio: ownerBio || null,
+        owner_photo_url: ownerPhotoUrl || null,
         ...(updatedCopy ? { generated_copy: updatedCopy } : {}),
       })
       .eq("id", siteId);

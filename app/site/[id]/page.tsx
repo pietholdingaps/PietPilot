@@ -84,8 +84,14 @@ export default async function GeneratedSitePage({ params }: { params: Promise<{ 
         template: submission.template || "classic",
         copy,
         projectPhotos: submission.project_photos || [],
-        reviewText: submission.review_text || "",
-        reviewAuthor: submission.review_author || "",
+        reviews: submission.reviews && submission.reviews.length > 0
+          ? submission.reviews
+          : submission.review_text
+            ? [{ text: submission.review_text, author: submission.review_author || "" }]
+            : [],
+        ownerName: submission.owner_name || "",
+        ownerBio: submission.owner_bio || "",
+        ownerPhotoUrl: submission.owner_photo_url || "",
       }}
     />
   );

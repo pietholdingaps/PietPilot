@@ -35,4 +35,8 @@ export type SiteData = {
   projectPhotos?: string[];
   reviewText?: string;
   reviewAuthor?: string;
+  reviews?: { text: string; author: string }[];
+  ownerName?: string;
+  ownerBio?: string;
+  ownerPhotoUrl?: string;
 };

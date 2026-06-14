@@ -559,8 +559,7 @@ function OnboardingInner() {
                                 template: t.id,
                                 copy: previewCopy,
                                 projectPhotos,
-                                reviewText: data.reviewText || "",
-                                reviewAuthor: data.reviewAuthor || "",
+                                reviews: data.reviewText ? [{ text: data.reviewText, author: data.reviewAuthor || "" }] : [],
                               }}
                             />
                           </div>

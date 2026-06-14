@@ -97,6 +97,9 @@ export default async function ServiceDetailPage({
           <div className="hidden sm:flex items-center gap-8 text-sm font-medium" style={{ color: theme.muted }}>
             <a href={`/site/${id}#about`} className="hover:opacity-70 transition-opacity">About</a>
             <a href={`/site/${id}#services`} className="hover:opacity-70 transition-opacity">Services</a>
+            {submission.project_photos && submission.project_photos.length > 0 && (
+              <a href={`/site/${id}/work`} className="hover:opacity-70 transition-opacity">Our Work</a>
+            )}
             <a href={`/site/${id}#contact`} className="hover:opacity-70 transition-opacity">Contact</a>
           </div>
           <div className="flex items-center gap-3">

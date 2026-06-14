@@ -32,10 +32,13 @@ function EditSiteInner() {
   const [subheadline, setSubheadline] = useState("");
   const [about, setAbout] = useState("");
   const [uploading, setUploading] = useState(false);
-  const [reviewText, setReviewText] = useState("");
-  const [reviewAuthor, setReviewAuthor] = useState("");
+  const [reviews, setReviews] = useState<{ text: string; author: string }[]>([]);
   const [projectPhotos, setProjectPhotos] = useState<string[]>([]);
   const [photosUploading, setPhotosUploading] = useState(false);
+  const [ownerName, setOwnerName] = useState("");
+  const [ownerBio, setOwnerBio] = useState("");
+  const [ownerPhotoUrl, setOwnerPhotoUrl] = useState("");
+  const [ownerPhotoUploading, setOwnerPhotoUploading] = useState(false);
 
   useEffect(() => {
     if (!siteId) {
@@ -58,9 +61,15 @@ function EditSiteInner() {
             setSubheadline(s.generated_copy.subheadline || "");
             setAbout(s.generated_copy.about || "");
           }
-          setReviewText(s.review_text || "");
-          setReviewAuthor(s.review_author || "");
+          if (s.reviews && s.reviews.length > 0) {
+            setReviews(s.reviews);
+          } else if (s.review_text) {
+            setReviews([{ text: s.review_text, author: s.review_author || "" }]);
+          }
           setProjectPhotos(s.project_photos || []);
+          setOwnerName(s.owner_name || "");
+          setOwnerBio(s.owner_bio || "");
+          setOwnerPhotoUrl(s.owner_photo_url || "");
         }
       })
       .finally(() => setLoading(false));
@@ -101,6 +110,31 @@ function EditSiteInner() {
     setProjectPhotos((p) => p.filter((u) => u !== url));
   }
 
+  async function handleOwnerPhotoUpload(file: File) {
+    setOwnerPhotoUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload-logo", { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.url) setOwnerPhotoUrl(data.url);
+    } finally {
+      setOwnerPhotoUploading(false);
+    }
+  }
+
+  function addReview() {
+    setReviews((r) => [...r, { text: "", author: "" }]);
+  }
+
+  function updateReview(index: number, field: "text" | "author", value: string) {
+    setReviews((r) => r.map((rev, i) => (i === index ? { ...rev, [field]: value } : rev)));
+  }
+
+  function removeReview(index: number) {
+    setReviews((r) => r.filter((_, i) => i !== index));
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -111,7 +145,8 @@ function EditSiteInner() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          siteId, businessName, phone, email, address, hours, logoUrl, headline, subheadline, about, reviewText, reviewAuthor, projectPhotos,
+          siteId, businessName, phone, email, address, hours, logoUrl, headline, subheadline, about,
+          reviews: reviews.filter((r) => r.text.trim()), projectPhotos, ownerName, ownerBio, ownerPhotoUrl,
         }),
       });
       if (!res.ok) throw new Error();
@@ -201,12 +236,65 @@ function EditSiteInner() {
               </div>
             </div>
 
-            {/* REVIEW */}
+            {/* OM MIG */}
             <div className="card rounded-2xl p-7">
-              <h2 className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-5">Customer review</h2>
+              <h2 className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-5">About me</h2>
               <div className="flex flex-col gap-4">
-                <Field label="Review text" value={reviewText} onChange={setReviewText} textarea />
-                <Field label="Reviewer name" value={reviewAuthor} onChange={setReviewAuthor} />
+                <Field label="Your name" value={ownerName} onChange={setOwnerName} />
+                <Field label="A bit about yourself" value={ownerBio} onChange={setOwnerBio} textarea />
+                <div className="flex items-center gap-5">
+                  {ownerPhotoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={ownerPhotoUrl} alt="Owner" className="w-16 h-16 rounded-lg object-cover bg-white/5 border border-white/10" />
+                  ) : (
+                    <div className="w-16 h-16 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/30 text-xs">
+                      None
+                    </div>
+                  )}
+                  <label className="cursor-pointer border border-white/10 hover:border-white/25 text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
+                    {ownerPhotoUploading ? "Uploading…" : "Upload photo of yourself"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleOwnerPhotoUpload(file);
+                      }}
+                    />
+                  </label>
+                </div>
+                <p className="text-white/30 text-xs">Leave blank to hide this section from your website.</p>
+              </div>
+            </div>
+
+            {/* REVIEWS */}
+            <div className="card rounded-2xl p-7">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-5">Customer reviews</h2>
+              <div className="flex flex-col gap-5">
+                {reviews.map((r, i) => (
+                  <div key={i} className="border border-white/10 rounded-xl p-4 flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-white/40">Review {i + 1}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeReview(i)}
+                        className="text-white/40 hover:text-red-400 text-xs font-semibold transition-colors"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <Field label="Review text" value={r.text} onChange={(v) => updateReview(i, "text", v)} textarea />
+                    <Field label="From" value={r.author} onChange={(v) => updateReview(i, "author", v)} />
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={addReview}
+                  className="self-start border border-white/10 hover:border-white/25 text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
+                >
+                  + Add review
+                </button>
               </div>
             </div>
 

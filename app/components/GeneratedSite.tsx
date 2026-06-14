@@ -77,6 +77,9 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
                 ))}
               </div>
             </details>
+            {data.projectPhotos && data.projectPhotos.length > 0 && (
+              <a href={`/site/${data.id}/work`} className="hover:opacity-70 transition-opacity">Our Work</a>
+            )}
             <a href="#contact" className="hover:opacity-70 transition-opacity">Contact</a>
           </div>
           <div className="flex items-center gap-3">
@@ -170,6 +173,25 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
           </div>
         </div>
       </section>
+
+      {/* OM MIG / MEET THE OWNER */}
+      {data.ownerBio && (
+        <section className="py-24 px-6" style={{ background: theme.card }}>
+          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-14 items-center">
+            {data.ownerPhotoUrl ? (
+              <div className="rounded-3xl overflow-hidden aspect-[4/3] order-1 md:order-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={data.ownerPhotoUrl} alt={data.ownerName || "Owner"} className="w-full h-full object-cover" />
+              </div>
+            ) : null}
+            <div className={data.ownerPhotoUrl ? "order-2 md:order-1" : ""}>
+              <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: theme.accent }}>Meet the owner</div>
+              <h2 className="text-3xl md:text-4xl font-extrabold mb-6 tracking-tight">{data.ownerName || "Meet the team"}</h2>
+              <p className="text-lg leading-relaxed" style={{ color: theme.muted }}>{data.ownerBio}</p>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* WHY CHOOSE US */}
       {copy.whyChooseUs?.points?.length > 0 && (
@@ -282,39 +304,25 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
         </div>
       </section>
 
-      {/* OUR WORK / GALLERY */}
-      {data.projectPhotos && data.projectPhotos.length > 0 && (
+      {/* REVIEWS / TESTIMONIALS */}
+      {data.reviews && data.reviews.length > 0 && (
         <section className="py-24 px-6">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-14">
-              <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: theme.accent }}>Our work</div>
-              <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">Recent projects</h2>
+              <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: theme.accent }}>What customers say</div>
+              <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">Reviews</h2>
             </div>
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
-              {data.projectPhotos.slice(0, 6).map((url, i) => (
-                <div key={i} className="rounded-2xl overflow-hidden aspect-[4/3]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={url} alt={`${data.businessName} project ${i + 1}`} className="w-full h-full object-cover" />
+              {data.reviews.map((r, i) => (
+                <div key={i} className="rounded-2xl p-7" style={{ background: theme.card, border: `1px solid ${theme.text}12` }}>
+                  <div className="mb-4" style={{ color: theme.accent }}>★★★★★</div>
+                  <p className="text-base leading-relaxed mb-5" style={{ color: theme.text }}>&ldquo;{r.text}&rdquo;</p>
+                  {r.author && (
+                    <p className="text-sm font-bold uppercase tracking-[0.2em]" style={{ color: theme.muted }}>— {r.author}</p>
+                  )}
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-      )}
-
-      {/* REVIEW / TESTIMONIAL */}
-      {data.reviewText && (
-        <section className="py-24 px-6" style={{ background: theme.card }}>
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="text-2xl mb-6" style={{ color: theme.accent }}>★★★★★</div>
-            <p className="text-xl md:text-2xl font-medium leading-relaxed mb-6" style={{ color: theme.text }}>
-              &ldquo;{data.reviewText}&rdquo;
-            </p>
-            {data.reviewAuthor && (
-              <p className="text-sm font-bold uppercase tracking-[0.2em]" style={{ color: theme.muted }}>
-                — {data.reviewAuthor}
-              </p>
-            )}
           </div>
         </section>
       )}
