@@ -282,6 +282,43 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
         </div>
       </section>
 
+      {/* OUR WORK / GALLERY */}
+      {data.projectPhotos && data.projectPhotos.length > 0 && (
+        <section className="py-24 px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-14">
+              <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: theme.accent }}>Our work</div>
+              <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">Recent projects</h2>
+            </div>
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
+              {data.projectPhotos.slice(0, 6).map((url, i) => (
+                <div key={i} className="rounded-2xl overflow-hidden aspect-[4/3]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt={`${data.businessName} project ${i + 1}`} className="w-full h-full object-cover" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* REVIEW / TESTIMONIAL */}
+      {data.reviewText && (
+        <section className="py-24 px-6" style={{ background: theme.card }}>
+          <div className="max-w-3xl mx-auto text-center">
+            <div className="text-2xl mb-6" style={{ color: theme.accent }}>★★★★★</div>
+            <p className="text-xl md:text-2xl font-medium leading-relaxed mb-6" style={{ color: theme.text }}>
+              &ldquo;{data.reviewText}&rdquo;
+            </p>
+            {data.reviewAuthor && (
+              <p className="text-sm font-bold uppercase tracking-[0.2em]" style={{ color: theme.muted }}>
+                — {data.reviewAuthor}
+              </p>
+            )}
+          </div>
+        </section>
+      )}
+
       {/* SERVICE AREA BANNER */}
       <section className="relative py-28 px-6">
         <div

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import GeneratedSite from "@/app/components/GeneratedSite";
 import { GeneratedSiteCopy } from "@/lib/siteTypes";
 
-const STEPS_TOTAL = 13;
+const STEPS_TOTAL = 15;
 
 // Used only if /api/preview-copy fails outright (e.g. network error), so the
 // preview screen never gets stuck on "Writing your site's content..." forever.
@@ -42,6 +42,11 @@ function localFallbackCopy(businessName: string, trade: string, area: string, li
       title,
       slug: title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
       description: `${businessName || "We"} provide reliable ${title.toLowerCase()} for homes and businesses across ${area || "the local area"}. Our ${trade || "experienced"} team gets the job done right, on time, and at a fair price — with clear communication every step of the way. Get in touch today for a free quote.`,
+      faqs: [
+        { question: `How much does ${title.toLowerCase()} cost?`, answer: `Pricing depends on the size and scope of your project. Contact ${businessName || "us"} for a free, no-obligation quote.` },
+        { question: "How soon can you start?", answer: `We aim to respond quickly and schedule the work as soon as possible — get in touch and we'll find a time that works for you.` },
+        { question: "Do you offer a guarantee?", answer: licenseNumber ? `Yes — ${businessName || "we"} stand behind our work and are fully licensed & insured (License #${licenseNumber}).` : `Yes — ${businessName || "we"} stand behind our work and are fully licensed & insured for your peace of mind.` },
+      ],
     })),
   };
 }
@@ -58,8 +63,10 @@ const questions = [
   { key: "services", label: "What services do you offer?", placeholder: "List as many as you'd like — e.g. drain cleaning, water heater repair, bathroom remodels...", type: "textarea" },
   { key: "about", label: "Tell us about you and your business — the more you write, the better your site will be", placeholder: "How long have you been in business? How many jobs have you done? What makes you different? What do customers say about you? What do you care about on the job?", type: "textarea" },
   { key: "whyChooseUs", label: "Why should customers choose you over the competition?", placeholder: "e.g. fast response times, fair prices, years of experience, guarantees, certifications, customer reviews...", type: "textarea" },
+  { key: "reviewText", label: "Got a great review from a happy customer? Paste it here", placeholder: "Optional — e.g. \"Built our deck in 3 days, fantastic work and very tidy!\"", type: "textarea" },
+  { key: "reviewAuthor", label: "Who was that review from?", placeholder: "Optional — e.g. Sarah M., Austin TX", type: "text" },
   { key: "logo", label: "Do you have a logo you'd like to use?", placeholder: "Optional — upload an image, or skip and we'll use your business name as text", type: "logo" },
-  { key: "photos", label: "Do you have photos of your own work?", placeholder: "You can skip this — we'll use trade-relevant stock photos instead", type: "file" },
+  { key: "photos", label: "Got photos of your own work?", placeholder: "Optional — upload a few (decks, roofs, kitchens, etc.) and we'll show them on your site instead of stock photos", type: "file" },
 ];
 
 const templates = [
@@ -127,6 +134,8 @@ function OnboardingInner() {
   const [generatingPreview, setGeneratingPreview] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string>("");
   const [logoUploading, setLogoUploading] = useState(false);
+  const [projectPhotos, setProjectPhotos] = useState<string[]>([]);
+  const [photosUploading, setPhotosUploading] = useState(false);
 
   async function handleLogoUpload(file: File) {
     setLogoUploading(true);
@@ -141,6 +150,29 @@ function OnboardingInner() {
     } finally {
       setLogoUploading(false);
     }
+  }
+
+  async function handlePhotosUpload(files: FileList) {
+    setPhotosUploading(true);
+    try {
+      const urls: string[] = [];
+      for (const file of Array.from(files).slice(0, 6 - projectPhotos.length)) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await fetch("/api/upload-logo", { method: "POST", body: formData });
+        const json = await res.json();
+        if (json.url) urls.push(json.url);
+      }
+      setProjectPhotos((p) => [...p, ...urls].slice(0, 6));
+    } catch {
+      // ignore — photos are optional
+    } finally {
+      setPhotosUploading(false);
+    }
+  }
+
+  function removeProjectPhoto(url: string) {
+    setProjectPhotos((p) => p.filter((u) => u !== url));
   }
 
   const current = questions[step];
@@ -195,7 +227,7 @@ function OnboardingInner() {
       const res = await fetch("/api/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, logoUrl, template: id, accountName: account.name, accountEmail: account.email }),
+        body: JSON.stringify({ ...data, logoUrl, projectPhotos, template: id, accountName: account.name, accountEmail: account.email }),
       });
       const json = await res.json();
       siteId = json?.id || null;
@@ -344,8 +376,41 @@ function OnboardingInner() {
               )}
               {current.type === "file" && (
                 <div className="border-2 border-dashed border-white/15 rounded-xl px-4 py-8 text-center">
-                  <p className="text-white/40 text-sm mb-3">Drag & drop photos here, or skip this step</p>
-                  <input type="file" multiple className="text-xs text-white/40" />
+                  {projectPhotos.length > 0 && (
+                    <div className="flex flex-wrap gap-3 justify-center mb-5">
+                      {projectPhotos.map((url) => (
+                        <div key={url} className="relative">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={url} alt="Your work" className="w-20 h-20 object-cover rounded-lg border border-white/10" />
+                          <button
+                            onClick={() => removeProjectPhoto(url)}
+                            className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-black/70 text-white text-xs flex items-center justify-center"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {projectPhotos.length < 6 ? (
+                    <>
+                      <p className="text-white/40 text-sm mb-3">
+                        {photosUploading ? "Uploading..." : "Upload up to 6 photos, or skip this step"}
+                      </p>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        disabled={photosUploading}
+                        onChange={(e) => {
+                          if (e.target.files?.length) handlePhotosUpload(e.target.files);
+                        }}
+                        className="text-xs text-white/40"
+                      />
+                    </>
+                  ) : (
+                    <p className="text-white/40 text-sm">You've added 6 photos — remove one to add another</p>
+                  )}
                 </div>
               )}
               {current.type === "logo" && (
@@ -493,6 +558,9 @@ function OnboardingInner() {
                                 hours: data.hours || "",
                                 template: t.id,
                                 copy: previewCopy,
+                                projectPhotos,
+                                reviewText: data.reviewText || "",
+                                reviewAuthor: data.reviewAuthor || "",
                               }}
                             />
                           </div>

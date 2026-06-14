@@ -11,7 +11,12 @@ export type GeneratedSiteCopy = {
   guaranteeLine: string;
   whyChooseUs: { title: string; points: string[] };
   process: { title: string; description: string }[];
-  serviceDetails: { title: string; slug: string; description: string }[];
+  serviceDetails: {
+    title: string;
+    slug: string;
+    description: string;
+    faqs?: { question: string; answer: string }[];
+  }[];
 };
 
 export type SiteData = {
@@ -27,4 +32,7 @@ export type SiteData = {
   hours: string;
   template: string;
   copy: GeneratedSiteCopy;
+  projectPhotos?: string[];
+  reviewText?: string;
+  reviewAuthor?: string;
 };

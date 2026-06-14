@@ -32,6 +32,10 @@ function EditSiteInner() {
   const [subheadline, setSubheadline] = useState("");
   const [about, setAbout] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [reviewText, setReviewText] = useState("");
+  const [reviewAuthor, setReviewAuthor] = useState("");
+  const [projectPhotos, setProjectPhotos] = useState<string[]>([]);
+  const [photosUploading, setPhotosUploading] = useState(false);
 
   useEffect(() => {
     if (!siteId) {
@@ -54,6 +58,9 @@ function EditSiteInner() {
             setSubheadline(s.generated_copy.subheadline || "");
             setAbout(s.generated_copy.about || "");
           }
+          setReviewText(s.review_text || "");
+          setReviewAuthor(s.review_author || "");
+          setProjectPhotos(s.project_photos || []);
         }
       })
       .finally(() => setLoading(false));
@@ -72,6 +79,28 @@ function EditSiteInner() {
     }
   }
 
+  async function handlePhotosUpload(files: FileList) {
+    setPhotosUploading(true);
+    try {
+      const urls: string[] = [];
+      for (const file of Array.from(files).slice(0, 6 - projectPhotos.length)) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await fetch("/api/upload-logo", { method: "POST", body: formData });
+        const json = await res.json();
+        if (json.url) urls.push(json.url);
+      }
+      setProjectPhotos((p) => [...p, ...urls].slice(0, 6));
+    } catch {
+    } finally {
+      setPhotosUploading(false);
+    }
+  }
+
+  function removeProjectPhoto(url: string) {
+    setProjectPhotos((p) => p.filter((u) => u !== url));
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -82,7 +111,7 @@ function EditSiteInner() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          siteId, businessName, phone, email, address, hours, logoUrl, headline, subheadline, about,
+          siteId, businessName, phone, email, address, hours, logoUrl, headline, subheadline, about, reviewText, reviewAuthor, projectPhotos,
         }),
       });
       if (!res.ok) throw new Error();
@@ -170,6 +199,51 @@ function EditSiteInner() {
                 <Field label="Subheadline" value={subheadline} onChange={setSubheadline} />
                 <Field label="About us" value={about} onChange={setAbout} textarea />
               </div>
+            </div>
+
+            {/* REVIEW */}
+            <div className="card rounded-2xl p-7">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-5">Customer review</h2>
+              <div className="flex flex-col gap-4">
+                <Field label="Review text" value={reviewText} onChange={setReviewText} textarea />
+                <Field label="Reviewer name" value={reviewAuthor} onChange={setReviewAuthor} />
+              </div>
+            </div>
+
+            {/* PROJECT PHOTOS */}
+            <div className="card rounded-2xl p-7">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-5">Project photos</h2>
+              <div className="flex flex-wrap gap-3 mb-4">
+                {projectPhotos.map((url) => (
+                  <div key={url} className="relative w-20 h-20 rounded-lg overflow-hidden border border-white/10">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={url} alt="Project" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removeProjectPhoto(url)}
+                      className="absolute top-0.5 right-0.5 bg-black/60 hover:bg-black/80 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+              {projectPhotos.length < 6 ? (
+                <label className="cursor-pointer border border-white/10 hover:border-white/25 text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors inline-block">
+                  {photosUploading ? "Uploading…" : "Upload photos"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) handlePhotosUpload(e.target.files);
+                    }}
+                  />
+                </label>
+              ) : (
+                <p className="text-white/40 text-sm">Maximum of 6 photos added.</p>
+              )}
             </div>
 
             <div className="flex items-center gap-4">

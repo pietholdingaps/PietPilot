@@ -43,6 +43,11 @@ const fallbackCopy = (businessName: string, trade: string, area: string, license
     title,
     slug: title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
     description: `${businessName || "We"} provide reliable ${title.toLowerCase()} for homes and businesses across ${area || "the local area"}. Our ${trade || "experienced"} team gets the job done right, on time, and at a fair price — with clear communication every step of the way. Get in touch today for a free quote.`,
+    faqs: [
+      { question: `How much does ${title.toLowerCase()} cost?`, answer: `Pricing depends on the size and scope of your project. Contact ${businessName || "us"} for a free, no-obligation quote.` },
+      { question: "How soon can you start?", answer: `We aim to respond quickly and schedule the work as soon as possible — get in touch and we'll find a time that works for you.` },
+      { question: "Do you offer a guarantee?", answer: licenseNumber ? `Yes — ${businessName || "we"} stand behind our work and are fully licensed & insured (License #${licenseNumber}).` : `Yes — ${businessName || "we"} stand behind our work and are fully licensed & insured for your peace of mind.` },
+    ],
   })),
 });
 
@@ -175,6 +180,30 @@ export default async function ServiceDetailPage({
           </div>
         </div>
       </section>
+
+      {/* FAQ */}
+      {service.faqs && service.faqs.length > 0 && (
+        <section className="py-20 px-6">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: theme.accent }}>FAQ</div>
+              <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">Frequently asked questions</h2>
+            </div>
+            <div className="space-y-4">
+              {service.faqs.map((faq, i) => (
+                <div
+                  key={i}
+                  className="rounded-2xl p-6"
+                  style={{ background: theme.card, border: `1px solid ${theme.text}12` }}
+                >
+                  <h3 className="font-bold text-lg mb-2">{faq.question}</h3>
+                  <p className="text-base leading-relaxed" style={{ color: theme.muted }}>{faq.answer}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* WHY CHOOSE US */}
       {copy.whyChooseUs?.points?.length > 0 && (
