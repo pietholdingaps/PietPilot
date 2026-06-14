@@ -47,15 +47,15 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
   "subheadline": "one sentence expanding on the headline, focused on the customer's benefit",
   "about": "a warm 3-4 sentence About section written in third person, based on what the owner shared",
   "servicesIntro": "one short sentence introducing the services list",
-  "services": ["exactly 6 short service names, each 2-5 words"],
-  "allServices": "an array of 8-12 short service names (2-5 words each) covering everything mentioned in 'Services offered', expanded with closely related services a business like this would realistically also offer — used for a full services list on the site",
+  "services": "an array of short service names (2-5 words each) — one for every distinct service the owner listed under 'Services offered', rewritten concisely. Do NOT invent or add services they didn't mention — only use what they actually told us, combining near-duplicates into one item if needed.",
+  "allServices": "the exact same array as 'services' — do not add anything extra",
   "ctaText": "short call-to-action button text (e.g. 'Get a Free Quote')",
   "trustLine": "one short credibility line using their experience info, e.g. '15+ years serving Austin homeowners'",
   "responsePromise": "a short reassuring line about how fast they respond, e.g. 'We respond within 24 hours — guaranteed.' (invent a reasonable promise if not stated)",
   "guaranteeLine": "a short trust/insurance/guarantee line, e.g. 'Fully licensed & insured for your peace of mind.' If a license/insurance number was provided, naturally include it (e.g. 'Fully licensed & insured — License #12345'). Otherwise invent something reasonable and trade-appropriate.",
   "whyChooseUs": "an object with 'title' (e.g. 'Why choose [Business Name]?') and 'points' (an array of exactly 3 short, punchy reasons customers should pick this business — base these on what the owner said about why customers should choose them, and on their experience/about info; each point max 8 words)",
   "process": "an array of exactly 4 objects, each with a short 'title' (2-4 words, e.g. 'Reach out', 'Free assessment', 'We get to work', 'Job done, guaranteed') and a one-sentence 'description' explaining that step of working with this business",
-  "serviceDetails": "an array of exactly 6 objects — one per service in the 'services' array, in the same order — each with: 'title' (same as the service name), 'slug' (lowercase, hyphenated, URL-safe version of the title, e.g. 'drain-cleaning'), 'description' (a unique, SEO-friendly 3-4 sentence paragraph about this specific service for this business — mention the trade, the local area, and what the customer gets, written naturally for search engines and real readers), and 'faqs' (an array of exactly 3 objects, each with a short 'question' a real customer would ask about this specific service, e.g. cost, timing, what's included, and a helpful 2-3 sentence 'answer' written from this business's perspective)"
+  "serviceDetails": "an array with one object per item in the 'services' array, in the same order — each with: 'title' (same as the service name), 'slug' (lowercase, hyphenated, URL-safe version of the title, e.g. 'drain-cleaning'), 'description' (a unique, SEO-friendly 3-4 sentence paragraph about this specific service for this business — mention the trade, the local area, and what the customer gets, written naturally for search engines and real readers), and 'faqs' (an array of exactly 3 objects, each with a short 'question' a real customer would ask about this specific service, e.g. cost, timing, what's included, and a helpful 2-3 sentence 'answer' written from this business's perspective)"
 }`;
 
     const message = await anthropic.messages.create({

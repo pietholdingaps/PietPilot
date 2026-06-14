@@ -27,18 +27,11 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
   const photos = getPhotosForTrade(data.trade);
   const { copy } = data;
 
-  // Always show exactly 6 services in a clean 3x2 grid. If the AI returned
-  // fewer, pad with sensible generic ones; if more, trim.
-  const fallbackExtras = ["Repairs & maintenance", "New installations", "Inspections", "Emergency call-outs", "Free estimates", "Maintenance plans"];
-  const services = [...(copy.services || [])];
-  for (const extra of fallbackExtras) {
-    if (services.length >= 6) break;
-    if (!services.includes(extra)) services.push(extra);
-  }
-  const servicesGrid = services.slice(0, 6);
+  // Show exactly the services the owner told us about — no invented extras.
+  const servicesGrid = (copy.services || []).slice(0, 12);
 
   // Extra services for the full "everything we do" list — anything from
-  // allServices that isn't already shown as one of the 6 main cards.
+  // allServices that isn't already shown as one of the main cards.
   const extraServices = (copy.allServices || []).filter(
     (s) => !servicesGrid.some((g) => g.toLowerCase() === s.toLowerCase())
   );
