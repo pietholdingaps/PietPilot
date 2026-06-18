@@ -7,6 +7,17 @@ const ALL_SERVICES_FALLBACK = [
   "Free estimates", "Maintenance plans", "Upgrades & replacements", "Routine servicing",
 ];
 
+// Parse the owner's free-text services input into a clean array of service names.
+// Handles comma-separated, newline-separated, bullet points, numbered lists, etc.
+function parseServicesInput(raw: string): string[] {
+  if (!raw || raw.trim() === "—") return [];
+  return raw
+    .split(/[\n,;•\-–]+/)
+    .map((s) => s.replace(/^\d+[\.\)]\s*/, "").trim()) // remove "1. " or "1) " prefixes
+    .filter((s) => s.length > 1 && s.length < 80)       // skip empty or absurdly long
+    .slice(0, 20);                                        // cap at 20
+}
+
 const fallbackCopy = (businessName: string, trade: string, area: string, licenseNumber?: string): GeneratedSiteCopy => ({
   headline: `${trade || "Trusted local"} services you can count on`,
   subheadline: `${businessName || "We"} proudly serve ${area || "the local area"} with fast, reliable work and honest pricing.`,
@@ -59,13 +70,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ copy: fallbackCopy(businessName, trade, area, licenseNumber) });
     }
 
+    const parsedServices = parseServicesInput(services);
+    const servicesBlock = parsedServices.length > 0
+      ? `The owner listed these EXACT services. Your 'services' array must contain ALL of them and NOTHING else:\n${parsedServices.map((s, i) => `${i + 1}. ${s}`).join("\n")}`
+      : `Services offered (raw): ${services || "—"}`;
+
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
     const prompt = `You are a copywriter building a real website for a real local tradesperson. Your job is to write copy that feels 100% specific to THIS business — not generic filler that could apply to anyone.
 
 CRITICAL RULES — follow these exactly or the website will be useless:
 
-1. SERVICES: Look at "Services offered" below. Convert EVERY service the owner listed into the 'services' array. Do not skip any. Do not add any they didn't mention. Do not replace their services with generic ones like "Repairs & maintenance", "Inspections", or "Emergency call-outs" unless the owner explicitly wrote those words. If they listed 8 services, return 8. If they listed 14, return 14.
+1. SERVICES — THIS IS THE MOST IMPORTANT RULE:
+${servicesBlock}
+NEVER use generic services like "Repairs & maintenance", "New installations", "Inspections", "Emergency call-outs", "Free estimates", or "Maintenance plans" UNLESS those exact words appear in the list above. The 'services' array in your JSON must match this list exactly (cleaned up to 2-5 word names).
 
 2. EXPERIENCE: If the owner mentioned years of experience (e.g. "8 years", "over a decade"), use it prominently in the headline or subheadline AND in the trustLine. Do not bury it.
 
@@ -84,7 +102,6 @@ Trade: ${trade || "—"}
 Area covered: ${area || "—"}
 Business address: ${address || "—"}
 Opening hours: ${hours || "—"}
-Services offered: ${services || "—"}
 Experience: ${experience || "—"}
 License/insurance number: ${licenseNumber || "—"}
 Why customers should choose them (in the owner's own words): ${whyChooseUs || "—"}
@@ -122,6 +139,17 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
     } catch {
       const match = raw.match(/\{[\s\S]*\}/);
       copy = match ? JSON.parse(match[0]) : null;
+    }
+
+    // Safety net: if AI returned generic services despite instructions, override with parsed input
+    if (copy && parsedServices.length > 0) {
+      const genericNames = ["repairs & maintenance", "new installations", "inspections", "emergency call-outs", "free estimates", "maintenance plans", "upgrades & replacements", "routine servicing"];
+      const aiServices = copy.services || [];
+      const genericCount = aiServices.filter((s) => genericNames.includes(s.toLowerCase())).length;
+      if (genericCount > aiServices.length / 2) {
+        copy.services = parsedServices;
+        copy.allServices = parsedServices;
+      }
     }
 
     return NextResponse.json({ copy: copy || fallbackCopy(businessName, trade, area, licenseNumber) });

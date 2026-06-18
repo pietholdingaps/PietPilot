@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import Anthropic from "@anthropic-ai/sdk";
 
+function parseServicesInput(raw: string): string[] {
+  if (!raw || raw.trim() === "—") return [];
+  return raw
+    .split(/[\n,;•\-–]+/)
+    .map((s) => s.replace(/^\d+[\.\)]\s*/, "").trim())
+    .filter((s) => s.length > 1 && s.length < 80)
+    .slice(0, 20);
+}
+
 export async function POST(req: NextRequest) {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,13 +31,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Submission not found" }, { status: 404 });
     }
 
+    const parsedServices = parseServicesInput(submission.services || "");
+    const servicesBlock = parsedServices.length > 0
+      ? `The owner listed these EXACT services. Your 'services' array must contain ALL of them and NOTHING else:\n${parsedServices.map((s, i) => `${i + 1}. ${s}`).join("\n")}`
+      : `Services offered (raw): ${submission.services || "—"}`;
+
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
     const prompt = `You are a copywriter building a real website for a real local tradesperson. Your job is to write copy that feels 100% specific to THIS business — not generic filler that could apply to anyone.
 
 CRITICAL RULES — follow these exactly or the website will be useless:
 
-1. SERVICES: Look at "Services offered" below. Convert EVERY service the owner listed into the 'services' array. Do not skip any. Do not add any they didn't mention. Do not replace their services with generic ones like "Repairs & maintenance", "Inspections", or "Emergency call-outs" unless the owner explicitly wrote those words. If they listed 8 services, return 8. If they listed 14, return 14.
+1. SERVICES — THIS IS THE MOST IMPORTANT RULE:
+${servicesBlock}
+NEVER use generic services like "Repairs & maintenance", "New installations", "Inspections", "Emergency call-outs", "Free estimates", or "Maintenance plans" UNLESS those exact words appear in the list above. The 'services' array in your JSON must match this list exactly (cleaned up to 2-5 word names).
 
 2. EXPERIENCE: If the owner mentioned years of experience (e.g. "8 years", "over a decade"), use it prominently in the headline or subheadline AND in the trustLine. Do not bury it.
 
@@ -47,7 +63,6 @@ Trade: ${submission.trade || "—"}
 Area covered: ${submission.area || "—"}
 Business address: ${submission.address || "—"}
 Opening hours: ${submission.hours || "—"}
-Services offered: ${submission.services || "—"}
 Experience: ${submission.experience || "—"}
 License/insurance number: ${submission.license_number || "—"}
 Why customers should choose them (in the owner's own words): ${submission.why_choose_us || "—"}
@@ -89,6 +104,17 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
 
     if (!copy) {
       return NextResponse.json({ error: "Could not generate site copy" }, { status: 500 });
+    }
+
+    // Safety net: override if AI returned generic services despite instructions
+    if (parsedServices.length > 0) {
+      const genericNames = ["repairs & maintenance", "new installations", "inspections", "emergency call-outs", "free estimates", "maintenance plans", "upgrades & replacements", "routine servicing"];
+      const aiServices = copy.services || [];
+      const genericCount = aiServices.filter((s: string) => genericNames.includes(s.toLowerCase())).length;
+      if (genericCount > aiServices.length / 2) {
+        copy.services = parsedServices;
+        copy.allServices = parsedServices;
+      }
     }
 
     const { error: updateError } = await supabase
