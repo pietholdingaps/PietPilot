@@ -2,6 +2,43 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import Anthropic from "@anthropic-ai/sdk";
 
+/** Maps a service name to a precise Pexels search query for the best photo result */
+function getPexelsQuery(serviceName: string): string {
+  const s = serviceName.toLowerCase();
+  // Decking / patio / terrace
+  if (/deck|terrace|patio|veranda|pergola/.test(s)) return "wooden deck garden patio outdoor";
+  // Flooring
+  if (/floor|vinyl|laminate|hardwood|parquet|carpet|tile|tiling/.test(s)) return "hardwood floor installation wood planks";
+  // Kitchen
+  if (/kitchen|worktop|cabinet|cupboard/.test(s)) return "modern kitchen renovation white cabinets";
+  // Bathroom
+  if (/bathroom|shower|bath|wet room/.test(s)) return "modern bathroom renovation shower tiles";
+  // Roofing
+  if (/roof|slate|tile|gutter|fascia|soffit/.test(s)) return "roofer roofing tiles roof repair";
+  // Fencing
+  if (/fenc|gate|railing|balustrade/.test(s)) return "garden fence wood panel new fence";
+  // Windows / doors
+  if (/window|door|glazing|conservatory/.test(s)) return "window installation double glazing home";
+  // Painting / decorating
+  if (/paint|decorat|plaster|render/.test(s)) return "interior painting decorator wall paint";
+  // Landscaping
+  if (/landscap|garden|turf|lawn|grass|plant|hedge/.test(s)) return "landscaping garden design lawn";
+  // Electrical
+  if (/electr|wiring|fuse|solar|ev charger|smart/.test(s)) return "electrician wiring electrical panel home";
+  // Plumbing
+  if (/plumb|boiler|radiator|heating|pipe/.test(s)) return "plumber boiler installation heating home";
+  // HVAC / air con
+  if (/hvac|air con|heat pump|ventilat/.test(s)) return "hvac air conditioning unit installation";
+  // Extension / building
+  if (/extension|conversion|loft|build/.test(s)) return "house extension building construction";
+  // Carpentry / joinery
+  if (/carpent|joineri|stair|shed|garage/.test(s)) return "carpentry joinery wood work craftsman";
+  // Driveway / masonry
+  if (/drive|block pav|mason|concrete|paving|pathway/.test(s)) return "block paving driveway new stone path";
+  // Default: just use the service name
+  return serviceName;
+}
+
 function parseServicesInput(raw: string): string[] {
   if (!raw || raw.trim() === "—") return [];
   return raw
@@ -131,15 +168,15 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
     if (pexelsKey && Array.isArray(copy.serviceDetails)) {
       for (const detail of copy.serviceDetails) {
         try {
-          // Use just the service title for the most relevant result
-          const query = encodeURIComponent(detail.title);
+          // Map common service names to better Pexels search terms
+          const serviceQuery = getPexelsQuery(detail.title);
+          const query = encodeURIComponent(serviceQuery);
           const pRes = await fetch(
             `https://api.pexels.com/v1/search?query=${query}&per_page=3&orientation=landscape`,
             { headers: { Authorization: pexelsKey } }
           );
           if (pRes.ok) {
             const pData = await pRes.json();
-            // Prefer medium-sized photos — more universally accessible than large2x
             const photo = pData.photos?.[0];
             const photoUrl = photo?.src?.large || photo?.src?.medium;
             if (photoUrl) (detail as Record<string, unknown>).photo = photoUrl;
