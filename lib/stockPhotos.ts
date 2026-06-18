@@ -13,9 +13,7 @@ function img(base: string, width: number) {
   return `${base}?auto=format&fit=crop&w=${width}&q=70`;
 }
 
-// base = full URL up to (but not including) the query string. Some Unsplash
-// photos live on images.unsplash.com, others (premium) on plus.unsplash.com —
-// so we store the full base, not just an ID.
+// base = full URL up to (but not including) the query string.
 const sets: Record<string, { hero: string; gallery: string[] }> = {
   plumbing: {
     hero: "https://images.unsplash.com/photo-1676210134188-4c05dd172f89",
@@ -97,6 +95,47 @@ const sets: Record<string, { hero: string; gallery: string[] }> = {
       "https://images.unsplash.com/photo-1581783898377-1c85bf937427",
     ],
   },
+  // Dedicated sets for specific services
+  flooring: {
+    hero: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64",
+    gallery: [
+      "https://images.unsplash.com/photo-1615873968403-89e068629265",
+      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7",
+      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc",
+    ],
+  },
+  decking: {
+    hero: "https://images.unsplash.com/photo-1600210492493-0946911123ea",
+    gallery: [
+      "https://images.unsplash.com/photo-1591088398332-8a7791972843",
+      "https://images.unsplash.com/photo-1572120360610-d971b9d7767c",
+      "https://images.unsplash.com/photo-1598902108854-10e335adac99",
+    ],
+  },
+  kitchen: {
+    hero: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136",
+    gallery: [
+      "https://images.unsplash.com/photo-1556909172-54557c7e4fb7",
+      "https://images.unsplash.com/photo-1556909045-bf6def6afd43",
+      "https://images.unsplash.com/photo-1556909078-59fe292e5bb3",
+    ],
+  },
+  bathroom: {
+    hero: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14",
+    gallery: [
+      "https://images.unsplash.com/photo-1507089947368-19c1da9775ae",
+      "https://images.unsplash.com/photo-1620626011761-996317702149",
+      "https://images.unsplash.com/photo-1564540574859-0dfb63985953",
+    ],
+  },
+  windows: {
+    hero: "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6",
+    gallery: [
+      "https://images.unsplash.com/photo-1560185127-6a7e1e2b0d61",
+      "https://images.unsplash.com/photo-1524758631624-e2822e304c36",
+      "https://images.unsplash.com/photo-1516455590571-18256e5bb9ff",
+    ],
+  },
 };
 
 const keywordMap: { keywords: string[]; key: keyof typeof sets }[] = [
@@ -127,25 +166,72 @@ export function getPhotosForTrade(trade: string): PhotoSet {
   };
 }
 
-// Maps a specific service name (e.g. "New roof", "Decks & patios", "Doors & windows")
-// to a photo that actually matches that service — not just the business's general trade.
-// Checked in order, so more specific categories (e.g. decks) come before broader
-// ones (e.g. landscaping) that share keywords like "tree"/"træ".
+// Maps a specific service name (e.g. "Flooring", "Decking", "Kitchen Renovation")
+// to a photo that actually matches that service.
+// Order matters: more specific entries first so they don't get swallowed by broader ones.
 const serviceCategories: { keywords: string[]; images: string[] }[] = [
-  { keywords: ["roof", "shingle", "gutter", "tag"], images: [sets.roofing.hero, ...sets.roofing.gallery] },
-  { keywords: ["deck", "patio", "terrasse", "pergola", "fence", "hegn"], images: [sets.carpentry.gallery[0], sets.carpentry.gallery[2], sets.landscaping.gallery[0]] },
-  { keywords: ["door", "window", "dør", "vindue", "glas"], images: [sets.carpentry.hero, sets.general.gallery[0], sets.carpentry.gallery[1]] },
-  { keywords: ["addition", "extension", "renovat", "remodel", "tilbygning", "ombygning", "udvidelse"], images: [sets.masonry.hero, ...sets.masonry.gallery] },
-  { keywords: ["kitchen", "køkken", "cabinet"], images: [sets.carpentry.hero, sets.carpentry.gallery[1], sets.carpentry.gallery[2]] },
-  { keywords: ["bathroom", "bad"], images: [sets.plumbing.hero, ...sets.plumbing.gallery] },
-  { keywords: ["floor", "gulv"], images: [sets.carpentry.gallery[2], sets.carpentry.hero] },
-  { keywords: ["paint", "maler", "drywall"], images: [sets.painting.hero, ...sets.painting.gallery] },
-  { keywords: ["concrete", "beton", "driveway", "indkørsel", "paving", "stone", "sten"], images: [sets.masonry.hero, ...sets.masonry.gallery] },
-  { keywords: ["plumb", "vvs", "pipe", "drain", "water heater"], images: [sets.plumbing.hero, ...sets.plumbing.gallery] },
-  { keywords: ["electric", "wiring", "panel", "el-arbejde", "strøm"], images: [sets.electrical.hero, ...sets.electrical.gallery] },
-  { keywords: ["hvac", "heating", "varme", "cooling", "air condition", "furnace", "ventilation"], images: [sets.hvac.hero, ...sets.hvac.gallery] },
-  { keywords: ["clean", "rengøring", "janitor"], images: [sets.cleaning.hero, ...sets.cleaning.gallery] },
-  { keywords: ["landscap", "garden", "have", "lawn", "tree", "træ"], images: [sets.landscaping.hero, ...sets.landscaping.gallery] },
+  // Specific rooms / finishes
+  {
+    keywords: ["kitchen", "køkken", "cabinet", "worktop", "benchtop"],
+    images: [sets.kitchen.hero, ...sets.kitchen.gallery],
+  },
+  {
+    keywords: ["bathroom", "bad", "bath", "shower", "toilet", "vanity"],
+    images: [sets.bathroom.hero, ...sets.bathroom.gallery],
+  },
+  {
+    keywords: ["floor", "flooring", "gulv", "hardwood", "laminate", "tile", "tiling", "vinyl"],
+    images: [sets.flooring.hero, ...sets.flooring.gallery],
+  },
+  {
+    keywords: ["deck", "decking", "patio", "terrasse", "pergola", "outdoor living", "veranda"],
+    images: [sets.decking.hero, ...sets.decking.gallery],
+  },
+  {
+    keywords: ["window", "vindue", "door", "dør", "glas", "glazing", "skylight"],
+    images: [sets.windows.hero, ...sets.windows.gallery],
+  },
+  {
+    keywords: ["fence", "hegn", "gate", "railing", "balustrade"],
+    images: [sets.decking.gallery[0], sets.decking.gallery[1], sets.landscaping.hero],
+  },
+  // Trade categories
+  {
+    keywords: ["roof", "shingle", "gutter", "tag", "takdækning"],
+    images: [sets.roofing.hero, ...sets.roofing.gallery],
+  },
+  {
+    keywords: ["paint", "maler", "drywall", "plaster"],
+    images: [sets.painting.hero, ...sets.painting.gallery],
+  },
+  {
+    keywords: ["concrete", "beton", "driveway", "indkørsel", "paving", "stone", "sten", "brick", "mason"],
+    images: [sets.masonry.hero, ...sets.masonry.gallery],
+  },
+  {
+    keywords: ["plumb", "vvs", "pipe", "drain", "water heater"],
+    images: [sets.plumbing.hero, ...sets.plumbing.gallery],
+  },
+  {
+    keywords: ["electric", "wiring", "panel", "el-arbejde", "strøm"],
+    images: [sets.electrical.hero, ...sets.electrical.gallery],
+  },
+  {
+    keywords: ["hvac", "heating", "varme", "cooling", "air condition", "furnace", "ventilation"],
+    images: [sets.hvac.hero, ...sets.hvac.gallery],
+  },
+  {
+    keywords: ["clean", "rengøring", "janitor", "pressure wash"],
+    images: [sets.cleaning.hero, ...sets.cleaning.gallery],
+  },
+  {
+    keywords: ["landscap", "garden", "have", "lawn", "mow", "tree", "træ", "hedge"],
+    images: [sets.landscaping.hero, ...sets.landscaping.gallery],
+  },
+  {
+    keywords: ["addition", "extension", "renovat", "remodel", "tilbygning", "ombygning", "framing", "carpen"],
+    images: [sets.carpentry.hero, ...sets.carpentry.gallery],
+  },
 ];
 
 export function getPhotoForService(serviceName: string, trade: string, index: number): string {
