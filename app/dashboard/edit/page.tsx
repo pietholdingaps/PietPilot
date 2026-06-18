@@ -443,8 +443,7 @@ function EditSiteInner() {
             </Section>
 
             {/* 8. DESIGN */}
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden p-6">
-              <h2 className="text-base font-bold text-white mb-1">🎨 Website design</h2>
+            <Section title="Website design" emoji="🎨">
               <p className="text-white/40 text-sm mb-6">Switch the look and feel of your website. You can change this at any time.</p>
               <div className="grid sm:grid-cols-3 gap-4">
                 {[
@@ -486,7 +485,7 @@ function EditSiteInner() {
                   </button>
                 ))}
               </div>
-            </div>
+            </Section>
 
             {/* SAVE */}
             <div className="flex items-center gap-4 pt-2">
