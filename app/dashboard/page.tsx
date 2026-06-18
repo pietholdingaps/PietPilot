@@ -39,6 +39,8 @@ function DashboardInner() {
   const [site, setSite] = useState<SiteInfo | null>(null);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
+  const [regenerating, setRegenerating] = useState(false);
+  const [regenDone, setRegenDone] = useState(false);
 
   useEffect(() => {
     const fromUrl = searchParams.get("site");
@@ -63,6 +65,22 @@ function DashboardInner() {
       })
       .finally(() => setLoading(false));
   }, [siteId]);
+
+  async function handleRegenerate() {
+    if (!siteId || regenerating) return;
+    setRegenerating(true);
+    setRegenDone(false);
+    try {
+      await fetch("/api/generate-site", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: siteId }),
+      });
+      setRegenDone(true);
+    } finally {
+      setRegenerating(false);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#0b1220] text-[#eef1f6] px-6 py-12">
@@ -142,6 +160,35 @@ function DashboardInner() {
                   Google Ads & lead-follow-up coming soon as add-ons.
                 </p>
               </div>
+            </div>
+
+            {/* REGENERATE */}
+            <div className="card rounded-2xl p-7 mb-10">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-3">AI Content</div>
+                  <h3 className="text-lg font-bold text-white mb-1">Regenerate your website</h3>
+                  <p className="text-white/45 text-sm leading-relaxed">
+                    Re-runs the AI using your original answers — useful if you want to refresh the text or apply the latest improvements.
+                  </p>
+                </div>
+                <button
+                  onClick={handleRegenerate}
+                  disabled={regenerating}
+                  className="flex-none bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-sm font-bold px-5 py-2.5 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {regenerating ? "Regenerating…" : regenDone ? "Done — refresh your site ✓" : "Regenerate ↺"}
+                </button>
+              </div>
+              {regenDone && (
+                <p className="mt-4 text-emerald-400 text-sm font-semibold">
+                  Website updated!{" "}
+                  <a href={`/site/${site.id}`} target="_blank" rel="noopener noreferrer" className="underline">
+                    Open your site ↗
+                  </a>{" "}
+                  to see the new content.
+                </p>
+              )}
             </div>
 
             {/* LEADS */}

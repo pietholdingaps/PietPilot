@@ -146,6 +146,19 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
     if (copy && parsedServices.length > 0) {
       copy.services = parsedServices;
       copy.allServices = parsedServices;
+
+      // Also fix serviceDetails so titles/slugs match the real services
+      const existingDetails = Array.isArray(copy.serviceDetails) ? copy.serviceDetails : [];
+      copy.serviceDetails = parsedServices.map((serviceName, i) => {
+        const existing = existingDetails[i];
+        const slug = serviceName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+        return {
+          title: serviceName,
+          slug,
+          description: existing?.description || `${businessName || "We"} provide professional ${serviceName.toLowerCase()} services across ${area || "the local area"}.`,
+          faqs: existing?.faqs || [],
+        };
+      });
     }
 
     return NextResponse.json({ copy: copy || fallbackCopy(businessName, trade, area, licenseNumber) });
