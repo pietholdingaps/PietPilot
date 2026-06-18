@@ -1,8 +1,7 @@
-// Trade-relevant photos. These are hand-picked, manually verified Unsplash
-// photos — each one was downloaded and visually checked to make sure it
-// actually shows the right trade in action (no more random/identical/unrelated
-// stock photos like the old LoremFlickr-based version produced), and each URL
-// was checked to actually return HTTP 200 (some earlier picks were broken).
+// Trade-relevant photos. Hand-picked Unsplash photos verified to show
+// the correct trade/service. Photo sets cover the most common service
+// categories — keyword matching is intentionally broad so any service
+// a tradesperson might type lands on the right image.
 
 type PhotoSet = {
   hero: string;
@@ -13,7 +12,6 @@ function img(base: string, width: number) {
   return `${base}?auto=format&fit=crop&w=${width}&q=70`;
 }
 
-// base = full URL up to (but not including) the query string.
 const sets: Record<string, { hero: string; gallery: string[] }> = {
   plumbing: {
     hero: "https://images.unsplash.com/photo-1676210134188-4c05dd172f89",
@@ -95,7 +93,6 @@ const sets: Record<string, { hero: string; gallery: string[] }> = {
       "https://images.unsplash.com/photo-1581783898377-1c85bf937427",
     ],
   },
-  // Dedicated sets for specific services
   flooring: {
     hero: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64",
     gallery: [
@@ -138,21 +135,28 @@ const sets: Record<string, { hero: string; gallery: string[] }> = {
   },
 };
 
-const keywordMap: { keywords: string[]; key: keyof typeof sets }[] = [
-  { keywords: ["plumb", "drain", "pipe", "water heater"], key: "plumbing" },
-  { keywords: ["electric", "wiring", "wire", "panel"], key: "electrical" },
-  { keywords: ["hvac", "heating", "cooling", "air condition", "furnace", "ac "], key: "hvac" },
-  { keywords: ["roof", "shingle", "gutter"], key: "roofing" },
-  { keywords: ["paint", "drywall"], key: "painting" },
-  { keywords: ["carpen", "wood", "framing", "cabinet"], key: "carpentry" },
-  { keywords: ["mason", "brick", "concrete", "stone", "paving"], key: "masonry" },
-  { keywords: ["landscap", "lawn", "garden", "tree"], key: "landscaping" },
-  { keywords: ["clean", "janitor"], key: "cleaning" },
+// ---------------------------------------------------------------------------
+// For the hero/gallery on the main site page (matched to trade, not service)
+// ---------------------------------------------------------------------------
+
+const tradeKeywordMap: { keywords: string[]; key: keyof typeof sets }[] = [
+  { keywords: ["plumb", "drain", "pipe", "water heater", "vvs"], key: "plumbing" },
+  { keywords: ["electric", "wiring", "wire", "panel", "electrician"], key: "electrical" },
+  { keywords: ["hvac", "heating", "cooling", "air condition", "furnace"], key: "hvac" },
+  { keywords: ["roof", "shingle", "gutter", "roofer", "tagdækker"], key: "roofing" },
+  { keywords: ["paint", "drywall", "decorator", "maler"], key: "painting" },
+  { keywords: ["carpen", "joiner", "timber", "framing", "tømrer"], key: "carpentry" },
+  { keywords: ["mason", "brick", "concrete", "stone", "paving", "murermester"], key: "masonry" },
+  { keywords: ["landscap", "lawn", "garden", "tree", "turf"], key: "landscaping" },
+  { keywords: ["clean", "janitor", "pressure wash"], key: "cleaning" },
+  { keywords: ["floor", "tiling", "tile"], key: "flooring" },
+  { keywords: ["kitchen", "cabinet", "køkken"], key: "kitchen" },
+  { keywords: ["bathroom", "bath", "bad"], key: "bathroom" },
 ];
 
 function setForTrade(trade: string) {
   const t = (trade || "").toLowerCase();
-  for (const { keywords, key } of keywordMap) {
+  for (const { keywords, key } of tradeKeywordMap) {
     if (keywords.some((k) => t.includes(k))) return sets[key];
   }
   return sets.general;
@@ -166,83 +170,178 @@ export function getPhotosForTrade(trade: string): PhotoSet {
   };
 }
 
-// Maps a specific service name (e.g. "Flooring", "Decking", "Kitchen Renovation")
-// to a photo that actually matches that service.
-// Order matters: more specific entries first so they don't get swallowed by broader ones.
-const serviceCategories: { keywords: string[]; images: string[] }[] = [
-  // Specific rooms / finishes
+// ---------------------------------------------------------------------------
+// Per-service photo matching
+// Each entry has: a list of keywords (matched against the service name),
+// and the photo set key to use. Listed most-specific first.
+// The more keywords you add here, the better it works for real customer input.
+// ---------------------------------------------------------------------------
+
+const servicePhotoMap: { keywords: string[]; key: keyof typeof sets }[] = [
+  // Kitchen
   {
-    keywords: ["kitchen", "køkken", "cabinet", "worktop", "benchtop"],
-    images: [sets.kitchen.hero, ...sets.kitchen.gallery],
+    keywords: [
+      "kitchen", "køkken", "cabinet", "cupboard", "worktop", "benchtop",
+      "kitchenette", "galley", "countertop",
+    ],
+    key: "kitchen",
   },
+  // Bathroom
   {
-    keywords: ["bathroom", "bad", "bath", "shower", "toilet", "vanity"],
-    images: [sets.bathroom.hero, ...sets.bathroom.gallery],
+    keywords: [
+      "bathroom", "bad", "bath", "shower", "badeværelse", "toilet", "vanity",
+      "wet room", "en suite", "ensuite", "powder room", "washroom",
+    ],
+    key: "bathroom",
   },
+  // Flooring — covers every floor material/type
   {
-    keywords: ["floor", "flooring", "gulv", "hardwood", "laminate", "tile", "tiling", "vinyl"],
-    images: [sets.flooring.hero, ...sets.flooring.gallery],
+    keywords: [
+      "floor", "flooring", "gulv", "hardwood", "laminate", "tile", "tiling",
+      "vinyl", "lvt", "lvp", "carpet", "carpeting", "screed", "subfloor",
+      "parquet", "engineered wood", "engineered floor", "ceramic", "porcelain",
+      "stone floor", "slate", "linoleum", "lino", "underlay",
+    ],
+    key: "flooring",
   },
+  // Decking / outdoor living
   {
-    keywords: ["deck", "decking", "patio", "terrasse", "pergola", "outdoor living", "veranda"],
-    images: [sets.decking.hero, ...sets.decking.gallery],
+    keywords: [
+      "deck", "decking", "patio", "terrasse", "pergola", "outdoor living",
+      "veranda", "balcony", "altan", "gazebo", "summerhouse", "outdoor room",
+      "outdoor entertainment", "bbq area", "pool deck",
+    ],
+    key: "decking",
   },
+  // Fencing — use decking photos (outdoor context)
   {
-    keywords: ["window", "vindue", "door", "dør", "glas", "glazing", "skylight"],
-    images: [sets.windows.hero, ...sets.windows.gallery],
+    keywords: [
+      "fence", "fencing", "hegn", "gate", "railing", "balustrade",
+      "picket", "timber fence", "colorbond", "pool fence", "privacy screen",
+    ],
+    key: "decking",
   },
+  // Windows & doors
   {
-    keywords: ["fence", "hegn", "gate", "railing", "balustrade"],
-    images: [sets.decking.gallery[0], sets.decking.gallery[1], sets.landscaping.hero],
+    keywords: [
+      "window", "vindue", "door", "dør", "glas", "glazing", "skylight",
+      "double glaz", "triple glaz", "bifold", "sliding door", "french door",
+      "upvc", "aluminium window", "sash window", "velux", "roof window",
+      "security door", "fly screen", "screen door",
+    ],
+    key: "windows",
   },
-  // Trade categories
+  // Roofing — covers everything roof-related
   {
-    keywords: ["roof", "shingle", "gutter", "tag", "takdækning"],
-    images: [sets.roofing.hero, ...sets.roofing.gallery],
+    keywords: [
+      "roof", "roofing", "shingle", "gutter", "tag", "tagdæk",
+      "flat roof", "pitched roof", "metal roof", "fascia", "soffit",
+      "chimney", "flashing", "ridge", "eaves", "downpipe", "downspout",
+      "re-roof", "reroof", "new roof", "roof repair", "roof replacement",
+      "colorbond roof", "tile roof", "slate roof", "tin roof",
+    ],
+    key: "roofing",
   },
+  // Painting & decorating
   {
-    keywords: ["paint", "maler", "drywall", "plaster"],
-    images: [sets.painting.hero, ...sets.painting.gallery],
+    keywords: [
+      "paint", "painting", "maler", "drywall", "plaster", "plastering",
+      "decorator", "decorating", "wallpaper", "render", "rendering",
+      "cornice", "skimming", "interior paint", "exterior paint",
+      "feature wall", "colour consult",
+    ],
+    key: "painting",
   },
+  // Masonry / hard surfaces
   {
-    keywords: ["concrete", "beton", "driveway", "indkørsel", "paving", "stone", "sten", "brick", "mason"],
-    images: [sets.masonry.hero, ...sets.masonry.gallery],
+    keywords: [
+      "concrete", "beton", "driveway", "indkørsel", "paving", "pave",
+      "stone", "sten", "brick", "brickwork", "mason", "retaining wall",
+      "garden wall", "path", "pathway", "footpath", "walkway",
+      "kerbing", "exposed aggregate", "stamped concrete", "cobblestone",
+      "bluestone", "sandstone", "limestone",
+    ],
+    key: "masonry",
   },
+  // Plumbing — everything water/gas
   {
-    keywords: ["plumb", "vvs", "pipe", "drain", "water heater"],
-    images: [sets.plumbing.hero, ...sets.plumbing.gallery],
+    keywords: [
+      "plumb", "vvs", "pipe", "piping", "drain", "drainage", "sewer",
+      "water heater", "hot water", "boiler", "radiator", "underfloor heat",
+      "leak", "tap", "faucet", "toilet install", "basin", "sink install",
+      "gas fit", "gas line", "irrigation pipe", "stormwater",
+    ],
+    key: "plumbing",
   },
+  // Electrical
   {
-    keywords: ["electric", "wiring", "panel", "el-arbejde", "strøm"],
-    images: [sets.electrical.hero, ...sets.electrical.gallery],
+    keywords: [
+      "electric", "electrical", "wiring", "rewiring", "panel", "switchboard",
+      "el-arbejde", "strøm", "lighting", "light install", "power point",
+      "outlet", "socket", "circuit", "fuse", "solar panel", "ev charger",
+      "data cable", "home automation", "smart home", "ceiling fan",
+      "exhaust fan", "downlight", "led install",
+    ],
+    key: "electrical",
   },
+  // HVAC / climate control
   {
-    keywords: ["hvac", "heating", "varme", "cooling", "air condition", "furnace", "ventilation"],
-    images: [sets.hvac.hero, ...sets.hvac.gallery],
+    keywords: [
+      "hvac", "heating", "varme", "cooling", "air condition", "aircon",
+      "furnace", "ventilation", "heat pump", "ducted", "split system",
+      "reverse cycle", "evaporative", "ducting", "vent", "thermostat",
+      "boiler service", "radiator install",
+    ],
+    key: "hvac",
   },
+  // Cleaning / pressure washing
   {
-    keywords: ["clean", "rengøring", "janitor", "pressure wash"],
-    images: [sets.cleaning.hero, ...sets.cleaning.gallery],
+    keywords: [
+      "clean", "cleaning", "rengøring", "janitor", "pressure wash",
+      "high pressure", "soft wash", "window clean", "gutter clean",
+      "end of lease", "bond clean", "carpet clean", "tile clean",
+      "roof clean", "driveway clean",
+    ],
+    key: "cleaning",
   },
+  // Landscaping / garden
   {
-    keywords: ["landscap", "garden", "have", "lawn", "mow", "tree", "træ", "hedge"],
-    images: [sets.landscaping.hero, ...sets.landscaping.gallery],
+    keywords: [
+      "landscap", "landscape", "garden", "have", "lawn", "mow", "mowing",
+      "turf", "grass", "artificial grass", "tree", "træ", "hedge",
+      "trimming", "pruning", "mulch", "soil", "planting", "irrigation",
+      "sprinkler", "retaining", "garden design", "outdoor design",
+      "lawn care", "weed",
+    ],
+    key: "landscaping",
   },
+  // Carpentry / structural / general building
   {
-    keywords: ["addition", "extension", "renovat", "remodel", "tilbygning", "ombygning", "framing", "carpen"],
-    images: [sets.carpentry.hero, ...sets.carpentry.gallery],
+    keywords: [
+      "carpen", "carpentry", "joiner", "joinery", "timber", "framing",
+      "tømrer", "stair", "staircase", "skirting", "architrave", "trim",
+      "loft conversion", "attic", "extension", "addition", "new build",
+      "structural", "renovation", "remodel", "fit-out", "fitout",
+      "formwork", "pergola build", "shed", "garage", "granny flat",
+    ],
+    key: "carpentry",
   },
 ];
 
 export function getPhotoForService(serviceName: string, trade: string, index: number): string {
   const s = (serviceName || "").toLowerCase();
-  for (const cat of serviceCategories) {
-    if (cat.keywords.some((k) => s.includes(k))) {
-      return img(cat.images[index % cat.images.length], 800);
+
+  for (const { keywords, key } of servicePhotoMap) {
+    if (keywords.some((k) => s.includes(k))) {
+      const set = sets[key];
+      const all = [set.hero, ...set.gallery];
+      return img(all[index % all.length], 800);
     }
   }
-  // No specific match — fall back to the business's general trade photos.
+
+  // No keyword match — use the business's trade photos so it's at least
+  // relevant to the trade, not a completely random image.
   const tradeSet = setForTrade(trade);
-  const allImages = [tradeSet.hero, ...tradeSet.gallery];
-  return img(allImages[index % allImages.length], 800);
+  const all = [tradeSet.hero, ...tradeSet.gallery];
+  return img(all[index % all.length], 800);
 }
