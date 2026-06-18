@@ -83,7 +83,7 @@ export default function ServicesCarousel({ items, theme }: { items: ServiceCardI
   }
 
   // Shared classes for every flex item (whether <a> or <div>)
-  const itemClass = "relative flex-none w-[260px] sm:w-[300px] aspect-[3/4] rounded-2xl overflow-hidden snap-start group";
+  const itemClass = "relative flex-none w-[72vw] sm:w-[45vw] md:w-[calc(25%-15px)] aspect-[3/4] rounded-2xl overflow-hidden snap-start group";
 
   return (
     <div className="relative">
