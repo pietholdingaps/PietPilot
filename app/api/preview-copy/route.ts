@@ -121,6 +121,7 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
   "guaranteeLine": "a trust line — include license/insurance number if provided",
   "whyChooseUs": { "title": "Why choose [Business Name]?", "points": ["3 short punchy points taken DIRECTLY from what the owner wrote under 'Why customers should choose them' — these must be their actual reasons, not invented ones"] },
   "process": [{ "title": "2-4 word step title", "description": "one sentence" }, ...4 steps total],
+  "stats": "an array of 3-4 objects shown as trust badges under the hero — extract from what the owner told us. Examples: years of experience ('8+' / 'Years Experience'), projects completed ('500+' / 'Projects Completed'), service radius ('50km' / 'Service Radius'), response time ('Same day' / 'Response Time'). Only include stats you can actually infer from their answers — do not invent numbers not mentioned.",
   "serviceDetails": "one object per service in the 'services' array, same order — each with: 'title' (same as service name), 'slug' (lowercase hyphenated URL slug), 'description' (3-4 sentence SEO paragraph mentioning the specific service, the business name, the area, and what the customer gets — make each one unique and specific), 'faqs' (3 FAQ objects — questions must be specific to THIS service, not copy-pasted generics — vary them across services)"
 }`;
 
@@ -141,15 +142,10 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
       copy = match ? JSON.parse(match[0]) : null;
     }
 
-    // Safety net: if AI returned generic services despite instructions, override with parsed input
+    // Always enforce the owner's own services — never let AI substitute or invent
     if (copy && parsedServices.length > 0) {
-      const genericNames = ["repairs & maintenance", "new installations", "inspections", "emergency call-outs", "free estimates", "maintenance plans", "upgrades & replacements", "routine servicing"];
-      const aiServices = copy.services || [];
-      const genericCount = aiServices.filter((s) => genericNames.includes(s.toLowerCase())).length;
-      if (genericCount > aiServices.length / 2) {
-        copy.services = parsedServices;
-        copy.allServices = parsedServices;
-      }
+      copy.services = parsedServices;
+      copy.allServices = parsedServices;
     }
 
     return NextResponse.json({ copy: copy || fallbackCopy(businessName, trade, area, licenseNumber) });

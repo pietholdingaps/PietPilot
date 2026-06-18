@@ -11,6 +11,7 @@ export type GeneratedSiteCopy = {
   guaranteeLine: string;
   whyChooseUs: { title: string; points: string[] };
   process: { title: string; description: string }[];
+  stats?: { value: string; label: string }[];
   serviceDetails: {
     title: string;
     slug: string;
