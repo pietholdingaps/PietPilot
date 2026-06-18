@@ -62,7 +62,7 @@ const questions = [
   { key: "hours", label: "What are your opening hours?", placeholder: "e.g. Mon–Fri 7am–6pm, Sat 8am–2pm", type: "text" },
   { key: "services", label: "What services do you offer?", placeholder: "List as many as you'd like — e.g. drain cleaning, water heater repair, bathroom remodels...", type: "textarea" },
   { key: "about", label: "Tell us about you and your business — the more you write, the better your site will be", placeholder: "How long have you been in business? How many jobs have you done? What makes you different? What do customers say about you? What do you care about on the job?", type: "textarea" },
-  { key: "whyChooseUs", label: "Why should customers choose you over the competition?", placeholder: "e.g. fast response times, fair prices, years of experience, guarantees, certifications, customer reviews...", type: "textarea" },
+  { key: "whyChooseUs", label: "Why should customers choose you over the competition?", placeholder: "e.g. fast response times, fair prices, years of experience, guarantees, certifications...", type: "textarea" },
   { key: "reviews", label: "Got reviews from happy customers? Add them here", placeholder: "Optional — paste a review and add who it's from. You can add as many as you like.", type: "reviews" },
   { key: "logo", label: "Do you have a logo you'd like to use?", placeholder: "Optional — upload an image, or skip and we'll use your business name as text", type: "logo" },
   { key: "photos", label: "Got photos of your own work?", placeholder: "Optional — upload a few (decks, roofs, kitchens, etc.) and we'll show them on your site instead of stock photos", type: "file" },
