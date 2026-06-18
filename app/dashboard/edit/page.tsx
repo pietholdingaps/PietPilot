@@ -245,7 +245,7 @@ function EditSiteInner() {
           <form onSubmit={handleSave} className="flex flex-col gap-3">
 
             {/* 1. BUSINESS INFO */}
-            <Section title="Business info" emoji="🏢" defaultOpen>
+            <Section title="Business info" emoji="🏢" defaultOpen active={!!(businessName || phone || email)}>
               <Field label="Business name" value={businessName} onChange={setBusinessName} />
               <Field label="Phone" value={phone} onChange={setPhone} />
               <Field label="Contact email" value={email} onChange={setEmail} />
@@ -272,7 +272,7 @@ function EditSiteInner() {
             </Section>
 
             {/* 2. HERO */}
-            <Section title="Hero section" emoji="🖼️">
+            <Section title="Hero section" emoji="🖼️" active={!!(headline || subheadline)}>
               <Field label="Main headline" value={headline} onChange={setHeadline} />
               <Field label="Subheadline" value={subheadline} onChange={setSubheadline} />
               <div>
@@ -296,7 +296,7 @@ function EditSiteInner() {
             </Section>
 
             {/* 3. SERVICES */}
-            <Section title="Services" emoji="🛠️">
+            <Section title="Services" emoji="🛠️" active={services.length > 0}>
               <p className="text-white/45 text-sm">Add or remove the services you offer. Each service gets its own page and image.</p>
               <div className="flex flex-wrap gap-2 min-h-[40px]">
                 {services.map((s) => (
@@ -360,7 +360,7 @@ function EditSiteInner() {
             </Section>
 
             {/* 4. ABOUT */}
-            <Section title="About your business" emoji="📖">
+            <Section title="About your business" emoji="📖" active={!!(about || whyPoints.some(p => p.trim()))}>
               <Field label="About us text" value={about} onChange={setAbout} textarea />
               <div>
                 <p className="text-sm font-semibold text-white/70 mb-3">Why customers choose you (3 reasons)</p>
@@ -373,7 +373,7 @@ function EditSiteInner() {
             </Section>
 
             {/* 5. REVIEWS */}
-            <Section title="Customer reviews" emoji="💬">
+            <Section title="Customer reviews" emoji="💬" active={reviews.filter(r => r.text.trim()).length > 0}>
               <div className="flex flex-col gap-4">
                 {reviews.map((r, i) => (
                   <div key={i} className="border border-white/[0.06] rounded-xl p-4 flex flex-col gap-3">
@@ -394,7 +394,7 @@ function EditSiteInner() {
             </Section>
 
             {/* 6. ABOUT ME */}
-            <Section title="About you (owner)" emoji="👤">
+            <Section title="About you (owner)" emoji="👤" active={!!(ownerName || ownerBio)}>
               <p className="text-white/45 text-sm">Leave blank to hide this section from your website.</p>
               <Field label="Your name" value={ownerName} onChange={setOwnerName} />
               <Field label="A bit about yourself" value={ownerBio} onChange={setOwnerBio} textarea />
@@ -419,7 +419,7 @@ function EditSiteInner() {
             </Section>
 
             {/* 7. PROJECT PHOTOS */}
-            <Section title="Project photos" emoji="📸">
+            <Section title="Project photos" emoji="📸" active={projectPhotos.length > 0}>
               <p className="text-white/45 text-sm">Upload photos of your work. They appear in an &quot;Our Work&quot; gallery on your website.</p>
               <div className="flex flex-wrap gap-3">
                 {projectPhotos.map((url) => (
@@ -443,7 +443,7 @@ function EditSiteInner() {
             </Section>
 
             {/* 8. DESIGN */}
-            <Section title="Website design" emoji="🎨">
+            <Section title="Website design" emoji="🎨" active={true}>
               <p className="text-white/40 text-sm mb-6">Switch the look and feel of your website. You can change this at any time.</p>
               <div className="grid sm:grid-cols-3 gap-4">
                 {[
@@ -513,10 +513,11 @@ function EditSiteInner() {
 }
 
 // Accordion section
-function Section({ title, emoji, defaultOpen, children }: {
+function Section({ title, emoji, defaultOpen, active, children }: {
   title: string;
   emoji: string;
   defaultOpen?: boolean;
+  active?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -525,6 +526,16 @@ function Section({ title, emoji, defaultOpen, children }: {
         <div className="flex items-center gap-3">
           <span className="text-lg">{emoji}</span>
           <span className="font-bold text-white text-sm">{title}</span>
+          {active === true && (
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400">
+              Active
+            </span>
+          )}
+          {active === false && (
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/[0.06] text-white/30">
+              Not set up
+            </span>
+          )}
         </div>
         <span className="text-white/35 text-xs transition-transform duration-200 group-open:rotate-180">▾</span>
       </summary>
