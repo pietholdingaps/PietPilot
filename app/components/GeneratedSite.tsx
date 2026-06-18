@@ -103,7 +103,7 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
       <section className="relative">
         <div
           className="relative min-h-[620px] bg-cover bg-center flex items-end"
-          style={{ backgroundImage: `url(${photos.hero})` }}
+          style={{ backgroundImage: `url(${data.customImages?.hero || photos.hero})` }}
         >
           <div className="absolute inset-0" style={{ background: theme.heroOverlay }} />
           <div className="relative max-w-6xl mx-auto px-6 w-full pb-20 pt-32">
@@ -243,10 +243,12 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
             theme={theme}
             items={servicesGrid.map((s, i) => {
               const detail = copy.serviceDetails?.[i];
+              const slug = s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+              const customImg = data.customImages?.services?.[slug];
               return {
                 title: s,
                 description: detail?.description || "Done right, on time, every time.",
-                image: getPhotoForService(s, data.trade, i),
+                image: customImg || (detail as { photo?: string } | undefined)?.photo || getPhotoForService(s, data.trade, i),
                 href: detail?.slug ? `/site/${data.id}/services/${detail.slug}` : undefined,
               };
             })}

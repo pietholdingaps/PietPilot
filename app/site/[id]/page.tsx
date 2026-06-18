@@ -92,6 +92,7 @@ export default async function GeneratedSitePage({ params }: { params: Promise<{ 
         ownerName: submission.owner_name || "",
         ownerBio: submission.owner_bio || "",
         ownerPhotoUrl: submission.owner_photo_url || "",
+        customImages: submission.custom_images || undefined,
       }}
     />
   );

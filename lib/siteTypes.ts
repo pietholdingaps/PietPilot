@@ -40,4 +40,8 @@ export type SiteData = {
   ownerName?: string;
   ownerBio?: string;
   ownerPhotoUrl?: string;
+  customImages?: {
+    hero?: string;
+    services?: Record<string, string>; // keyed by service slug
+  };
 };

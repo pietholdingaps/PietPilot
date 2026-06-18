@@ -2,6 +2,28 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { GeneratedSiteCopy } from "@/lib/siteTypes";
 
+function rebuildServiceDetails(
+  newServices: string[],
+  currentCopy: GeneratedSiteCopy,
+  businessName: string,
+  area: string
+) {
+  return newServices.map((title) => {
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    const existing = (currentCopy.serviceDetails || []).find(
+      (d) => d.title.toLowerCase() === title.toLowerCase() || d.slug === slug
+    );
+    return existing
+      ? { ...existing, title, slug }
+      : {
+          title,
+          slug,
+          description: `${businessName || "We"} provide professional ${title.toLowerCase()} services across ${area || "the local area"}. Contact us today for a free, no-obligation quote.`,
+          faqs: [],
+        };
+  });
+}
+
 export async function POST(req: NextRequest) {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -10,7 +32,14 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { siteId, businessName, phone, email, address, hours, logoUrl, headline, subheadline, about, reviews, projectPhotos, ownerName, ownerBio, ownerPhotoUrl } = body;
+    const {
+      siteId, businessName, phone, email, address, hours, logoUrl,
+      headline, subheadline, about,
+      services, whyPoints,
+      reviews, projectPhotos,
+      ownerName, ownerBio, ownerPhotoUrl,
+      customImages,
+    } = body;
 
     if (!siteId) {
       return NextResponse.json({ error: "Missing site id" }, { status: 400 });
@@ -18,7 +47,7 @@ export async function POST(req: NextRequest) {
 
     const { data: existing, error: fetchError } = await supabase
       .from("onboarding_submissions")
-      .select("generated_copy")
+      .select("generated_copy, business_name, area")
       .eq("id", siteId)
       .single();
 
@@ -27,12 +56,23 @@ export async function POST(req: NextRequest) {
     }
 
     const currentCopy: GeneratedSiteCopy | null = existing.generated_copy;
+    const bName = businessName || existing.business_name || "";
+    const bArea = address || existing.area || "";
+
     const updatedCopy = currentCopy
       ? {
           ...currentCopy,
-          headline: headline ?? currentCopy.headline,
-          subheadline: subheadline ?? currentCopy.subheadline,
-          about: about ?? currentCopy.about,
+          ...(headline !== undefined && { headline }),
+          ...(subheadline !== undefined && { subheadline }),
+          ...(about !== undefined && { about }),
+          ...(services && {
+            services,
+            allServices: services,
+            serviceDetails: rebuildServiceDetails(services, currentCopy, bName, bArea),
+          }),
+          ...(whyPoints && {
+            whyChooseUs: { ...currentCopy.whyChooseUs, points: whyPoints },
+          }),
         }
       : null;
 
@@ -50,6 +90,7 @@ export async function POST(req: NextRequest) {
         owner_name: ownerName || null,
         owner_bio: ownerBio || null,
         owner_photo_url: ownerPhotoUrl || null,
+        custom_images: customImages || null,
         ...(updatedCopy ? { generated_copy: updatedCopy } : {}),
       })
       .eq("id", siteId);

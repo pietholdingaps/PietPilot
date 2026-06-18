@@ -126,6 +126,26 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
       });
     }
 
+    // Pexels: fetch a relevant photo for each service if API key is available
+    const pexelsKey = process.env.PEXELS_API_KEY;
+    if (pexelsKey && Array.isArray(copy.serviceDetails)) {
+      for (const detail of copy.serviceDetails) {
+        try {
+          const query = encodeURIComponent(`${detail.title} ${submission.trade || ""}`);
+          const pRes = await fetch(`https://api.pexels.com/v1/search?query=${query}&per_page=1&orientation=landscape`, {
+            headers: { Authorization: pexelsKey },
+          });
+          if (pRes.ok) {
+            const pData = await pRes.json();
+            const photoUrl = pData.photos?.[0]?.src?.large2x || pData.photos?.[0]?.src?.large;
+            if (photoUrl) (detail as Record<string, unknown>).photo = photoUrl;
+          }
+        } catch {
+          // Pexels lookup failed — no problem, falls back to keyword matching
+        }
+      }
+    }
+
     const { error: updateError } = await supabase
       .from("onboarding_submissions")
       .update({ generated_copy: copy })

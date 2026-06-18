@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 
   const { data: submission, error: siteError } = await supabase
     .from("onboarding_submissions")
-    .select("id, business_name, trade, area, phone, email, address, hours, logo_url, template, generated_copy, project_photos, review_text, review_author, reviews, owner_name, owner_bio, owner_photo_url")
+    .select("id, business_name, trade, area, phone, email, address, hours, logo_url, template, generated_copy, project_photos, review_text, review_author, reviews, owner_name, owner_bio, owner_photo_url, custom_images")
     .eq("id", siteId)
     .single();
 
