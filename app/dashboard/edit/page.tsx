@@ -295,34 +295,7 @@ function EditSiteInner() {
               </div>
             </Section>
 
-            {/* 3. DESIGN */}
-            <Section title="Website design" emoji="🎨">
-              <p className="text-sm text-white/50 mb-4">Choose the look and feel of your website.</p>
-              <div className="grid grid-cols-3 gap-3">
-                {([
-                  { id: "classic", label: "Classic", desc: "Clean white, blue accents", preview: "bg-white" },
-                  { id: "bold", label: "Bold", desc: "Dark black, amber accents", preview: "bg-gray-950" },
-                  { id: "warm", label: "Warm", desc: "Cream tones, terracotta", preview: "bg-amber-50" },
-                ] as const).map((t) => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    onClick={() => setTemplate(t.id)}
-                    className={`rounded-xl border-2 p-3 text-left transition-all ${
-                      template === t.id
-                        ? "border-orange-500 ring-1 ring-orange-500/40"
-                        : "border-white/10 hover:border-white/25"
-                    }`}
-                  >
-                    <div className={`w-full h-12 rounded-lg mb-2 border border-white/10 ${t.preview}`} />
-                    <p className="text-sm font-bold text-white">{t.label}</p>
-                    <p className="text-xs text-white/40 mt-0.5">{t.desc}</p>
-                  </button>
-                ))}
-              </div>
-            </Section>
-
-            {/* 4. SERVICES */}
+            {/* 3. SERVICES */}
             <Section title="Services" emoji="🛠️">
               <p className="text-white/45 text-sm">Add or remove the services you offer. Each service gets its own page and image.</p>
               <div className="flex flex-wrap gap-2 min-h-[40px]">
@@ -468,6 +441,52 @@ function EditSiteInner() {
                 <p className="text-white/40 text-sm">Maximum 6 photos.</p>
               )}
             </Section>
+
+            {/* 8. DESIGN */}
+            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden p-6">
+              <h2 className="text-base font-bold text-white mb-1">🎨 Website design</h2>
+              <p className="text-white/40 text-sm mb-6">Switch the look and feel of your website. You can change this at any time.</p>
+              <div className="grid sm:grid-cols-3 gap-4">
+                {[
+                  { id: "classic", name: "Classic & Trustworthy", desc: "Clean, professional, no-nonsense. Built for trades that win on reliability.", accent: "#38bdf8" },
+                  { id: "bold", name: "Modern & Bold", desc: "Sharp, confident, eye-catching. Stands out in a crowded local search.", accent: "#f59e0b" },
+                  { id: "warm", name: "Warm & Personal", desc: "Friendly, approachable, community-feel. Great for owner-operated businesses.", accent: "#fb7185" },
+                ].map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setTemplate(t.id)}
+                    className={`rounded-2xl p-5 text-left transition-all border ${
+                      template === t.id
+                        ? "border-[#f59e0b] bg-white/[0.04]"
+                        : "border-white/[0.06] bg-white/[0.02] hover:-translate-y-0.5"
+                    }`}
+                  >
+                    {/* Mini browser preview */}
+                    <div className="rounded-lg overflow-hidden border border-white/10 mb-4 bg-[#0b1220]">
+                      <div className="flex items-center gap-1.5 px-3 py-2 border-b border-white/[0.06]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-white/15" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-white/15" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-white/15" />
+                      </div>
+                      <div className="p-3 space-y-2">
+                        <div className="h-3 w-2/3 rounded" style={{ background: t.accent, opacity: 0.8 }} />
+                        <div className="h-2 w-full rounded bg-white/[0.08]" />
+                        <div className="h-2 w-5/6 rounded bg-white/[0.08]" />
+                        <div className="h-6 w-16 rounded mt-2" style={{ background: t.accent }} />
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mb-1">
+                      <h3 className="text-sm font-bold text-white">{t.name}</h3>
+                      {template === t.id && (
+                        <span className="text-[10px] font-bold text-[#f59e0b] uppercase tracking-wider">Active</span>
+                      )}
+                    </div>
+                    <p className="text-white/40 text-xs leading-relaxed">{t.desc}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
 
             {/* SAVE */}
             <div className="flex items-center gap-4 pt-2">
