@@ -121,7 +121,7 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
   "guaranteeLine": "a trust line — include license/insurance number if provided",
   "whyChooseUs": { "title": "Why choose [Business Name]?", "points": ["3 short punchy points taken DIRECTLY from what the owner wrote under 'Why customers should choose them' — these must be their actual reasons, not invented ones"] },
   "process": [{ "title": "2-4 word step title", "description": "one sentence" }, ...4 steps total],
-  "stats": "REQUIRED — always include exactly 4 stat objects shown as bold trust badges under the hero. Use these 4 slots in this order: (1) Years of experience — if they gave a number use it (e.g. '10+'), if not write '5+' as a reasonable default for any established trade business; (2) Jobs/projects completed — if mentioned use it (e.g. '500+'), otherwise use '200+' as a conservative default; (3) Service area — use a SHORT version of the area, max 2-3 words (e.g. 'Copenhagen', 'Greater London', 'Sydney Metro') — never paste the full address or a long sentence; (4) Response time — use what they said or default to '1 Hour'. The 'value' field must always be short (max 6 characters or a very short word like 'Same Day') — it renders as a large bold number/word. The 'label' field is the small caption below it. NEVER leave this array empty.",
+  "stats": "REQUIRED — always include exactly 4 stat objects shown as bold trust badges under the hero. Use these 4 slots in this order: (1) Years of experience — if they gave a number use it (e.g. '10+'), if not write '5+' as a reasonable default for any established trade business; (2) Jobs/projects completed — if mentioned use it (e.g. '500+'), otherwise use '200+' as a conservative default; (3) Service area — use a SHORT version of the area, max 2-3 words (e.g. 'Copenhagen', 'Greater London', 'Sydney Metro') — never paste the full address or a long sentence; (4) Opening hours — copy the FULL hours string exactly as given (e.g. 'Mon-Fri 7am-5pm, Sat 8am-2pm') with label 'Opening Hours'. The 'value' field for stats 1, 2, 3 must be short (max 6 chars or short phrase). For stat 4 (hours) the value CAN be a longer string. The 'label' field is the small caption below it. NEVER leave this array empty.",
   "serviceDetails": "one object per service in the 'services' array, same order — each with: 'title' (same as service name), 'slug' (lowercase hyphenated URL slug), 'description' (3-4 sentence SEO paragraph mentioning the specific service, the business name, the area, and what the customer gets — make each one unique and specific), 'faqs' (3 FAQ objects — questions must be specific to THIS service, not copy-pasted generics — vary them across services)"
 }`;
 
@@ -146,15 +146,27 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
       return NextResponse.json({ error: "Could not generate site copy" }, { status: 500 });
     }
 
+    // Fix 1: Strip double "License #" prefix from AI-generated guaranteeLine
+    if (copy.guaranteeLine) {
+      copy.guaranteeLine = copy.guaranteeLine.replace(/license\s*#\s*license\s*#\s*/gi, "License #");
+    }
+
     // Always enforce the owner's own services — never let AI substitute or invent
     if (parsedServices.length > 0) {
       copy.services = parsedServices;
       copy.allServices = parsedServices;
 
-      // Also fix serviceDetails so titles/slugs match the real services
+      // Fix 2: Match serviceDetails by title similarity (not just index) so descriptions are unique per service
       const existingDetails = Array.isArray(copy.serviceDetails) ? copy.serviceDetails : [];
-      copy.serviceDetails = parsedServices.map((serviceName, i) => {
-        const existing = existingDetails[i];
+      copy.serviceDetails = parsedServices.map((serviceName) => {
+        const nameKey = serviceName.toLowerCase().replace(/[^a-z0-9]/g, "");
+        // Try to find a matching detail by title — fuzzy match on first word
+        const firstWord = serviceName.toLowerCase().split(/\s+/)[0];
+        const existing =
+          existingDetails.find((d) => {
+            const dKey = (d.title || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+            return dKey === nameKey || dKey.includes(firstWord) || nameKey.includes((d.title || "").toLowerCase().split(/\s+/)[0]);
+          }) || existingDetails.find((d) => (d.title || "").toLowerCase().includes(firstWord));
         const slug = serviceName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
         return {
           title: serviceName,

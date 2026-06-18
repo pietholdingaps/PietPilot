@@ -29,6 +29,8 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
   const theme = themes[data.template] || themes.classic;
   const photos = getPhotosForTrade(data.trade);
   const { copy } = data;
+  // Safety: strip any double "License #" prefix that AI may have generated
+  const guaranteeLine = (copy.guaranteeLine || "").replace(/license\s*#\s*license\s*#\s*/gi, "License #");
 
   // Show all services as carousel cards — no arbitrary limit, no text list below.
   const servicesGrid = copy.services || [];
@@ -142,11 +144,11 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
           // Jobs completed — try to find a number in the about text
           const jobsMatch = (copy.about || "").match(/(\d[\d,]+)\+?\s*(job|project|home|customer|client)/i);
           fallback.push({ value: jobsMatch ? `${jobsMatch[1].replace(/,/g, "")}+` : "200+", label: "Jobs Completed" });
-          // Area — use first 2 words max to keep it short
+          // Area — use first part only to keep it short
           const areaShort = (data.area || "Local Area").split(/[,&]/)[0].trim().split(" ").slice(0, 3).join(" ");
           fallback.push({ value: areaShort, label: "Service Area" });
-          // Response time
-          fallback.push({ value: "1 Hour", label: "Response Time" });
+          // Full opening hours (including Saturday)
+          fallback.push({ value: data.hours || "Mon–Fri 8am–5pm", label: "Opening Hours" });
           stats = fallback;
         }
         return (
@@ -181,7 +183,7 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
               >
                 ✓
               </div>
-              {copy.guaranteeLine}
+              {guaranteeLine}
             </div>
           </div>
         </div>
@@ -356,7 +358,7 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
           <div className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-extrabold mb-3 tracking-tight">Ready to get started?</h2>
             <p className="mb-1.5 text-base" style={{ color: theme.muted }}>{data.hours} · {copy.responsePromise}</p>
-            <p className="text-base" style={{ color: theme.muted }}>{copy.guaranteeLine}</p>
+            <p className="text-base" style={{ color: theme.muted }}>{guaranteeLine}</p>
           </div>
           <div className="grid md:grid-cols-2 gap-6 items-stretch">
             <div
@@ -407,7 +409,7 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
         <div className="max-w-6xl mx-auto grid sm:grid-cols-3 gap-10 mb-10">
           <div>
             <p className="text-lg font-extrabold tracking-tight mb-3">{data.businessName}</p>
-            <p className="text-sm leading-relaxed" style={{ color: theme.muted }}>{copy.guaranteeLine}</p>
+            <p className="text-sm leading-relaxed" style={{ color: theme.muted }}>{guaranteeLine}</p>
           </div>
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] mb-3" style={{ color: theme.accent }}>Services</p>
