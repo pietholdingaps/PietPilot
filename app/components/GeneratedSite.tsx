@@ -130,29 +130,51 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
         </div>
       </section>
 
-      {/* STATS / TRUST BADGES */}
-      {copy.stats && copy.stats.length > 0 ? (
-        <section className="py-8 px-6 border-b" style={{ borderColor: `${theme.text}0d`, background: theme.card }}>
-          <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
-            {copy.stats.map((s, i) => (
-              <div key={i} className="text-center">
-                <div className="text-2xl md:text-3xl font-extrabold tracking-tight" style={{ color: theme.accent }}>{s.value}</div>
-                <div className="text-xs font-bold uppercase tracking-[0.15em] mt-1" style={{ color: theme.muted }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </section>
-      ) : (
-        <section className="py-5 px-6 border-b" style={{ borderColor: `${theme.text}0d`, background: theme.card }}>
-          <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-x-10 gap-y-2 text-center">
-            <p className="text-sm font-semibold tracking-wide" style={{ color: theme.muted }}>{copy.trustLine}</p>
-            <span className="hidden sm:inline w-1 h-1 rounded-full" style={{ background: `${theme.muted}66` }} />
-            <p className="text-sm font-semibold tracking-wide" style={{ color: theme.muted }}>{data.hours}</p>
-            <span className="hidden sm:inline w-1 h-1 rounded-full" style={{ background: `${theme.muted}66` }} />
-            <p className="text-sm font-semibold tracking-wide" style={{ color: theme.muted }}>{copy.responsePromise}</p>
-          </div>
-        </section>
-      )}
+      {/* STATS / TRUST BADGES — always shown */}
+      {(() => {
+        // Use AI-generated stats if available, otherwise build sensible fallbacks
+        let stats = copy.stats && copy.stats.length > 0 ? copy.stats : null;
+        if (!stats) {
+          const fallback: { value: string; label: string }[] = [];
+          // Try to extract years from trustLine or experience text
+          const yearsMatch = (copy.trustLine || "").match(/(\d+)\+?\s*year/i);
+          if (yearsMatch) {
+            fallback.push({ value: `${yearsMatch[1]}+`, label: "Years Experience" });
+          }
+          // Area
+          if (data.area) {
+            fallback.push({ value: data.area, label: "Service Area" });
+          }
+          // Hours hint
+          if (data.hours) {
+            fallback.push({ value: data.hours.split(",")[0].trim(), label: "Opening Hours" });
+          }
+          // Response promise — strip long sentences to just the key phrase
+          const responseShort = (copy.responsePromise || "").replace(/\s*—.*/, "").replace("We respond within ", "").trim();
+          if (responseShort) {
+            fallback.push({ value: responseShort, label: "Response Time" });
+          }
+          // Absolute minimum — just show 3 generic badges from what we know
+          if (fallback.length < 2) {
+            fallback.push({ value: "100%", label: "Satisfaction Guaranteed" });
+            if (data.area) fallback.push({ value: data.area, label: "Local Area" });
+            fallback.push({ value: "Same Day", label: "Response Time" });
+          }
+          stats = fallback.slice(0, 4);
+        }
+        return (
+          <section className="py-8 px-6 border-b" style={{ borderColor: `${theme.text}0d`, background: theme.card }}>
+            <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
+              {stats.map((s, i) => (
+                <div key={i} className="text-center">
+                  <div className="text-2xl md:text-3xl font-extrabold tracking-tight" style={{ color: theme.accent }}>{s.value}</div>
+                  <div className="text-xs font-bold uppercase tracking-[0.15em] mt-1" style={{ color: theme.muted }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+      })()}
 
       {/* ABOUT */}
       <section id="about" className="py-24 px-6">
