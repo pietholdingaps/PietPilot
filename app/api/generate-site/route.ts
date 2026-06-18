@@ -24,9 +24,23 @@ export async function POST(req: NextRequest) {
 
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
-    const prompt = `You are a copywriter for a marketing platform that builds websites for local tradespeople (plumbers, electricians, roofers, etc).
+    const prompt = `You are a copywriter building a real website for a real local tradesperson. Your job is to write copy that feels 100% specific to THIS business — not generic filler that could apply to anyone.
 
-Write website copy for this business based on what the owner told us:
+CRITICAL RULES — follow these exactly or the website will be useless:
+
+1. SERVICES: Look at "Services offered" below. Convert EVERY service the owner listed into the 'services' array. Do not skip any. Do not add any they didn't mention. Do not replace their services with generic ones like "Repairs & maintenance", "Inspections", or "Emergency call-outs" unless the owner explicitly wrote those words. If they listed 8 services, return 8. If they listed 14, return 14.
+
+2. EXPERIENCE: If the owner mentioned years of experience (e.g. "8 years", "over a decade"), use it prominently in the headline or subheadline AND in the trustLine. Do not bury it.
+
+3. ABOUT: Use the owner's own words as your raw material. Do not replace specific details (years in business, number of jobs done, what they care about, what makes them different) with generic phrases. The 'about' field should read like it was written BY this specific business, not by a template.
+
+4. WHY CHOOSE US: Base the 'points' directly on what the owner wrote under "Why customers should choose them". Use their actual reasons — do not substitute with generic points like "honest pricing" or "quality work" unless the owner specifically mentioned those things.
+
+5. FAQ: Each service's FAQ questions must be specific to THAT service. For "Roof Repairs" ask about storm damage, repair vs replacement, timeframes. For "Terrace Construction" ask about materials, planning permission, maintenance. Do NOT ask generic questions like "How much does [service] cost?" and "How soon can you start?" for every single service — vary them based on what customers actually wonder about for that specific job.
+
+6. LOCAL SEO: Mention the area (${submission.area || "local area"}) and specific service combinations naturally throughout descriptions.
+
+Here is the business information:
 
 Business name: ${submission.business_name || "—"}
 Trade: ${submission.trade || "—"}
@@ -39,28 +53,26 @@ License/insurance number: ${submission.license_number || "—"}
 Why customers should choose them (in the owner's own words): ${submission.why_choose_us || "—"}
 About the business (in the owner's own words): ${submission.about || "—"}
 
-Write in a confident, friendly, local-business tone — never generic corporate fluff. Use specific details from what the owner wrote whenever possible.
-
 Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape:
 {
-  "headline": "short, punchy hero headline (max 8 words)",
-  "subheadline": "one sentence expanding on the headline, focused on the customer's benefit",
-  "about": "a warm 3-4 sentence About section written in third person, based on what the owner shared",
-  "servicesIntro": "one short sentence introducing the services list",
-  "services": "an array of short service names (2-5 words each) — one for every distinct service the owner listed under 'Services offered', rewritten concisely. Do NOT invent or add services they didn't mention — only use what they actually told us, combining near-duplicates into one item if needed.",
-  "allServices": "the exact same array as 'services' — do not add anything extra",
-  "ctaText": "short call-to-action button text (e.g. 'Get a Free Quote')",
-  "trustLine": "one short credibility line using their experience info, e.g. '15+ years serving Austin homeowners'",
-  "responsePromise": "a short reassuring line about how fast they respond, e.g. 'We respond within 24 hours — guaranteed.' (invent a reasonable promise if not stated)",
-  "guaranteeLine": "a short trust/insurance/guarantee line, e.g. 'Fully licensed & insured for your peace of mind.' If a license/insurance number was provided, naturally include it (e.g. 'Fully licensed & insured — License #12345'). Otherwise invent something reasonable and trade-appropriate.",
-  "whyChooseUs": "an object with 'title' (e.g. 'Why choose [Business Name]?') and 'points' (an array of exactly 3 short, punchy reasons customers should pick this business — base these on what the owner said about why customers should choose them, and on their experience/about info; each point max 8 words)",
-  "process": "an array of exactly 4 objects, each with a short 'title' (2-4 words, e.g. 'Reach out', 'Free assessment', 'We get to work', 'Job done, guaranteed') and a one-sentence 'description' explaining that step of working with this business",
-  "serviceDetails": "an array with one object per item in the 'services' array, in the same order — each with: 'title' (same as the service name), 'slug' (lowercase, hyphenated, URL-safe version of the title, e.g. 'drain-cleaning'), 'description' (a unique, SEO-friendly 3-4 sentence paragraph about this specific service for this business — mention the trade, the local area, and what the customer gets, written naturally for search engines and real readers), and 'faqs' (an array of exactly 3 objects, each with a short 'question' a real customer would ask about this specific service, e.g. cost, timing, what's included, and a helpful 2-3 sentence 'answer' written from this business's perspective)"
+  "headline": "short punchy hero headline — if they have years of experience, lead with it (e.g. '8 Years of Trusted Roofing & Carpentry in Næstved'). Max 10 words.",
+  "subheadline": "one sentence that uses the business name, area, and a specific benefit from what they told us — not a generic line",
+  "about": "3-4 sentences written in third person using the owner's own details as the source — include their years in business, what they specialise in, what they care about, and what makes them different. Do NOT use placeholder phrases like 'local trusted name' or 'clear communication' unless the owner said that.",
+  "servicesIntro": "one short sentence introducing the services list — mention their trade and area",
+  "services": "an array — one short name (2-5 words) per service the owner listed under 'Services offered'. Include ALL of them. Add NOTHING they didn't mention.",
+  "allServices": "identical to 'services' — do not add anything",
+  "ctaText": "short CTA button text",
+  "trustLine": "a credibility line that leads with their years of experience if they gave it — e.g. '8+ years serving homeowners across Næstved and surrounding areas'",
+  "responsePromise": "a short reassuring line about response time — invent something reasonable if not stated",
+  "guaranteeLine": "a trust line — include license/insurance number if provided",
+  "whyChooseUs": { "title": "Why choose [Business Name]?", "points": ["3 short punchy points taken DIRECTLY from what the owner wrote under 'Why customers should choose them' — these must be their actual reasons, not invented ones"] },
+  "process": [{ "title": "2-4 word step title", "description": "one sentence" }, ...4 steps total],
+  "serviceDetails": "one object per service in the 'services' array, same order — each with: 'title' (same as service name), 'slug' (lowercase hyphenated URL slug), 'description' (3-4 sentence SEO paragraph mentioning the specific service, the business name, the area, and what the customer gets — make each one unique and specific), 'faqs' (3 FAQ objects — questions must be specific to THIS service, not copy-pasted generics — vary them across services)"
 }`;
 
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 1536,
+      max_tokens: 4096,
       messages: [{ role: "user", content: prompt }],
     });
 

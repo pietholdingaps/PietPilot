@@ -290,17 +290,33 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
               <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: theme.accent }}>What customers say</div>
               <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">Reviews</h2>
             </div>
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
-              {data.reviews.map((r, i) => (
-                <div key={i} className="rounded-2xl p-7" style={{ background: theme.card, border: `1px solid ${theme.text}12` }}>
-                  <div className="mb-4" style={{ color: theme.accent }}>★★★★★</div>
-                  <p className="text-base leading-relaxed mb-5" style={{ color: theme.text }}>&ldquo;{r.text}&rdquo;</p>
-                  {r.author && (
-                    <p className="text-sm font-bold uppercase tracking-[0.2em]" style={{ color: theme.muted }}>— {r.author}</p>
-                  )}
-                </div>
-              ))}
-            </div>
+            {data.reviews.length === 1 ? (
+              /* Single review — featured centered quote */
+              <div className="max-w-2xl mx-auto text-center">
+                <div className="text-3xl mb-6" style={{ color: theme.accent }}>★★★★★</div>
+                <p className="text-xl md:text-2xl font-medium leading-relaxed mb-6" style={{ color: theme.text }}>
+                  &ldquo;{data.reviews[0].text}&rdquo;
+                </p>
+                {data.reviews[0].author && (
+                  <p className="text-sm font-bold uppercase tracking-[0.2em]" style={{ color: theme.muted }}>
+                    — {data.reviews[0].author}
+                  </p>
+                )}
+              </div>
+            ) : (
+              /* Multiple reviews — grid */
+              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
+                {data.reviews.map((r, i) => (
+                  <div key={i} className="rounded-2xl p-7" style={{ background: theme.card, border: `1px solid ${theme.text}12` }}>
+                    <div className="mb-4" style={{ color: theme.accent }}>★★★★★</div>
+                    <p className="text-base leading-relaxed mb-5" style={{ color: theme.text }}>&ldquo;{r.text}&rdquo;</p>
+                    {r.author && (
+                      <p className="text-sm font-bold uppercase tracking-[0.2em]" style={{ color: theme.muted }}>— {r.author}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       )}
