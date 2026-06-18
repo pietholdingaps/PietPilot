@@ -245,7 +245,7 @@ function EditSiteInner() {
           <form onSubmit={handleSave} className="flex flex-col gap-3">
 
             {/* 1. BUSINESS INFO */}
-            <Section title="Business info" emoji="🏢" defaultOpen active={!!(businessName || phone || email)}>
+            <Section title="Business info" emoji="🏢" active={!!(businessName || phone || email)}>
               <Field label="Business name" value={businessName} onChange={setBusinessName} />
               <Field label="Phone" value={phone} onChange={setPhone} />
               <Field label="Contact email" value={email} onChange={setEmail} />
