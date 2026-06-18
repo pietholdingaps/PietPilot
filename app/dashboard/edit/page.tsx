@@ -58,6 +58,9 @@ function EditSiteInner() {
   const [projectPhotos, setProjectPhotos] = useState<string[]>([]);
   const [photosUploading, setPhotosUploading] = useState(false);
 
+  // Design / template
+  const [template, setTemplate] = useState("classic");
+
   // Custom images (hero bg + per-service)
   const [customImages, setCustomImages] = useState<{
     hero?: string;
@@ -96,6 +99,7 @@ function EditSiteInner() {
           setOwnerBio(s.owner_bio || "");
           setOwnerPhotoUrl(s.owner_photo_url || "");
           setCustomImages(s.custom_images || {});
+          setTemplate(s.template || "classic");
         }
       })
       .finally(() => setLoading(false));
@@ -195,7 +199,7 @@ function EditSiteInner() {
           reviews: reviews.filter((r) => r.text.trim()),
           projectPhotos,
           ownerName, ownerBio, ownerPhotoUrl,
-          customImages,
+          customImages, template,
         }),
       });
       if (!res.ok) throw new Error();
@@ -291,7 +295,34 @@ function EditSiteInner() {
               </div>
             </Section>
 
-            {/* 3. SERVICES */}
+            {/* 3. DESIGN */}
+            <Section title="Website design" emoji="🎨">
+              <p className="text-sm text-white/50 mb-4">Choose the look and feel of your website.</p>
+              <div className="grid grid-cols-3 gap-3">
+                {([
+                  { id: "classic", label: "Classic", desc: "Clean white, blue accents", preview: "bg-white" },
+                  { id: "bold", label: "Bold", desc: "Dark black, amber accents", preview: "bg-gray-950" },
+                  { id: "warm", label: "Warm", desc: "Cream tones, terracotta", preview: "bg-amber-50" },
+                ] as const).map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setTemplate(t.id)}
+                    className={`rounded-xl border-2 p-3 text-left transition-all ${
+                      template === t.id
+                        ? "border-orange-500 ring-1 ring-orange-500/40"
+                        : "border-white/10 hover:border-white/25"
+                    }`}
+                  >
+                    <div className={`w-full h-12 rounded-lg mb-2 border border-white/10 ${t.preview}`} />
+                    <p className="text-sm font-bold text-white">{t.label}</p>
+                    <p className="text-xs text-white/40 mt-0.5">{t.desc}</p>
+                  </button>
+                ))}
+              </div>
+            </Section>
+
+            {/* 4. SERVICES */}
             <Section title="Services" emoji="🛠️">
               <p className="text-white/45 text-sm">Add or remove the services you offer. Each service gets its own page and image.</p>
               <div className="flex flex-wrap gap-2 min-h-[40px]">
