@@ -234,6 +234,7 @@ function OnboardingInner() {
 
     let siteId: string | null = null;
     try {
+      // 1. Save submission to DB
       const res = await fetch("/api/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -244,23 +245,29 @@ function OnboardingInner() {
       setGeneratedSiteId(siteId);
       if (siteId) localStorage.setItem("pietpilot_site_id", siteId);
 
-      if (siteId) {
-        // fire off the AI copy generation — don't block the building animation on it
-        fetch("/api/generate-site", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: siteId }),
-        }).catch(() => {});
-      }
+      // 2. Run AI generation + minimum animation time in parallel — show ready only when BOTH are done
+      const minAnimation = new Promise<void>((resolve) =>
+        setTimeout(resolve, buildingMessages.length * 1400 + 600)
+      );
+      const generate = siteId
+        ? fetch("/api/generate-site", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: siteId }),
+          }).catch(() => {})
+        : Promise.resolve();
+
+      await Promise.all([minAnimation, generate]);
     } catch {
-      // even if saving fails, keep the user moving — we don't want to block the experience
+      // if something fails, still show ready after minimum animation time
+      await new Promise<void>((resolve) =>
+        setTimeout(resolve, buildingMessages.length * 1400 + 600)
+      );
     }
 
-    setTimeout(() => {
-      clearInterval(interval);
-      setSubmitting(false);
-      setStep(questions.length + 3); // ready screen
-    }, buildingMessages.length * 1400 + 600);
+    clearInterval(interval);
+    setSubmitting(false);
+    setStep(questions.length + 3); // ready screen
   }
 
   const progressPct = step <= questions.length ? Math.round(((step + 1) / (STEPS_TOTAL + 1)) * 100) : 100;

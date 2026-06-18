@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import Anthropic from "@anthropic-ai/sdk";
 
+export const maxDuration = 60; // Allow up to 60s for AI generation + Pexels calls
+
 /** Maps a service name to a precise Pexels search query for the best photo result */
 function getPexelsQuery(serviceName: string): string {
   const s = serviceName.toLowerCase();
