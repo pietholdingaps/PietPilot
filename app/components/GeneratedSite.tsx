@@ -245,10 +245,13 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
               const detail = copy.serviceDetails?.[i];
               const slug = s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
               const customImg = data.customImages?.services?.[slug];
+              const stockFallback = getPhotoForService(s, data.trade, i);
+              const pexelsPhoto = (detail as { photo?: string } | undefined)?.photo;
               return {
                 title: s,
                 description: detail?.description || "Done right, on time, every time.",
-                image: customImg || (detail as { photo?: string } | undefined)?.photo || getPhotoForService(s, data.trade, i),
+                image: customImg || pexelsPhoto || stockFallback,
+                fallbackImage: customImg ? undefined : stockFallback,
                 href: detail?.slug ? `/site/${data.id}/services/${detail.slug}` : undefined,
               };
             })}

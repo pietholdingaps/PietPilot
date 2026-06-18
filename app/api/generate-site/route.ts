@@ -131,13 +131,17 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
     if (pexelsKey && Array.isArray(copy.serviceDetails)) {
       for (const detail of copy.serviceDetails) {
         try {
-          const query = encodeURIComponent(`${detail.title} ${submission.trade || ""}`);
-          const pRes = await fetch(`https://api.pexels.com/v1/search?query=${query}&per_page=1&orientation=landscape`, {
-            headers: { Authorization: pexelsKey },
-          });
+          // Use just the service title for the most relevant result
+          const query = encodeURIComponent(detail.title);
+          const pRes = await fetch(
+            `https://api.pexels.com/v1/search?query=${query}&per_page=3&orientation=landscape`,
+            { headers: { Authorization: pexelsKey } }
+          );
           if (pRes.ok) {
             const pData = await pRes.json();
-            const photoUrl = pData.photos?.[0]?.src?.large2x || pData.photos?.[0]?.src?.large;
+            // Prefer medium-sized photos — more universally accessible than large2x
+            const photo = pData.photos?.[0];
+            const photoUrl = photo?.src?.large || photo?.src?.medium;
             if (photoUrl) (detail as Record<string, unknown>).photo = photoUrl;
           }
         } catch {

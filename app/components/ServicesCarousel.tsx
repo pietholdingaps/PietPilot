@@ -7,6 +7,7 @@ export type ServiceCardItem = {
   title: string;
   description: string;
   image: string;
+  fallbackImage?: string;
   href?: string;
 };
 
@@ -101,11 +102,17 @@ export default function ServicesCarousel({ items, theme }: { items: ServiceCardI
           const inner = (
             <>
               {/* eslint-disable-next-line @next/next/no-img-element */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={item.image}
                 alt={item.title}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 draggable={false}
+                onError={(e) => {
+                  if (item.fallbackImage && e.currentTarget.src !== item.fallbackImage) {
+                    e.currentTarget.src = item.fallbackImage;
+                  }
+                }}
               />
               <div
                 className="absolute inset-0"
