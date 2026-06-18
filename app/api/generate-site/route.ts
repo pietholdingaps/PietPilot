@@ -103,7 +103,7 @@ Area covered: ${submission.area || "—"}
 Business address: ${submission.address || "—"}
 Opening hours: ${submission.hours || "—"}
 Experience: ${submission.experience || "—"}
-License/insurance number: ${submission.license_number || "—"}
+License/insurance number: ${(submission.license_number || "").replace(/^license\s*#?\s*/i, "").trim() || "—"}
 Why customers should choose them (in the owner's own words): ${submission.why_choose_us || "—"}
 About the business (in the owner's own words): ${submission.about || "—"}
 

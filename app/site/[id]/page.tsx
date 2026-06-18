@@ -78,7 +78,7 @@ export default async function GeneratedSitePage({ params }: { params: Promise<{ 
         phone: submission.phone || "",
         email: submission.email || "",
         address: submission.address || "",
-        licenseNumber: submission.license_number || "",
+        licenseNumber: (submission.license_number || "").replace(/^license\s*#?\s*/i, "").trim(),
         logoUrl: submission.logo_url || "",
         hours: submission.hours || "",
         template: submission.template || "classic",

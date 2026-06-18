@@ -212,10 +212,10 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
                   style={{ background: theme.bg, border: `1px solid ${theme.text}12` }}
                 >
                   <div
-                    className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 mx-auto font-extrabold text-base"
+                    className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 mx-auto font-extrabold text-sm tracking-widest"
                     style={{ background: `${theme.accent}1a`, color: theme.accent, border: `1px solid ${theme.accent}40` }}
                   >
-                    ✓
+                    {String(i + 1).padStart(2, "0")}
                   </div>
                   <p className="font-bold text-base">{point}</p>
                 </div>
@@ -334,9 +334,9 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
             Service area
           </div>
           <h2 className="text-3xl md:text-4xl font-extrabold mb-4 tracking-tight text-white">
-            Proudly serving {data.area || "your local area"}
+            {copy.trustLine || `Proudly serving ${data.area || "your local area"}`}
           </h2>
-          <p className="text-white/80 text-lg leading-relaxed">{copy.trustLine}</p>
+          <p className="text-white/80 text-lg leading-relaxed">{data.area}</p>
         </div>
       </section>
 
@@ -423,7 +423,11 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
         </div>
         <div className="max-w-6xl mx-auto pt-8 border-t text-center" style={{ borderColor: `${theme.text}10` }}>
           <p className="text-xs" style={{ color: theme.muted }}>
-            Website by PietPilot · © {new Date().getFullYear()}
+            Website by{" "}
+            <a href="https://pietpilot.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-70 transition-opacity">
+              PietPilot
+            </a>{" "}
+            · © {new Date().getFullYear()}
           </p>
         </div>
       </footer>

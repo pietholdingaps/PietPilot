@@ -119,7 +119,7 @@ export default function ServicesCarousel({ items, theme }: { items: ServiceCardI
                 style={{ background: "linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,0.85) 100%)" }}
               />
               <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                <h3 className="font-extrabold text-lg mb-2 leading-tight">{item.title}</h3>
+                <h3 className="font-extrabold text-lg mb-2 leading-tight capitalize">{item.title}</h3>
                 <p className="text-sm text-white/80 mb-4 leading-relaxed line-clamp-3">{item.description}</p>
                 {item.href && (
                   <span className="text-sm font-bold" style={{ color: theme.accent }}>
