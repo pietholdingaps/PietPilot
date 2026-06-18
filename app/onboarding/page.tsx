@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import GeneratedSite from "@/app/components/GeneratedSite";
 import { GeneratedSiteCopy } from "@/lib/siteTypes";
 
-const STEPS_TOTAL = 15;
+const STEPS_TOTAL = 14;
 
 // Used only if /api/preview-copy fails outright (e.g. network error), so the
 // preview screen never gets stuck on "Writing your site's content..." forever.
@@ -63,8 +63,7 @@ const questions = [
   { key: "services", label: "What services do you offer?", placeholder: "List as many as you'd like — e.g. drain cleaning, water heater repair, bathroom remodels...", type: "textarea" },
   { key: "about", label: "Tell us about you and your business — the more you write, the better your site will be", placeholder: "How long have you been in business? How many jobs have you done? What makes you different? What do customers say about you? What do you care about on the job?", type: "textarea" },
   { key: "whyChooseUs", label: "Why should customers choose you over the competition?", placeholder: "e.g. fast response times, fair prices, years of experience, guarantees, certifications, customer reviews...", type: "textarea" },
-  { key: "reviewText", label: "Got a great review from a happy customer? Paste it here", placeholder: "Optional — e.g. \"Built our deck in 3 days, fantastic work and very tidy!\"", type: "textarea" },
-  { key: "reviewAuthor", label: "Who was that review from?", placeholder: "Optional — e.g. Sarah M., Austin TX", type: "text" },
+  { key: "reviews", label: "Got reviews from happy customers? Add them here", placeholder: "Optional — paste a review and add who it's from. You can add as many as you like.", type: "reviews" },
   { key: "logo", label: "Do you have a logo you'd like to use?", placeholder: "Optional — upload an image, or skip and we'll use your business name as text", type: "logo" },
   { key: "photos", label: "Got photos of your own work?", placeholder: "Optional — upload a few (decks, roofs, kitchens, etc.) and we'll show them on your site instead of stock photos", type: "file" },
 ];
@@ -136,6 +135,17 @@ function OnboardingInner() {
   const [logoUploading, setLogoUploading] = useState(false);
   const [projectPhotos, setProjectPhotos] = useState<string[]>([]);
   const [photosUploading, setPhotosUploading] = useState(false);
+  const [reviews, setReviews] = useState<{ text: string; author: string }[]>([]);
+
+  function addReview() {
+    setReviews((r) => [...r, { text: "", author: "" }]);
+  }
+  function updateReview(i: number, field: "text" | "author", value: string) {
+    setReviews((r) => r.map((rev, idx) => (idx === i ? { ...rev, [field]: value } : rev)));
+  }
+  function removeReview(i: number) {
+    setReviews((r) => r.filter((_, idx) => idx !== i));
+  }
 
   async function handleLogoUpload(file: File) {
     setLogoUploading(true);
@@ -227,7 +237,7 @@ function OnboardingInner() {
       const res = await fetch("/api/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, logoUrl, projectPhotos, template: id, accountName: account.name, accountEmail: account.email }),
+        body: JSON.stringify({ ...data, logoUrl, projectPhotos, reviews: reviews.filter((r) => r.text.trim()), template: id, accountName: account.name, accountEmail: account.email }),
       });
       const json = await res.json();
       siteId = json?.id || null;
@@ -413,6 +423,48 @@ function OnboardingInner() {
                   )}
                 </div>
               )}
+              {current.type === "reviews" && (
+                <div className="flex flex-col gap-4">
+                  {reviews.map((r, i) => (
+                    <div key={i} className="border border-white/10 rounded-xl p-4 flex flex-col gap-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-white/40">Review {i + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeReview(i)}
+                          className="text-white/40 hover:text-red-400 text-xs font-semibold transition-colors"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                      <textarea
+                        value={r.text}
+                        onChange={(e) => updateReview(i, "text", e.target.value)}
+                        rows={3}
+                        placeholder="e.g. Built our deck in 3 days, fantastic work and very tidy!"
+                        className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/25 text-sm outline-none focus:border-[#f59e0b]/50 resize-none"
+                      />
+                      <input
+                        type="text"
+                        value={r.author}
+                        onChange={(e) => updateReview(i, "author", e.target.value)}
+                        placeholder="Who is this from? e.g. Sarah M., Austin TX"
+                        className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/25 text-sm outline-none focus:border-[#f59e0b]/50"
+                      />
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addReview}
+                    className="self-start border border-white/10 hover:border-white/25 text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
+                  >
+                    + Add a review
+                  </button>
+                  {reviews.length === 0 && (
+                    <p className="text-white/30 text-xs">Optional — skip this if you don&apos;t have any yet. You can always add them later.</p>
+                  )}
+                </div>
+              )}
               {current.type === "logo" && (
                 <div className="border-2 border-dashed border-white/15 rounded-xl px-4 py-8 text-center">
                   {logoUrl ? (
@@ -559,7 +611,7 @@ function OnboardingInner() {
                                 template: t.id,
                                 copy: previewCopy,
                                 projectPhotos,
-                                reviews: data.reviewText ? [{ text: data.reviewText, author: data.reviewAuthor || "" }] : [],
+                                reviews: reviews.filter((r) => r.text.trim()),
                               }}
                             />
                           </div>
