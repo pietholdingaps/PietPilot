@@ -94,7 +94,27 @@ export default async function ServiceDetailPage({
           <a href={`/site/${id}`} className="text-lg font-extrabold tracking-tight">{businessName}</a>
           <div className="hidden sm:flex items-center gap-8 text-sm font-medium" style={{ color: theme.muted }}>
             <a href={`/site/${id}#about`} className="hover:opacity-70 transition-opacity">About</a>
-            <a href={`/site/${id}#services`} className="hover:opacity-70 transition-opacity">Services</a>
+            <details className="relative group">
+              <summary className="list-none cursor-pointer hover:opacity-70 transition-opacity flex items-center gap-1.5 select-none">
+                We offer
+                <span className="text-[10px] mt-0.5">▾</span>
+              </summary>
+              <div
+                className="absolute top-full left-0 mt-2 rounded-xl shadow-xl border py-2 min-w-[180px] z-50"
+                style={{ background: theme.bg, borderColor: `${theme.text}12` }}
+              >
+                {(copy.serviceDetails || []).map((s) => (
+                  <a
+                    key={s.slug}
+                    href={`/site/${id}/services/${s.slug}`}
+                    className="block px-4 py-2.5 text-sm hover:opacity-70 transition-opacity"
+                    style={{ color: theme.text }}
+                  >
+                    {s.title}
+                  </a>
+                ))}
+              </div>
+            </details>
             {submission.project_photos && submission.project_photos.length > 0 && (
               <a href={`/site/${id}/work`} className="hover:opacity-70 transition-opacity">Our Work</a>
             )}
