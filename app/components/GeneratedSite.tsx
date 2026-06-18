@@ -136,31 +136,18 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
         let stats = copy.stats && copy.stats.length > 0 ? copy.stats : null;
         if (!stats) {
           const fallback: { value: string; label: string }[] = [];
-          // Try to extract years from trustLine or experience text
+          // Years of experience from trustLine
           const yearsMatch = (copy.trustLine || "").match(/(\d+)\+?\s*year/i);
-          if (yearsMatch) {
-            fallback.push({ value: `${yearsMatch[1]}+`, label: "Years Experience" });
-          }
-          // Area
-          if (data.area) {
-            fallback.push({ value: data.area, label: "Service Area" });
-          }
-          // Hours hint
-          if (data.hours) {
-            fallback.push({ value: data.hours.split(",")[0].trim(), label: "Opening Hours" });
-          }
-          // Response promise — strip long sentences to just the key phrase
-          const responseShort = (copy.responsePromise || "").replace(/\s*—.*/, "").replace("We respond within ", "").trim();
-          if (responseShort) {
-            fallback.push({ value: responseShort, label: "Response Time" });
-          }
-          // Absolute minimum — just show 3 generic badges from what we know
-          if (fallback.length < 2) {
-            fallback.push({ value: "100%", label: "Satisfaction Guaranteed" });
-            if (data.area) fallback.push({ value: data.area, label: "Local Area" });
-            fallback.push({ value: "Same Day", label: "Response Time" });
-          }
-          stats = fallback.slice(0, 4);
+          fallback.push({ value: yearsMatch ? `${yearsMatch[1]}+` : "5+", label: "Years Experience" });
+          // Jobs completed — try to find a number in the about text
+          const jobsMatch = (copy.about || "").match(/(\d[\d,]+)\+?\s*(job|project|home|customer|client)/i);
+          fallback.push({ value: jobsMatch ? `${jobsMatch[1].replace(/,/g, "")}+` : "200+", label: "Jobs Completed" });
+          // Area — use first 2 words max to keep it short
+          const areaShort = (data.area || "Local Area").split(/[,&]/)[0].trim().split(" ").slice(0, 3).join(" ");
+          fallback.push({ value: areaShort, label: "Service Area" });
+          // Response time
+          fallback.push({ value: "1 Hour", label: "Response Time" });
+          stats = fallback;
         }
         return (
           <section className="py-8 px-6 border-b" style={{ borderColor: `${theme.text}0d`, background: theme.card }}>
