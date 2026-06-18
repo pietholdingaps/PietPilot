@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback } from "react";
 import { Theme } from "./GeneratedSite";
 
 export type ServiceCardItem = {
@@ -13,6 +13,11 @@ export type ServiceCardItem = {
 export default function ServicesCarousel({ items, theme }: { items: ServiceCardItem[]; theme: Theme }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
+
+  // Mouse drag-to-scroll state
+  const isDragging = useRef(false);
+  const dragStartX = useRef(0);
+  const dragScrollLeft = useRef(0);
 
   function scrollToIndex(i: number) {
     const el = scrollRef.current;
@@ -37,15 +42,60 @@ export default function ServicesCarousel({ items, theme }: { items: ServiceCardI
     setActive(closest);
   }
 
+  // Mouse drag handlers
+  const onMouseDown = useCallback((e: React.MouseEvent) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    isDragging.current = true;
+    dragStartX.current = e.pageX - el.offsetLeft;
+    dragScrollLeft.current = el.scrollLeft;
+    el.style.cursor = "grabbing";
+    el.style.userSelect = "none";
+  }, []);
+
+  const onMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDragging.current) return;
+    const el = scrollRef.current;
+    if (!el) return;
+    const x = e.pageX - el.offsetLeft;
+    const walk = (x - dragStartX.current) * 1.5;
+    el.scrollLeft = dragScrollLeft.current - walk;
+  }, []);
+
+  const onMouseUp = useCallback(() => {
+    isDragging.current = false;
+    const el = scrollRef.current;
+    if (el) {
+      el.style.cursor = "grab";
+      el.style.userSelect = "";
+    }
+  }, []);
+
+  function prev() {
+    const i = Math.max(0, active - 1);
+    scrollToIndex(i);
+  }
+
+  function next() {
+    const i = Math.min(items.length - 1, active + 1);
+    scrollToIndex(i);
+  }
+
   // Shared classes for every flex item (whether <a> or <div>)
-  const itemClass = "relative flex-none w-[260px] sm:w-[300px] aspect-[3/4] rounded-2xl overflow-hidden snap-start group cursor-pointer";
+  const itemClass = "relative flex-none w-[260px] sm:w-[300px] aspect-[3/4] rounded-2xl overflow-hidden snap-start group";
 
   return (
-    <div>
+    <div className="relative">
+      {/* Scroll track */}
       <div
         ref={scrollRef}
         onScroll={handleScroll}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+        onMouseLeave={onMouseUp}
         className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-2 -mx-6 px-6 sm:-mx-0 sm:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        style={{ cursor: "grab" }}
       >
         {items.map((item, i) => {
           const inner = (
@@ -55,6 +105,7 @@ export default function ServicesCarousel({ items, theme }: { items: ServiceCardI
                 src={item.image}
                 alt={item.title}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                draggable={false}
               />
               <div
                 className="absolute inset-0"
@@ -83,6 +134,30 @@ export default function ServicesCarousel({ items, theme }: { items: ServiceCardI
           );
         })}
       </div>
+
+      {/* Arrow buttons — only show if more than 1 item */}
+      {items.length > 1 && (
+        <>
+          <button
+            onClick={prev}
+            disabled={active === 0}
+            aria-label="Previous service"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 sm:-translate-x-6 z-10 w-10 h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-20"
+            style={{ background: theme.accent, color: "#fff" }}
+          >
+            ←
+          </button>
+          <button
+            onClick={next}
+            disabled={active === items.length - 1}
+            aria-label="Next service"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 sm:translate-x-6 z-10 w-10 h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-20"
+            style={{ background: theme.accent, color: "#fff" }}
+          >
+            →
+          </button>
+        </>
+      )}
 
       {/* Dot navigation */}
       {items.length > 1 && (
