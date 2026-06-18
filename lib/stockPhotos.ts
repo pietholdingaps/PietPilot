@@ -94,22 +94,25 @@ const sets: Record<string, { hero: string; gallery: string[] }> = {
     ],
   },
   flooring: {
-    hero: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64",
+    // verified: wood floor hallway, Scandi living room with floor, bright room with floor
+    hero: "https://images.unsplash.com/photo-1581858726788-75bc0f6a952d",
     gallery: [
       "https://images.unsplash.com/photo-1615873968403-89e068629265",
+      "https://images.unsplash.com/photo-1631679706909-1844bbd07221",
       "https://images.unsplash.com/photo-1586023492125-27b2c045efd7",
-      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc",
     ],
   },
   decking: {
-    hero: "https://images.unsplash.com/photo-1600210492493-0946911123ea",
+    // verified: modern house exterior w/ outdoor space, house w/ pool+balcony, white modern exterior
+    hero: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
     gallery: [
-      "https://images.unsplash.com/photo-1591088398332-8a7791972843",
-      "https://images.unsplash.com/photo-1572120360610-d971b9d7767c",
-      "https://images.unsplash.com/photo-1598902108854-10e335adac99",
+      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6",
+      "https://images.unsplash.com/photo-1523217582562-09d0def993a6",
+      "https://images.unsplash.com/photo-1568605114967-8130f3a36994",
     ],
   },
   kitchen: {
+    // verified via Unsplash kitchen collection
     hero: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136",
     gallery: [
       "https://images.unsplash.com/photo-1556909172-54557c7e4fb7",
@@ -118,11 +121,12 @@ const sets: Record<string, { hero: string; gallery: string[] }> = {
     ],
   },
   bathroom: {
-    hero: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14",
+    // verified: dark modern bathroom w/ freestanding tub, bright bathroom w/ glass shower
+    hero: "https://images.unsplash.com/photo-1600566752355-35792bedcfea",
     gallery: [
+      "https://images.unsplash.com/photo-1584622650111-993a426fbf0a",
       "https://images.unsplash.com/photo-1507089947368-19c1da9775ae",
       "https://images.unsplash.com/photo-1620626011761-996317702149",
-      "https://images.unsplash.com/photo-1564540574859-0dfb63985953",
     ],
   },
   windows: {
