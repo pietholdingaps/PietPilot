@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       services, whyPoints,
       reviews, projectPhotos,
       ownerName, ownerBio, ownerPhotoUrl,
-      customImages, template,
+      customImages, template, hiddenSections,
     } = body;
 
     if (!siteId) {
@@ -92,6 +92,7 @@ export async function POST(req: NextRequest) {
         owner_photo_url: ownerPhotoUrl || null,
         custom_images: customImages || null,
         template: template || "classic",
+        hidden_sections: hiddenSections || [],
         ...(updatedCopy ? { generated_copy: updatedCopy } : {}),
       })
       .eq("id", siteId);

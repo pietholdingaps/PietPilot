@@ -32,6 +32,7 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
 
   // Show all services as carousel cards — no arbitrary limit, no text list below.
   const servicesGrid = copy.services || [];
+  const hidden = new Set(data.hiddenSections || []);
 
   return (
     <div style={{ background: theme.bg, color: theme.text }} className="min-h-screen font-sans antialiased">
@@ -178,7 +179,7 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
       </section>
 
       {/* OM MIG / MEET THE OWNER */}
-      {data.ownerBio && (
+      {data.ownerBio && !hidden.has("owner") && (
         <section className="py-24 px-6" style={{ background: theme.card }}>
           <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-14 items-center">
             {data.ownerPhotoUrl ? (
@@ -280,7 +281,7 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
       </section>
 
       {/* REVIEWS / TESTIMONIALS */}
-      {data.reviews && data.reviews.length > 0 && (
+      {data.reviews && data.reviews.length > 0 && !hidden.has("reviews") && (
         <section className="py-24 px-6">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-14">

@@ -44,4 +44,5 @@ export type SiteData = {
     hero?: string;
     services?: Record<string, string>; // keyed by service slug
   };
+  hiddenSections?: string[];
 };

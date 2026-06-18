@@ -61,6 +61,14 @@ function EditSiteInner() {
   // Design / template
   const [template, setTemplate] = useState("classic");
 
+  // Hidden sections (toggled off on the live site)
+  const [hiddenSections, setHiddenSections] = useState<string[]>([]);
+  function toggleSection(key: string) {
+    setHiddenSections((prev) =>
+      prev.includes(key) ? prev.filter((s) => s !== key) : [...prev, key]
+    );
+  }
+
   // Custom images (hero bg + per-service)
   const [customImages, setCustomImages] = useState<{
     hero?: string;
@@ -100,6 +108,7 @@ function EditSiteInner() {
           setOwnerPhotoUrl(s.owner_photo_url || "");
           setCustomImages(s.custom_images || {});
           setTemplate(s.template || "classic");
+          setHiddenSections(s.hidden_sections || []);
         }
       })
       .finally(() => setLoading(false));
@@ -199,7 +208,7 @@ function EditSiteInner() {
           reviews: reviews.filter((r) => r.text.trim()),
           projectPhotos,
           ownerName, ownerBio, ownerPhotoUrl,
-          customImages, template,
+          customImages, template, hiddenSections,
         }),
       });
       if (!res.ok) throw new Error();
@@ -236,8 +245,54 @@ function EditSiteInner() {
           </Link>
         </div>
 
-        <h1 className="text-3xl font-extrabold tracking-tight mb-1">Edit your website</h1>
-        <p className="text-white/45 text-sm mb-8">Open a section to edit it. Click Save at the bottom when done.</p>
+        <div className="flex items-start justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl font-extrabold tracking-tight mb-1">Edit your website</h1>
+            <p className="text-white/45 text-sm">Open a section to edit it. Click Save at the bottom when done.</p>
+          </div>
+          <a
+            href={`/site/${siteId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-none border border-white/10 hover:border-white/25 text-sm font-bold px-4 py-2.5 rounded-xl transition-colors whitespace-nowrap"
+          >
+            Preview ↗
+          </a>
+        </div>
+
+        {/* Completion score */}
+        {!loading && (() => {
+          const steps = [
+            { label: "Business info", done: !!(businessName && phone) },
+            { label: "Services", done: services.length > 0 },
+            { label: "About", done: !!about },
+            { label: "Reviews", done: reviews.filter(r => r.text.trim()).length > 0 },
+            { label: "About you", done: !!(ownerName || ownerBio) },
+            { label: "Project photos", done: projectPhotos.length > 0 },
+          ];
+          const done = steps.filter(s => s.done).length;
+          const pct = Math.round((done / steps.length) * 100);
+          const missing = steps.filter(s => !s.done).map(s => s.label);
+          return (
+            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-3">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-bold">Website completeness</p>
+                <p className="text-sm font-extrabold" style={{ color: pct === 100 ? "#34d399" : "#f59e0b" }}>{pct}%</p>
+              </div>
+              <div className="h-2 rounded-full bg-white/[0.08] overflow-hidden mb-3">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${pct}%`, background: pct === 100 ? "#34d399" : "#f59e0b" }}
+                />
+              </div>
+              {missing.length > 0 && (
+                <p className="text-xs text-white/40">
+                  Missing: {missing.join(", ")} — {missing.includes("Project photos") && <span className="text-[#f59e0b] font-semibold">real photos make the biggest difference!</span>}
+                </p>
+              )}
+            </div>
+          );
+        })()}
 
         {loading ? (
           <p className="text-white/40 text-sm">Loading…</p>
@@ -373,7 +428,7 @@ function EditSiteInner() {
             </Section>
 
             {/* 5. REVIEWS */}
-            <Section title="Customer reviews" emoji="💬" active={reviews.filter(r => r.text.trim()).length > 0}>
+            <Section title="Customer reviews" emoji="💬" active={reviews.filter(r => r.text.trim()).length > 0} toggleKey="reviews" isHidden={hiddenSections.includes("reviews")} onToggle={() => toggleSection("reviews")}>
               <div className="flex flex-col gap-4">
                 {reviews.map((r, i) => (
                   <div key={i} className="border border-white/[0.06] rounded-xl p-4 flex flex-col gap-3">
@@ -394,7 +449,7 @@ function EditSiteInner() {
             </Section>
 
             {/* 6. ABOUT ME */}
-            <Section title="About you (owner)" emoji="👤" active={!!(ownerName || ownerBio)}>
+            <Section title="About you (owner)" emoji="👤" active={!!(ownerName || ownerBio)} toggleKey="owner" isHidden={hiddenSections.includes("owner")} onToggle={() => toggleSection("owner")}>
               <p className="text-white/45 text-sm">Leave blank to hide this section from your website.</p>
               <Field label="Your name" value={ownerName} onChange={setOwnerName} />
               <Field label="A bit about yourself" value={ownerBio} onChange={setOwnerBio} textarea />
@@ -513,11 +568,14 @@ function EditSiteInner() {
 }
 
 // Accordion section
-function Section({ title, emoji, defaultOpen, active, children }: {
+function Section({ title, emoji, defaultOpen, active, toggleKey, isHidden, onToggle, children }: {
   title: string;
   emoji: string;
   defaultOpen?: boolean;
   active?: boolean;
+  toggleKey?: string;
+  isHidden?: boolean;
+  onToggle?: () => void;
   children: React.ReactNode;
 }) {
   return (
@@ -537,9 +595,30 @@ function Section({ title, emoji, defaultOpen, active, children }: {
             </span>
           )}
         </div>
-        <span className="text-white/35 text-xs transition-transform duration-200 group-open:rotate-180">▾</span>
+        <div className="flex items-center gap-3">
+          {toggleKey && onToggle && (
+            <button
+              type="button"
+              onClick={(e) => { e.preventDefault(); onToggle(); }}
+              title={isHidden ? "Click to show on website" : "Click to hide from website"}
+              className={`text-xs font-bold px-2.5 py-1 rounded-full border transition-all ${
+                isHidden
+                  ? "border-white/10 text-white/25 bg-transparent"
+                  : "border-[#f59e0b]/30 text-[#f59e0b] bg-[#f59e0b]/10"
+              }`}
+            >
+              {isHidden ? "Hidden" : "Visible"}
+            </button>
+          )}
+          <span className="text-white/35 text-xs transition-transform duration-200 group-open:rotate-180">▾</span>
+        </div>
       </summary>
       <div className="px-6 pb-6 pt-5 border-t border-white/[0.06] flex flex-col gap-4">
+        {isHidden && toggleKey && (
+          <p className="text-xs text-white/40 bg-white/[0.03] rounded-lg px-4 py-3 border border-white/[0.06]">
+            This section is hidden on your website. Click <strong>Hidden</strong> above to show it again.
+          </p>
+        )}
         {children}
       </div>
     </details>
