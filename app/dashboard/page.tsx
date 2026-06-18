@@ -108,7 +108,7 @@ function DashboardInner() {
             <div className="flex flex-wrap items-center justify-between gap-4 mb-10">
               <div>
                 <h1 className="text-3xl font-extrabold tracking-tight mb-1">
-                  Welcome back, {site.business_name || "there"} 👋
+                  Welcome back, {site.owner_name?.split(" ")[0] || site.business_name || "there"} 👋
                 </h1>
                 <p className="text-white/45 text-base">
                   Here's how your website is doing.
