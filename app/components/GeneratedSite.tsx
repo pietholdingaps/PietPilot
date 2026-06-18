@@ -30,14 +30,8 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
   const photos = getPhotosForTrade(data.trade);
   const { copy } = data;
 
-  // Show exactly the services the owner told us about — no invented extras.
-  const servicesGrid = (copy.services || []).slice(0, 12);
-
-  // Extra services for the full "everything we do" list — anything from
-  // allServices that isn't already shown as one of the main cards.
-  const extraServices = (copy.allServices || []).filter(
-    (s) => !servicesGrid.some((g) => g.toLowerCase() === s.toLowerCase())
-  );
+  // Show all services as carousel cards — no arbitrary limit, no text list below.
+  const servicesGrid = copy.services || [];
 
   return (
     <div style={{ background: theme.bg, color: theme.text }} className="min-h-screen font-sans antialiased">
@@ -257,21 +251,6 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
             })}
           />
 
-          {extraServices.length > 0 && (
-            <div className="mt-12 pt-12 border-t" style={{ borderColor: `${theme.text}12` }}>
-              <p className="text-center text-sm font-bold uppercase tracking-[0.2em] mb-6" style={{ color: theme.muted }}>
-                ...and more
-              </p>
-              <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 max-w-3xl mx-auto">
-                {extraServices.map((s, i) => (
-                  <div key={i} className="flex items-center gap-2 text-sm font-medium">
-                    <span style={{ color: theme.accent }}>✓</span>
-                    {s}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </section>
 
