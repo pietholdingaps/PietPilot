@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       project_photos: projectPhotos && projectPhotos.length > 0 ? projectPhotos : null,
       reviews: reviews && reviews.length > 0 ? reviews : null,
       template: template || null,
-      owner_name: accountName || null,
+      account_name: accountName || null,
       created_at: new Date().toISOString(),
     }).select("id").single();
 
