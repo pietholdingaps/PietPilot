@@ -23,6 +23,7 @@ type SiteInfo = {
   hours: string;
   logo_url: string;
   template: string;
+  owner_name?: string;
 };
 
 export default function Dashboard() {
