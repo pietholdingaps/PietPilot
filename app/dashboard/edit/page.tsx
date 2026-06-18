@@ -527,12 +527,12 @@ function Section({ title, emoji, defaultOpen, active, children }: {
           <span className="text-lg">{emoji}</span>
           <span className="font-bold text-white text-sm">{title}</span>
           {active === true && (
-            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400">
+            <span style={{ background: "rgba(16,185,129,0.15)", color: "#34d399" }} className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">
               Active
             </span>
           )}
           {active === false && (
-            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/[0.06] text-white/30">
+            <span style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.3)" }} className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">
               Not set up
             </span>
           )}
