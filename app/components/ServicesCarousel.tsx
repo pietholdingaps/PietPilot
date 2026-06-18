@@ -18,7 +18,7 @@ export default function ServicesCarousel({ items, theme }: { items: ServiceCardI
     const el = scrollRef.current;
     if (!el) return;
     const card = el.children[i] as HTMLElement | undefined;
-    if (card) el.scrollTo({ left: card.offsetLeft - el.offsetLeft, behavior: "smooth" });
+    if (card) el.scrollTo({ left: card.offsetLeft, behavior: "smooth" });
     setActive(i);
   }
 
@@ -28,8 +28,7 @@ export default function ServicesCarousel({ items, theme }: { items: ServiceCardI
     let closest = 0;
     let closestDist = Infinity;
     Array.from(el.children).forEach((child, i) => {
-      const c = child as HTMLElement;
-      const dist = Math.abs(c.offsetLeft - el.scrollLeft - el.offsetLeft);
+      const dist = Math.abs((child as HTMLElement).offsetLeft - el.scrollLeft);
       if (dist < closestDist) {
         closestDist = dist;
         closest = i;
@@ -37,6 +36,9 @@ export default function ServicesCarousel({ items, theme }: { items: ServiceCardI
     });
     setActive(closest);
   }
+
+  // Shared classes for every flex item (whether <a> or <div>)
+  const itemClass = "relative flex-none w-[260px] sm:w-[300px] aspect-[3/4] rounded-2xl overflow-hidden snap-start group cursor-pointer";
 
   return (
     <div>
@@ -46,13 +48,13 @@ export default function ServicesCarousel({ items, theme }: { items: ServiceCardI
         className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-2 -mx-6 px-6 sm:-mx-0 sm:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {items.map((item, i) => {
-          const Card = (
-            <div className="relative flex-none w-[260px] sm:w-[300px] aspect-[3/4] rounded-2xl overflow-hidden snap-start group">
+          const inner = (
+            <>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={item.image}
                 alt={item.title}
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
               <div
                 className="absolute inset-0"
@@ -67,18 +69,22 @@ export default function ServicesCarousel({ items, theme }: { items: ServiceCardI
                   </span>
                 )}
               </div>
-            </div>
+            </>
           );
+
           return item.href ? (
-            <a key={i} href={item.href} className="block">
-              {Card}
+            <a key={i} href={item.href} className={itemClass}>
+              {inner}
             </a>
           ) : (
-            <div key={i}>{Card}</div>
+            <div key={i} className={itemClass}>
+              {inner}
+            </div>
           );
         })}
       </div>
 
+      {/* Dot navigation */}
       {items.length > 1 && (
         <div className="flex items-center justify-center gap-2 mt-8">
           {items.map((_, i) => (
@@ -86,8 +92,11 @@ export default function ServicesCarousel({ items, theme }: { items: ServiceCardI
               key={i}
               aria-label={`Go to service ${i + 1}`}
               onClick={() => scrollToIndex(i)}
-              className="w-2 h-2 rounded-full transition-all"
-              style={{ background: i === active ? theme.accent : `${theme.text}25` }}
+              className="w-2 h-2 rounded-full transition-all duration-200"
+              style={{
+                background: i === active ? theme.accent : `${theme.text}30`,
+                transform: i === active ? "scale(1.4)" : "scale(1)",
+              }}
             />
           ))}
         </div>
