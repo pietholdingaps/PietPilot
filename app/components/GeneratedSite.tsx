@@ -54,7 +54,7 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
     fallback.push({ value: yearsMatch ? `${yearsMatch[1]}+` : "5+", label: "Years Experience" });
     const jobsMatch = (copy.about || "").match(/(\d[\d,]+)\+?\s*(job|project|home|customer|client)/i);
     fallback.push({ value: jobsMatch ? `${jobsMatch[1].replace(/,/g, "")}+` : "200+", label: "Jobs Completed" });
-    const areaCity = (data.area || "Local Area").split(/[,&]/)[0].trim().split(/\s+and\s+/i)[0].trim().split(" ").slice(0, 2).join(" ");
+    const areaCity = (data.area || "Local Area").split(/\s+and\s+/i)[0].split(/[,&]/)[0].trim().split(" ").slice(0, 1).join(" ");
     fallback.push({ value: areaCity, label: "Service Area" });
     fallback.push({ value: "1 Hour", label: "Response Time" });
     return fallback;

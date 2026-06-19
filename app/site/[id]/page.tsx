@@ -114,7 +114,7 @@ export default async function GeneratedSitePage({ params }: { params: Promise<{ 
       : [
           { value: "5+", label: "Years Experience" },
           { value: "200+", label: "Jobs Completed" },
-          { value: (submission.area || "Local").split(/[,&]/)[0].trim().split(" ").slice(0, 2).join(" "), label: "Service Area" },
+          { value: (submission.area || "Local").split(/[,&\s]+and\s+/i)[0].split(/,/)[0].trim().split(" ").slice(0, 2).join(" "), label: "Service Area" },
           { value: "1 Hour", label: "Response Time" },
         ];
     if (yearsRaw) currentStats[0] = { value: `${yearsRaw}+`, label: "Years Experience" };
