@@ -223,7 +223,16 @@ function EditSiteInner() {
         setHours(s.hours || "");
         setLogoUrl(s.logo_url || "");
         setTemplate(s.template || "classic");
-        setHiddenSections(s.hidden_sections || []);
+        // If hidden_sections was never explicitly saved, auto-hide sections with no content
+        const savedHidden: string[] = s.hidden_sections || [];
+        const autoHidden = new Set(savedHidden);
+        // Only auto-hide if the user has never explicitly saved a preference (hidden_sections is null)
+        if (!s.hidden_sections) {
+          if (!s.owner_name && !s.owner_bio) autoHidden.add("owner");
+          if (!s.project_photos || s.project_photos.length === 0) autoHidden.add("photos");
+          if (!s.trustpilot_url && !s.google_reviews_url) autoHidden.add("reviews");
+        }
+        setHiddenSections(Array.from(autoHidden));
         // Section order — use saved or default
         if (s.section_order && s.section_order.length > 0) {
           // Merge: keep saved order but add any new sections that aren't in saved list
