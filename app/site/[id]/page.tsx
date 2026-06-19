@@ -120,6 +120,7 @@ export default async function GeneratedSitePage({ params }: { params: Promise<{ 
         ownerPhotoUrl: submission.owner_photo_url || "",
         customImages: submission.custom_images || undefined,
         hiddenSections: submission.hidden_sections || [],
+        sectionOrder: submission.section_order || undefined,
         trustpilotUrl: submission.trustpilot_url || "",
         googleReviewsUrl: submission.google_reviews_url || "",
       }}

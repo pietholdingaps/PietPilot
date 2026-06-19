@@ -16,8 +16,7 @@ function rebuildServiceDetails(
     return existing
       ? { ...existing, title, slug }
       : {
-          title,
-          slug,
+          title, slug,
           description: `${businessName || "We"} provide professional ${title.toLowerCase()} services across ${area || "the local area"}. Contact us today for a free, no-obligation quote.`,
           faqs: [],
         };
@@ -33,18 +32,16 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const {
-      siteId, businessName, phone, email, address, hours, logoUrl,
-      headline, subheadline, about, guaranteeLine, responsePromise,
-      services, serviceDescriptions, whyPoints, stats,
+      siteId, businessName, phone, email, address, hours, logoUrl, template,
+      headline, subheadline, ctaText, about, guaranteeLine, responsePromise, trustLine,
+      services, serviceDescriptions, whyPoints, processSteps, stats,
       trustpilotUrl, googleReviewsUrl,
       projectPhotos,
       ownerName, ownerBio, ownerPhotoUrl,
-      customImages, template, hiddenSections,
+      customImages, hiddenSections, sectionOrder,
     } = body;
 
-    if (!siteId) {
-      return NextResponse.json({ error: "Missing site id" }, { status: 400 });
-    }
+    if (!siteId) return NextResponse.json({ error: "Missing site id" }, { status: 400 });
 
     const { data: existing, error: fetchError } = await supabase
       .from("onboarding_submissions")
@@ -52,38 +49,43 @@ export async function POST(req: NextRequest) {
       .eq("id", siteId)
       .single();
 
-    if (fetchError || !existing) {
-      return NextResponse.json({ error: "Site not found" }, { status: 404 });
-    }
+    if (fetchError || !existing) return NextResponse.json({ error: "Site not found" }, { status: 404 });
 
     const currentCopy: GeneratedSiteCopy | null = existing.generated_copy;
     const bName = businessName || existing.business_name || "";
     const bArea = address || existing.area || "";
 
-    const updatedCopy = currentCopy
+    // When services are edited, we need to merge descriptions separately
+    // (because serviceDescriptions is keyed by title, which may have changed)
+    const updatedServiceDetails = services && currentCopy
+      ? rebuildServiceDetails(services, currentCopy, bName, bArea).map((d) => ({
+          ...d,
+          description: serviceDescriptions?.[d.title] ?? d.description,
+        }))
+      : currentCopy
+        ? (serviceDescriptions
+            ? (currentCopy.serviceDetails || []).map((d) => ({
+                ...d,
+                description: serviceDescriptions[d.title] ?? d.description,
+              }))
+            : currentCopy.serviceDetails)
+        : null;
+
+    const updatedCopy: GeneratedSiteCopy | null = currentCopy
       ? {
           ...currentCopy,
           ...(headline !== undefined && { headline }),
           ...(subheadline !== undefined && { subheadline }),
+          ...(ctaText !== undefined && { ctaText }),
           ...(about !== undefined && { about }),
-          ...(services && {
-            services,
-            allServices: services,
-            serviceDetails: rebuildServiceDetails(services, currentCopy, bName, bArea),
-          }),
-          ...(whyPoints && {
-            whyChooseUs: { ...currentCopy.whyChooseUs, points: whyPoints },
-          }),
-          ...(stats && { stats }),
           ...(guaranteeLine !== undefined && { guaranteeLine }),
           ...(responsePromise !== undefined && { responsePromise }),
-          // Merge edited service descriptions back into serviceDetails
-          ...(serviceDescriptions && {
-            serviceDetails: (currentCopy.serviceDetails || []).map((d) => ({
-              ...d,
-              description: serviceDescriptions[d.title] ?? d.description,
-            })),
-          }),
+          ...(trustLine !== undefined && { trustLine }),
+          ...(services && { services, allServices: services }),
+          ...(whyPoints && { whyChooseUs: { ...currentCopy.whyChooseUs, points: whyPoints } }),
+          ...(processSteps && { process: processSteps }),
+          ...(stats && { stats }),
+          ...(updatedServiceDetails && { serviceDetails: updatedServiceDetails }),
         }
       : null;
 
@@ -96,15 +98,16 @@ export async function POST(req: NextRequest) {
         address,
         hours,
         logo_url: logoUrl || null,
+        template: template || "classic",
         trustpilot_url: trustpilotUrl || null,
         google_reviews_url: googleReviewsUrl || null,
-        project_photos: projectPhotos && projectPhotos.length > 0 ? projectPhotos : null,
+        project_photos: projectPhotos?.length > 0 ? projectPhotos : null,
         owner_name: ownerName || null,
         owner_bio: ownerBio || null,
         owner_photo_url: ownerPhotoUrl || null,
         custom_images: customImages || null,
-        template: template || "classic",
         hidden_sections: hiddenSections || [],
+        section_order: sectionOrder || null,
         ...(updatedCopy ? { generated_copy: updatedCopy } : {}),
       })
       .eq("id", siteId);

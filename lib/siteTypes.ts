@@ -42,9 +42,10 @@ export type SiteData = {
   ownerPhotoUrl?: string;
   customImages?: {
     hero?: string;
-    services?: Record<string, string>; // keyed by service slug
+    services?: Record<string, string>;
   };
   hiddenSections?: string[];
+  sectionOrder?: string[];
   trustpilotUrl?: string;
   googleReviewsUrl?: string;
 };
