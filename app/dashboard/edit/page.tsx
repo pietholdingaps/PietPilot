@@ -104,8 +104,12 @@ function EditSiteInner() {
           setHours(s.hours || "");
           setLogoUrl(s.logo_url || "");
           if (s.generated_copy) {
-            setHeadline(s.generated_copy.headline || "");
-            setSubheadline(s.generated_copy.subheadline || "");
+            const biz = s.business_name || "";
+            const tr = s.trade || "trade";
+            const area = s.area || "the local area";
+            // If headline is missing from generated_copy, use same fallback as live site
+            setHeadline(s.generated_copy.headline || `${tr} services you can count on`);
+            setSubheadline(s.generated_copy.subheadline || `${biz || "We"} proudly serve ${area} with fast, reliable work and honest pricing.`);
             // Fallback to raw onboarding field if generated_copy doesn't have it yet
             setAbout(s.generated_copy.about || s.about || "");
             setServices(
@@ -129,6 +133,12 @@ function EditSiteInner() {
             setAbout(s.about || "");
             const rawServices = (s.services || "").split(/[\n,;•\-–]+/).map((x: string) => x.trim()).filter((x: string) => x.length > 1);
             setServices(rawServices);
+            // Build simple headline/subheadline from onboarding data so fields aren't blank
+            const biz = s.business_name || "";
+            const tr = s.trade || "trade";
+            const area = s.area || "the local area";
+            setHeadline(biz ? `${tr} services you can count on` : `Trusted ${tr} services`);
+            setSubheadline(`${biz || "We"} proudly serve ${area} with fast, reliable work and honest pricing.`);
           }
           setTrustpilotUrl(s.trustpilot_url || "");
           setGoogleReviewsUrl(s.google_reviews_url || "");
