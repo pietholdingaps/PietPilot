@@ -44,6 +44,11 @@ function EditSiteInner() {
   // About
   const [about, setAbout] = useState("");
   const [whyPoints, setWhyPoints] = useState<string[]>(["", "", ""]);
+  const [guaranteeLine, setGuaranteeLine] = useState("");
+  const [responsePromise, setResponsePromise] = useState("");
+
+  // Service descriptions (keyed by service name)
+  const [serviceDescriptions, setServiceDescriptions] = useState<Record<string, string>>({});
 
   // Reviews — now via platform links only
   const [trustpilotUrl, setTrustpilotUrl] = useState("");
@@ -111,6 +116,14 @@ function EditSiteInner() {
             const pts = s.generated_copy.whyChooseUs?.points || [];
             setWhyPoints(pts.length > 0 ? pts : ["", "", ""]);
             if (s.generated_copy.stats?.length > 0) setStats(s.generated_copy.stats);
+            setGuaranteeLine(s.generated_copy.guaranteeLine || "");
+            setResponsePromise(s.generated_copy.responsePromise || "");
+            // Load service descriptions keyed by name
+            const descs: Record<string, string> = {};
+            for (const d of s.generated_copy.serviceDetails || []) {
+              if (d.title && d.description) descs[d.title] = d.description;
+            }
+            setServiceDescriptions(descs);
           } else {
             // No generated_copy yet — load straight from onboarding answers
             setAbout(s.about || "");
@@ -219,8 +232,8 @@ function EditSiteInner() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           siteId, businessName, phone, email, address, hours, logoUrl,
-          headline, subheadline, about,
-          services,
+          headline, subheadline, about, guaranteeLine, responsePromise,
+          services, serviceDescriptions,
           whyPoints: whyPoints.filter((p) => p.trim()),
           stats: stats.filter((s) => s.value.trim()),
           trustpilotUrl, googleReviewsUrl,
@@ -438,6 +451,13 @@ function EditSiteInner() {
                         />
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold truncate mb-1.5">{s}</p>
+                          <textarea
+                            value={serviceDescriptions[s] || ""}
+                            onChange={(e) => setServiceDescriptions(prev => ({ ...prev, [s]: e.target.value }))}
+                            placeholder="Short description shown on the service card..."
+                            rows={2}
+                            className="w-full bg-[#0b1220] border border-white/10 rounded-lg px-3 py-2 text-xs text-white/80 focus:outline-none focus:border-[#f59e0b]/50 resize-none mb-1.5"
+                          />
                           <div className="flex flex-wrap gap-1.5">
                             <label className="cursor-pointer text-xs font-semibold px-2.5 py-1 rounded-md border border-white/10 hover:border-white/25 transition-colors">
                               Upload photo
@@ -462,6 +482,8 @@ function EditSiteInner() {
             {/* 4. ABOUT */}
             <Section title="About your business" emoji="📖" active={!!(about || whyPoints.some(p => p.trim()))}>
               <Field label="About us text" value={about} onChange={setAbout} textarea />
+              <Field label="Trust & license line" value={guaranteeLine} onChange={setGuaranteeLine} placeholder="e.g. Fully licensed & insured — License #TX-48213" />
+              <Field label="Response promise" value={responsePromise} onChange={setResponsePromise} placeholder="e.g. We respond within 1 hour — guaranteed." />
               <div>
                 <p className="text-sm font-semibold text-white/70 mb-3">Why customers choose you (3 reasons)</p>
                 <div className="flex flex-col gap-2">

@@ -34,8 +34,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const {
       siteId, businessName, phone, email, address, hours, logoUrl,
-      headline, subheadline, about,
-      services, whyPoints, stats,
+      headline, subheadline, about, guaranteeLine, responsePromise,
+      services, serviceDescriptions, whyPoints, stats,
       trustpilotUrl, googleReviewsUrl,
       projectPhotos,
       ownerName, ownerBio, ownerPhotoUrl,
@@ -75,6 +75,15 @@ export async function POST(req: NextRequest) {
             whyChooseUs: { ...currentCopy.whyChooseUs, points: whyPoints },
           }),
           ...(stats && { stats }),
+          ...(guaranteeLine !== undefined && { guaranteeLine }),
+          ...(responsePromise !== undefined && { responsePromise }),
+          // Merge edited service descriptions back into serviceDetails
+          ...(serviceDescriptions && {
+            serviceDetails: (currentCopy.serviceDetails || []).map((d) => ({
+              ...d,
+              description: serviceDescriptions[d.title] ?? d.description,
+            })),
+          }),
         }
       : null;
 
