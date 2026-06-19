@@ -590,7 +590,7 @@ function OnboardingInner() {
                         <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
                         <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
                         <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
-                        <span className="ml-3 text-xs text-white/30">{(data.businessName || "yourcompany").toLowerCase().replace(/\s+/g, "")}.com</span>
+                        <span className="ml-3 text-xs text-white/30">{(data.businessName || "yourcompany").toLowerCase().replace(/[^a-z0-9]/g, "")}.com</span>
                       </div>
                       {!previewCopy ? (
                         <div className="p-16 flex flex-col items-center justify-center gap-3 text-white/40 text-sm">

@@ -75,9 +75,27 @@ export async function POST(req: NextRequest) {
       ? `The owner listed these EXACT services. Your 'services' array must contain ALL of them and NOTHING else:\n${parsedServices.map((s, i) => `${i + 1}. ${s}`).join("\n")}`
       : `Services offered (raw): ${submission.services || "—"}`;
 
+    // Pre-extract numbers from experience/about so AI can't hallucinate defaults
+    const rawExperience = submission.experience || "";
+    const rawAbout = submission.about || "";
+    const yearsMatch = (rawExperience + " " + rawAbout).match(/(\d+)\s*\+?\s*year/i);
+    const jobsMatch = (rawExperience + " " + rawAbout).match(/(\d[\d,\.]+)\s*\+?\s*(job|project|home|customer|client|repair|install)/i);
+    const extractedYears = yearsMatch ? `${yearsMatch[1]}+` : null;
+    const extractedJobs = jobsMatch ? `${jobsMatch[1].replace(/[,\.]/g, "")}+` : null;
+
+    const licenseClean = (submission.license_number || "").replace(/^license\s*#?\s*/i, "").trim();
+
+    const hardFacts = [
+      extractedYears ? `- Years in business: ${extractedYears} — USE THIS EXACT NUMBER in stats and headline` : null,
+      extractedJobs ? `- Jobs/projects completed: ${extractedJobs} — USE THIS EXACT NUMBER in stats` : null,
+      licenseClean ? `- License/insurance number: ${licenseClean} — when you write the guaranteeLine, write ONLY "License #${licenseClean}" — do NOT write "License #License #${licenseClean}"` : null,
+    ].filter(Boolean).join("\n");
+
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
     const prompt = `You are a copywriter building a real website for a real local tradesperson. Your job is to write copy that feels 100% specific to THIS business — not generic filler that could apply to anyone.
+
+${hardFacts ? `⚠️ HARD FACTS — these are extracted directly from what the owner wrote. Use them verbatim, do not change or round them:\n${hardFacts}\n` : ""}
 
 CRITICAL RULES — follow these exactly or the website will be useless:
 
@@ -85,15 +103,19 @@ CRITICAL RULES — follow these exactly or the website will be useless:
 ${servicesBlock}
 NEVER use generic services like "Repairs & maintenance", "New installations", "Inspections", "Emergency call-outs", "Free estimates", or "Maintenance plans" UNLESS those exact words appear in the list above. The 'services' array in your JSON must match this list exactly (cleaned up to 2-5 word names).
 
-2. EXPERIENCE: If the owner mentioned years of experience (e.g. "8 years", "over a decade"), use it prominently in the headline or subheadline AND in the trustLine. Do not bury it.
+2. EXPERIENCE & STATS: Use the EXACT numbers from the HARD FACTS above. If the owner said 13 years, write 13+ not 5+. If they said 4000 jobs, write 4000+ not 200+. Never use placeholder defaults when real numbers are available.
 
-3. ABOUT: Use the owner's own words as your raw material. Do not replace specific details (years in business, number of jobs done, what they care about, what makes them different) with generic phrases. The 'about' field should read like it was written BY this specific business, not by a template.
+3. ABOUT: Use the owner's own words as your raw material. Include their specific specialties (e.g. galvanized pipes, old homes, no-mess policy), years in business, and what makes them different. Do NOT replace specific details with generic phrases.
 
-4. WHY CHOOSE US: Base the 'points' directly on what the owner wrote under "Why customers should choose them". Use their actual reasons — do not substitute with generic points like "honest pricing" or "quality work" unless the owner specifically mentioned those things.
+4. WHY CHOOSE US: Base the 'points' directly on what the owner wrote. Use their actual reasons — do not substitute with generic points unless the owner specifically mentioned those things.
 
-5. FAQ: Each service's FAQ questions must be specific to THAT service. For "Roof Repairs" ask about storm damage, repair vs replacement, timeframes. For "Terrace Construction" ask about materials, planning permission, maintenance. Do NOT ask generic questions like "How much does [service] cost?" and "How soon can you start?" for every single service — vary them based on what customers actually wonder about for that specific job.
+5. FAQ: Each service's FAQ questions must be specific to THAT service. For "Water Heater Repair" ask about tank vs tankless, lifespan, signs it needs replacing. For "Leak Detection" ask about hidden leaks, methods used, damage prevention. Do NOT copy-paste the same 3 questions for every service.
 
-6. LOCAL SEO: Mention the area (${submission.area || "local area"}) and specific service combinations naturally throughout descriptions.
+6. SERVICE DESCRIPTIONS: Each serviceDetails description must mention something specific to that exact service — not a template sentence. "Drain Cleaning" ≠ "Water Heater Repair" ≠ "Leak Detection". Make them clearly different.
+
+7. GRAMMAR: Use correct subject-verb agreement. "[Business name] stands behind our work" not "stand behind". Check every sentence.
+
+8. LOCAL SEO: Mention the area (${submission.area || "local area"}) and specific service combinations naturally.
 
 Here is the business information:
 
@@ -102,27 +124,27 @@ Trade: ${submission.trade || "—"}
 Area covered: ${submission.area || "—"}
 Business address: ${submission.address || "—"}
 Opening hours: ${submission.hours || "—"}
-Experience: ${submission.experience || "—"}
-License/insurance number: ${(submission.license_number || "").replace(/^license\s*#?\s*/i, "").trim() || "—"}
+Experience: ${rawExperience || "—"}
+License/insurance number: ${licenseClean || "—"}
 Why customers should choose them (in the owner's own words): ${submission.why_choose_us || "—"}
-About the business (in the owner's own words): ${submission.about || "—"}
+About the business (in the owner's own words): ${rawAbout || "—"}
 
 Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape:
 {
-  "headline": "short punchy hero headline — if they have years of experience, lead with it (e.g. '8 Years of Trusted Roofing & Carpentry in Næstved'). Max 10 words.",
-  "subheadline": "one sentence that uses the business name, area, and a specific benefit from what they told us — not a generic line",
-  "about": "3-4 sentences written in third person using the owner's own details as the source — include their years in business, what they specialise in, what they care about, and what makes them different. Do NOT use placeholder phrases like 'local trusted name' or 'clear communication' unless the owner said that.",
-  "servicesIntro": "one short sentence introducing the services list — mention their trade and area",
-  "services": "an array — one short name (2-5 words) per service the owner listed under 'Services offered'. Include ALL of them. Add NOTHING they didn't mention.",
-  "allServices": "identical to 'services' — do not add anything",
+  "headline": "short punchy hero headline — lead with their exact years of experience if given (e.g. '13 Years of Trusted Plumbing Across Austin'). Max 10 words.",
+  "subheadline": "one sentence using the business name, area, and a specific benefit from what they told us — not a generic line",
+  "about": "3-4 sentences in third person using their specific details — years in business, specialties, what they care about, what makes them different. Reference specific things they mentioned (materials, methods, policies). Do NOT use filler like 'local trusted name'.",
+  "servicesIntro": "one short sentence introducing the services — mention their trade and area",
+  "services": ["array of their exact services, 2-5 word names, ALL of them, NOTHING added"],
+  "allServices": ["identical to services"],
   "ctaText": "short CTA button text",
-  "trustLine": "a credibility line that leads with their years of experience if they gave it — e.g. '8+ years serving homeowners across Næstved and surrounding areas'",
-  "responsePromise": "a short reassuring line about response time — invent something reasonable if not stated",
-  "guaranteeLine": "a trust line — include license/insurance number if provided",
-  "whyChooseUs": { "title": "Why choose [Business Name]?", "points": ["3 short punchy points taken DIRECTLY from what the owner wrote under 'Why customers should choose them' — these must be their actual reasons, not invented ones"] },
-  "process": [{ "title": "2-4 word step title", "description": "one sentence" }, ...4 steps total],
-  "stats": "REQUIRED — always include exactly 4 stat objects shown as bold trust badges under the hero. CRITICAL: the 'value' field renders as a very large bold number/word — it MUST be short (max ~8 characters). Long text looks broken. Use these 4 slots: (1) Years of experience — e.g. value '10+' label 'Years Experience' — if not stated use '5+'; (2) Jobs completed — e.g. value '500+' label 'Jobs Completed' — if not stated use '200+'; (3) Service area — use ONLY the city name, 1-2 words MAX (e.g. 'Copenhagen', 'London', 'Sydney') — NEVER write 'Copenhagen and surrounding areas' or any long phrase; (4) Response time — e.g. value '1 Hour' label 'Response Time' — use what they said or default to '1 Hour'. NEVER leave this array empty.",
-  "serviceDetails": "one object per service in the 'services' array, same order — each with: 'title' (same as service name), 'slug' (lowercase hyphenated URL slug), 'description' (3-4 sentence SEO paragraph mentioning the specific service, the business name, the area, and what the customer gets — make each one unique and specific), 'faqs' (3 FAQ objects — questions must be specific to THIS service, not copy-pasted generics — vary them across services)"
+  "trustLine": "credibility line leading with their exact years of experience — e.g. '13+ years serving homeowners across Austin and surrounding areas'",
+  "responsePromise": "short reassuring line about response time — use what they said or invent something reasonable",
+  "guaranteeLine": "trust line with license if provided — format: 'Fully licensed & insured — License #${licenseClean || "XXXXX"}' — ONE 'License #' only, never doubled",
+  "whyChooseUs": { "title": "Why choose [Business Name]?", "points": ["3 punchy points taken DIRECTLY from what the owner wrote — their actual reasons"] },
+  "process": [{ "title": "2-4 word step title", "description": "one sentence" }, { "title": "...", "description": "..." }, { "title": "...", "description": "..." }, { "title": "...", "description": "..." }],
+  "stats": [{ "value": "${extractedYears || "5+"}", "label": "Years Experience" }, { "value": "${extractedJobs || "200+"}", "label": "Jobs Completed" }, { "value": "CITY_ONLY_1_OR_2_WORDS", "label": "Service Area" }, { "value": "1 Hour", "label": "Response Time" }],
+  "serviceDetails": [{ "title": "exact service name", "slug": "url-slug", "description": "3-4 sentences specific to THIS service — mention the service name, what the customer gets, any relevant specifics from the owner's input. MUST be unique — not the same template repeated.", "faqs": [{ "question": "specific question about this service", "answer": "..." }, { "question": "...", "answer": "..." }, { "question": "...", "answer": "..." }] }]
 }`;
 
     const message = await anthropic.messages.create({
@@ -146,10 +168,16 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
       return NextResponse.json({ error: "Could not generate site copy" }, { status: 500 });
     }
 
-    // Fix 1: Strip double "License #" prefix from AI-generated guaranteeLine
-    if (copy.guaranteeLine) {
-      copy.guaranteeLine = copy.guaranteeLine.replace(/license\s*#\s*license\s*#\s*/gi, "License #");
+    // Strip double "License #" from ALL string values in the copy (recursively)
+    function stripDoubleLicense(obj: unknown): unknown {
+      if (typeof obj === "string") return obj.replace(/license\s*#\s*license\s*#\s*/gi, "License #");
+      if (Array.isArray(obj)) return obj.map(stripDoubleLicense);
+      if (obj && typeof obj === "object") {
+        return Object.fromEntries(Object.entries(obj as Record<string, unknown>).map(([k, v]) => [k, stripDoubleLicense(v)]));
+      }
+      return obj;
     }
+    copy = stripDoubleLicense(copy) as typeof copy;
 
     // Always enforce the owner's own services — never let AI substitute or invent
     if (parsedServices.length > 0) {

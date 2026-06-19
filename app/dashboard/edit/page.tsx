@@ -466,6 +466,12 @@ function EditSiteInner() {
 
             {/* 5. REVIEWS */}
             <Section title="Customer reviews" emoji="💬" active={reviews.filter(r => r.text.trim()).length > 0} toggleKey="reviews" isHidden={hiddenSections.includes("reviews")} onToggle={() => toggleSection("reviews")}>
+              <div className="flex items-start gap-2.5 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 mb-2">
+                <span className="text-amber-400 mt-0.5 flex-none">⚠️</span>
+                <p className="text-amber-300/80 text-xs leading-relaxed">
+                  <strong className="text-amber-300">Only add real reviews from real customers.</strong> Fake or invented testimonials are against FTC guidelines in the US and consumer protection laws in most countries — and will hurt trust if spotted by potential customers.
+                </p>
+              </div>
               <div className="flex flex-col gap-4">
                 {reviews.map((r, i) => (
                   <div key={i} className="border border-white/[0.06] rounded-xl p-4 flex flex-col gap-3">
