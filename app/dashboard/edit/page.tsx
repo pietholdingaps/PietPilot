@@ -251,39 +251,74 @@ function EditSiteInner() {
         const tr = s.trade || "trade";
         const area = s.area || "the local area";
 
+        // Compute fallbacks that match what the live site shows
+        const licClean = (s.license_number || "").replace(/^license\s*#?\s*/i, "").trim();
+        const fallbackGuaranteeLine = licClean
+          ? `Fully licensed & insured — License #${licClean}.`
+          : "Fully licensed & insured for your peace of mind.";
+        const fallbackWhyPoints = [
+          "Local, reliable, and easy to reach",
+          "Honest pricing with no surprises",
+          "Quality work, done right the first time",
+        ];
+        const fallbackProcess = [
+          { title: "Reach out", description: "Call, message, or fill out our form and tell us what you need." },
+          { title: "Free assessment", description: "We visit and give you a clear, honest quote." },
+          { title: "We get to work", description: "Our team shows up on time and gets the job done right." },
+          { title: "Job done, guaranteed", description: `${biz || "We"} stand${biz ? "s" : ""} behind our work — guaranteed.` },
+        ];
+
+        // Extract real stats numbers from raw onboarding fields
+        const rawExp = (s.experience || "") + " " + (s.about || "");
+        const yearsM = rawExp.match(/(\d[\d,\.]*)\s*\+?\s*(year|years|yr|yrs|år|årig)/i);
+        const jobsM  = rawExp.match(/(\d[\d,\.]*)\s*\+?\s*(job|jobs|project|projects|home|homes|customer|customers|client|clients|opgave|opgaver|kunde|kunder)/i);
+        const extractedYears = yearsM ? yearsM[1].replace(/[,\.]/g, "") + "+" : null;
+        const extractedJobs  = jobsM  ? jobsM[1].replace(/[,\.]/g, "") + "+" : null;
+        const areaCity = area.split(/\s+and\s+/i)[0].split(/[,&]/)[0].trim().split(" ")[0];
+
         if (g) {
           setHeadline(g.headline || `${tr} services you can count on`);
           setSubheadline(g.subheadline || `${biz || "We"} proudly serve ${area} with fast, reliable work and honest pricing.`);
           setCtaText(g.ctaText || "Get a Free Quote");
           setAbout(g.about || s.about || "");
-          setGuaranteeLine(g.guaranteeLine || "");
-          setResponsePromise(g.responsePromise || "");
-          setTrustLine(g.trustLine || "");
+          setGuaranteeLine(g.guaranteeLine || fallbackGuaranteeLine);
+          setResponsePromise(g.responsePromise || "We respond within 24 hours — guaranteed.");
+          setTrustLine(g.trustLine || `Proudly serving ${area}`);
           setServices(g.services?.length > 0 ? g.services : parseRaw(s.services || ""));
-          const pts = g.whyChooseUs?.points || [];
-          setWhyPoints(pts.length >= 3 ? pts : [...pts, ...Array(3 - pts.length).fill("")]);
+          const pts = g.whyChooseUs?.points?.filter(Boolean) || [];
+          setWhyPoints(pts.length >= 3 ? pts : [...pts, ...fallbackWhyPoints.slice(pts.length)]);
           if (g.process?.length > 0) setProcessSteps(g.process);
-          // Load stats — but override years/jobs with real extracted values from raw fields
-          if (g.stats?.length > 0) {
-            const rawExp = (s.experience || "") + " " + (s.about || "");
-            const yearsM = rawExp.match(/(\d[\d,\.]*)\s*\+?\s*(year|years|yr|yrs|år|årig)/i);
-            const jobsM  = rawExp.match(/(\d[\d,\.]*)\s*\+?\s*(job|jobs|project|projects|home|homes|customer|customers|client|clients|opgave|opgaver|kunde|kunder)/i);
-            const extractedYears = yearsM ? yearsM[1].replace(/[,\.]/g, "") + "+" : null;
-            const extractedJobs  = jobsM  ? jobsM[1].replace(/[,\.]/g, "") + "+" : null;
-            const merged = [...g.stats];
-            if (extractedYears) merged[0] = { ...merged[0], value: extractedYears };
-            if (extractedJobs)  merged[1] = { ...merged[1], value: extractedJobs };
-            setStats(merged);
-          }
+          // Stats — prefer generated but override years/jobs with real extracted numbers
+          const baseStats = g.stats?.length > 0 ? [...g.stats] : [
+            { value: extractedYears || "5+", label: "Years Experience" },
+            { value: extractedJobs || "200+", label: "Jobs Completed" },
+            { value: areaCity || "Local", label: "Service Area" },
+            { value: "1 Hour", label: "Response Time" },
+          ];
+          if (extractedYears) baseStats[0] = { ...baseStats[0], value: extractedYears };
+          if (extractedJobs)  baseStats[1] = { ...baseStats[1], value: extractedJobs };
+          setStats(baseStats);
           const descs: Record<string, string> = {};
           for (const d of g.serviceDetails || []) { if (d.title && d.description) descs[d.title] = d.description; }
           setServiceDescriptions(descs);
         } else {
+          // No generated_copy yet — show the same fallback text the live site shows
           setHeadline(`${tr} services you can count on`);
           setSubheadline(`${biz || "We"} proudly serve ${area} with fast, reliable work and honest pricing.`);
           setCtaText("Get a Free Quote");
           setAbout(s.about || "");
+          setGuaranteeLine(fallbackGuaranteeLine);
+          setResponsePromise("We respond within 24 hours — guaranteed.");
+          setTrustLine(`Proudly serving ${area}`);
           setServices(parseRaw(s.services || ""));
+          setWhyPoints(fallbackWhyPoints);
+          setProcessSteps(fallbackProcess);
+          setStats([
+            { value: extractedYears || "5+", label: "Years Experience" },
+            { value: extractedJobs || "200+", label: "Jobs Completed" },
+            { value: areaCity || "Local", label: "Service Area" },
+            { value: "1 Hour", label: "Response Time" },
+          ]);
         }
       })
       .finally(() => setLoading(false));
