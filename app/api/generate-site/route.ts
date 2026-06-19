@@ -78,8 +78,9 @@ export async function POST(req: NextRequest) {
     // Pre-extract numbers from experience/about so AI can't hallucinate defaults
     const rawExperience = submission.experience || "";
     const rawAbout = submission.about || "";
-    const yearsMatch = (rawExperience + " " + rawAbout).match(/(\d+)\s*\+?\s*year/i);
-    const jobsMatch = (rawExperience + " " + rawAbout).match(/(\d[\d,\.]+)\s*\+?\s*(job|project|home|customer|client|repair|install)/i);
+    // Match years in both English ("year", "years") and Danish ("år", "årig")
+    const yearsMatch = (rawExperience + " " + rawAbout).match(/(\d+)\s*\+?\s*(year|years|yr|yrs|år|årig)/i);
+    const jobsMatch = (rawExperience + " " + rawAbout).match(/(\d[\d,\.]+)\s*\+?\s*(job|jobs|project|projects|home|homes|customer|customers|client|clients|repair|repairs|install|installations|opgave|opgaver|kunde|kunder)/i);
     const extractedYears = yearsMatch ? `${yearsMatch[1]}+` : null;
     const extractedJobs = jobsMatch ? `${jobsMatch[1].replace(/[,\.]/g, "")}+` : null;
 
@@ -166,6 +167,21 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
 
     if (!copy) {
       return NextResponse.json({ error: "Could not generate site copy" }, { status: 500 });
+    }
+
+    // FORCE the extracted stats values — never let AI use default placeholders when we have real numbers
+    if (extractedYears || extractedJobs) {
+      if (!Array.isArray(copy.stats)) {
+        copy.stats = [
+          { value: extractedYears || "5+", label: "Years Experience" },
+          { value: extractedJobs || "200+", label: "Jobs Completed" },
+          { value: (submission.area || "").split(/[,&]/)[0].trim().split(/\s+/).slice(0, 2).join(" ") || "Local Area", label: "Service Area" },
+          { value: "1 Hour", label: "Response Time" },
+        ];
+      } else {
+        if (extractedYears) copy.stats[0] = { value: extractedYears, label: "Years Experience" };
+        if (extractedJobs) copy.stats[1] = { value: extractedJobs, label: "Jobs Completed" };
+      }
     }
 
     // Strip double "License #" from ALL string values in the copy (recursively)
