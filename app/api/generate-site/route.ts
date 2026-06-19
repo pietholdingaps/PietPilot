@@ -156,22 +156,46 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
       copy.services = parsedServices;
       copy.allServices = parsedServices;
 
-      // Fix 2: Match serviceDetails by title similarity (not just index) so descriptions are unique per service
+      // Match serviceDetails to the real services list.
+      // Strategy: try title match first, then fall back to same index position.
+      // This preserves AI-written descriptions even when AI used slightly different title wording.
       const existingDetails = Array.isArray(copy.serviceDetails) ? copy.serviceDetails : [];
-      copy.serviceDetails = parsedServices.map((serviceName) => {
+
+      function findDetailForService(serviceName: string, idx: number) {
         const nameKey = serviceName.toLowerCase().replace(/[^a-z0-9]/g, "");
-        // Try to find a matching detail by title — fuzzy match on first word
-        const firstWord = serviceName.toLowerCase().split(/\s+/)[0];
-        const existing =
-          existingDetails.find((d) => {
-            const dKey = (d.title || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-            return dKey === nameKey || dKey.includes(firstWord) || nameKey.includes((d.title || "").toLowerCase().split(/\s+/)[0]);
-          }) || existingDetails.find((d) => (d.title || "").toLowerCase().includes(firstWord));
+        const words = serviceName.toLowerCase().split(/\s+/);
+        // 1. Exact title match
+        let found = existingDetails.find((d) =>
+          (d.title || "").toLowerCase().replace(/[^a-z0-9]/g, "") === nameKey
+        );
+        // 2. Any word in common
+        if (!found) found = existingDetails.find((d) =>
+          words.some((w) => w.length > 3 && (d.title || "").toLowerCase().includes(w))
+        );
+        // 3. Same index position (AI usually outputs in same order)
+        if (!found && existingDetails[idx]) found = existingDetails[idx];
+        return found;
+      }
+
+      copy.serviceDetails = parsedServices.map((serviceName, idx) => {
+        const existing = findDetailForService(serviceName, idx);
         const slug = serviceName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+        const biz = submission.business_name || "We";
+        const area = submission.area || "the local area";
+        // Varied fallback descriptions so they're never all identical
+        const fallbacks = [
+          `${biz} offers professional ${serviceName.toLowerCase()} across ${area}. Our experienced team handles every job efficiently, on time, and at a fair price — with no hidden costs.`,
+          `Need ${serviceName.toLowerCase()} in ${area}? ${biz} delivers quality workmanship backed by years of local experience. Get in touch today for a free, no-obligation quote.`,
+          `${biz}'s ${serviceName.toLowerCase()} service covers all of ${area}. We show up on time, communicate clearly, and get the job done right — every single time.`,
+          `${biz} specialises in ${serviceName.toLowerCase()} for homeowners and businesses across ${area}. Fast response, honest pricing, and guaranteed satisfaction.`,
+          `Whether it's a small fix or a large project, ${biz} handles ${serviceName.toLowerCase()} throughout ${area} with the same care and attention to detail. Call us for a free quote.`,
+          `${biz} brings expertise and reliability to every ${serviceName.toLowerCase()} job in ${area}. We're trusted by local customers for our quality work and transparent pricing.`,
+        ];
+        const description = existing?.description || fallbacks[idx % fallbacks.length];
         return {
           title: serviceName,
           slug,
-          description: existing?.description || `${submission.business_name || "We"} provide professional ${serviceName.toLowerCase()} services across ${submission.area || "the local area"}.`,
+          description,
           faqs: existing?.faqs || [],
         };
       });
