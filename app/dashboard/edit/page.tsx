@@ -263,7 +263,18 @@ function EditSiteInner() {
           const pts = g.whyChooseUs?.points || [];
           setWhyPoints(pts.length >= 3 ? pts : [...pts, ...Array(3 - pts.length).fill("")]);
           if (g.process?.length > 0) setProcessSteps(g.process);
-          if (g.stats?.length > 0) setStats(g.stats);
+          // Load stats — but override years/jobs with real extracted values from raw fields
+          if (g.stats?.length > 0) {
+            const rawExp = (s.experience || "") + " " + (s.about || "");
+            const yearsM = rawExp.match(/(\d[\d,\.]*)\s*\+?\s*(year|years|yr|yrs|år|årig)/i);
+            const jobsM  = rawExp.match(/(\d[\d,\.]*)\s*\+?\s*(job|jobs|project|projects|home|homes|customer|customers|client|clients|opgave|opgaver|kunde|kunder)/i);
+            const extractedYears = yearsM ? yearsM[1].replace(/[,\.]/g, "") + "+" : null;
+            const extractedJobs  = jobsM  ? jobsM[1].replace(/[,\.]/g, "") + "+" : null;
+            const merged = [...g.stats];
+            if (extractedYears) merged[0] = { ...merged[0], value: extractedYears };
+            if (extractedJobs)  merged[1] = { ...merged[1], value: extractedJobs };
+            setStats(merged);
+          }
           const descs: Record<string, string> = {};
           for (const d of g.serviceDetails || []) { if (d.title && d.description) descs[d.title] = d.description; }
           setServiceDescriptions(descs);
@@ -500,7 +511,7 @@ function EditSiteInner() {
                           <input
                             type="text" value={stat.value} maxLength={12}
                             onChange={(e) => setStats((prev) => prev.map((s, j) => j === i ? { ...s, value: e.target.value } : s))}
-                            placeholder="e.g. 10+"
+                            placeholder={i === 0 ? "e.g. 10+" : i === 1 ? "e.g. 500+" : i === 2 ? "e.g. Austin" : "e.g. 1 Hour"}
                             className="w-full bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm font-bold text-white focus:outline-none focus:border-[#f59e0b]/50 mb-2 placeholder:text-white/20"
                           />
                           <input
