@@ -2,6 +2,13 @@ import { createClient } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
 import GeneratedSite from "@/app/components/GeneratedSite";
 import { GeneratedSiteCopy } from "@/lib/siteTypes";
+import { generateServiceDescription } from "@/lib/serviceDescriptions";
+
+// Extract a number + unit match from free text (supports English and Danish)
+function extractNumber(text: string, unitPattern: RegExp): string | null {
+  const m = text.match(new RegExp(`(\\d[\\d,\\.]*)[\\s\\+]*(${unitPattern.source})`, "i"));
+  return m ? m[1].replace(/[,\.]/g, "") : null;
+}
 
 export const dynamic = "force-dynamic";
 
@@ -59,7 +66,7 @@ const fallbackCopy = (businessName: string, trade: string, area: string, license
     serviceDetails: serviceList.map((title) => ({
       title,
       slug: title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
-      description: `${businessName || "We"} provide professional ${title.toLowerCase()} services across ${area || "the local area"}. Get in touch today for a free, no-obligation quote.`,
+      description: generateServiceDescription(title, businessName, area || "the local area"),
       faqs: [
         { question: `How much does ${title.toLowerCase()} cost?`, answer: `Pricing depends on the scope of your project. Contact ${businessName || "us"} for a free quote.` },
         { question: "How soon can you start?", answer: "We aim to respond quickly — get in touch and we'll find a time that works for you." },
@@ -93,6 +100,44 @@ export default async function GeneratedSitePage({ params }: { params: Promise<{ 
 
   // Run stripDoubleLicense on EVERY string in the copy — catches any old saved copy with the bug
   const copy = stripDoubleLicense(rawCopy) as GeneratedSiteCopy;
+
+  // ── STATS OVERRIDE ────────────────────────────────────────────────────────
+  // Re-extract real numbers from raw onboarding fields at render time.
+  // This guarantees the live site always shows the correct stats even if the
+  // AI stored wrong defaults ("5+", "200+") during an earlier generation.
+  const rawExp = (submission.experience || "") + " " + (submission.about || "");
+  const yearsRaw  = extractNumber(rawExp, /year|years|yr|yrs|år|årig/);
+  const jobsRaw   = extractNumber(rawExp, /job|jobs|project|projects|home|homes|customer|customers|client|clients|opgave|opgaver|kunde|kunder/);
+  if (yearsRaw || jobsRaw) {
+    const currentStats: { value: string; label: string }[] = Array.isArray(copy.stats) && copy.stats.length > 0
+      ? [...copy.stats]
+      : [
+          { value: "5+", label: "Years Experience" },
+          { value: "200+", label: "Jobs Completed" },
+          { value: (submission.area || "Local").split(/[,&]/)[0].trim().split(" ").slice(0, 2).join(" "), label: "Service Area" },
+          { value: "1 Hour", label: "Response Time" },
+        ];
+    if (yearsRaw) currentStats[0] = { value: `${yearsRaw}+`, label: "Years Experience" };
+    if (jobsRaw)  currentStats[1] = { value: `${jobsRaw}+`,  label: "Jobs Completed" };
+    (copy as GeneratedSiteCopy).stats = currentStats;
+  }
+
+  // ── SERVICE DESCRIPTION OVERRIDE ─────────────────────────────────────────
+  // If any stored serviceDetail description is the old generic template,
+  // replace it with a smart category-specific description.
+  // Regex catches the two known generic patterns from previous code.
+  const genericPattern = /provide professional .+ services across|Done right, on time/i;
+  if (Array.isArray(copy.serviceDetails)) {
+    copy.serviceDetails = copy.serviceDetails.map((d) => {
+      if (!d.description || genericPattern.test(d.description)) {
+        return {
+          ...d,
+          description: generateServiceDescription(d.title, submission.business_name || "", submission.area || ""),
+        };
+      }
+      return d;
+    });
+  }
 
   return (
     <GeneratedSite

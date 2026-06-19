@@ -183,17 +183,20 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
           <ServicesCarousel
             theme={theme}
             items={servicesGrid.map((s, i) => {
-              const detail = copy.serviceDetails?.[i];
               const slug = s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+              // Match by title (case-insensitive) first, then by slug, then by index
+              const detail = copy.serviceDetails?.find(
+                (d) => d.title.toLowerCase() === s.toLowerCase() || d.slug === slug
+              ) || copy.serviceDetails?.[i];
               const customImg = data.customImages?.services?.[slug];
               const stockFallback = getPhotoForService(s, data.trade, i);
               const pexelsPhoto = (detail as { photo?: string } | undefined)?.photo;
               return {
                 title: s,
-                description: detail?.description || "Done right, on time, every time.",
+                description: detail?.description || "",
                 image: customImg || pexelsPhoto || stockFallback,
                 fallbackImage: customImg ? undefined : stockFallback,
-                href: detail?.slug ? `/site/${data.id}/services/${detail.slug}` : undefined,
+                href: `/site/${data.id}/services/${slug}`,
               };
             })}
           />
