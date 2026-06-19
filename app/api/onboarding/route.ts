@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     const {
       businessName, trade, area, phone, email, address, license, hours,
       services, experience, about, whyChooseUs, logoUrl, template,
-      accountName, accountEmail, projectPhotos, reviews,
+      accountName, accountEmail, projectPhotos, trustpilotUrl, googleReviewsUrl,
     } = body;
 
     const { data: inserted, error: dbError } = await supabase.from("onboarding_submissions").insert({
@@ -33,7 +33,8 @@ export async function POST(req: NextRequest) {
       why_choose_us: whyChooseUs || null,
       logo_url: logoUrl || null,
       project_photos: projectPhotos && projectPhotos.length > 0 ? projectPhotos : null,
-      reviews: reviews && reviews.length > 0 ? reviews : null,
+      trustpilot_url: trustpilotUrl || null,
+      google_reviews_url: googleReviewsUrl || null,
       template: template || null,
       account_name: accountName || null,
       created_at: new Date().toISOString(),
