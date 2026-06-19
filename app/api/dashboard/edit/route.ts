@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     const {
       siteId, businessName, phone, email, address, hours, logoUrl,
       headline, subheadline, about,
-      services, whyPoints,
+      services, whyPoints, stats,
       reviews, projectPhotos,
       ownerName, ownerBio, ownerPhotoUrl,
       customImages, template, hiddenSections,
@@ -73,6 +73,7 @@ export async function POST(req: NextRequest) {
           ...(whyPoints && {
             whyChooseUs: { ...currentCopy.whyChooseUs, points: whyPoints },
           }),
+          ...(stats && { stats }),
         }
       : null;
 

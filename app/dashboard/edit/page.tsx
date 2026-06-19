@@ -58,6 +58,14 @@ function EditSiteInner() {
   const [projectPhotos, setProjectPhotos] = useState<string[]>([]);
   const [photosUploading, setPhotosUploading] = useState(false);
 
+  // Stats badges under hero
+  const [stats, setStats] = useState<{ value: string; label: string }[]>([
+    { value: "5+", label: "Years Experience" },
+    { value: "200+", label: "Jobs Completed" },
+    { value: "", label: "Service Area" },
+    { value: "1 Hour", label: "Response Time" },
+  ]);
+
   // Design / template
   const [template, setTemplate] = useState("classic");
 
@@ -96,6 +104,7 @@ function EditSiteInner() {
             setServices(s.generated_copy.services || []);
             const pts = s.generated_copy.whyChooseUs?.points || [];
             setWhyPoints(pts.length > 0 ? pts : ["", "", ""]);
+            if (s.generated_copy.stats?.length > 0) setStats(s.generated_copy.stats);
           }
           if (s.reviews?.length > 0) {
             setReviews(s.reviews);
@@ -205,6 +214,7 @@ function EditSiteInner() {
           headline, subheadline, about,
           services,
           whyPoints: whyPoints.filter((p) => p.trim()),
+          stats: stats.filter((s) => s.value.trim()),
           reviews: reviews.filter((r) => r.text.trim()),
           projectPhotos,
           ownerName, ownerBio, ownerPhotoUrl,
@@ -350,7 +360,34 @@ function EditSiteInner() {
               </div>
             </Section>
 
-            {/* 3. SERVICES */}
+            {/* 3. TRUST BADGES */}
+            <Section title="Trust badges" emoji="📊" active={stats.some(s => s.value.trim())}>
+              <p className="text-white/45 text-sm mb-1">The 4 stat badges shown just below your hero image. Keep the values short — they display as large bold numbers/words.</p>
+              <div className="grid grid-cols-2 gap-3">
+                {stats.map((stat, i) => (
+                  <div key={i} className="rounded-xl border border-white/[0.06] bg-[#0b1220] p-4">
+                    <input
+                      type="text"
+                      value={stat.value}
+                      onChange={(e) => setStats(prev => prev.map((s, j) => j === i ? { ...s, value: e.target.value } : s))}
+                      placeholder="e.g. 10+"
+                      maxLength={12}
+                      className="w-full bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm font-bold text-white focus:outline-none focus:border-[#f59e0b]/50 mb-2"
+                    />
+                    <input
+                      type="text"
+                      value={stat.label}
+                      onChange={(e) => setStats(prev => prev.map((s, j) => j === i ? { ...s, label: e.target.value } : s))}
+                      placeholder="e.g. Years Experience"
+                      maxLength={24}
+                      className="w-full bg-transparent border border-white/10 rounded-lg px-3 py-2 text-xs text-white/60 focus:outline-none focus:border-[#f59e0b]/50"
+                    />
+                  </div>
+                ))}
+              </div>
+            </Section>
+
+            {/* 4. SERVICES */}
             <Section title="Services" emoji="🛠️" active={services.length > 0}>
               <p className="text-white/45 text-sm">Add or remove the services you offer. Each service gets its own page and image.</p>
               <div className="flex flex-wrap gap-2 min-h-[40px]">

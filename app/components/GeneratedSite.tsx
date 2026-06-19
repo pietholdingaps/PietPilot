@@ -144,11 +144,11 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
           // Jobs completed — try to find a number in the about text
           const jobsMatch = (copy.about || "").match(/(\d[\d,]+)\+?\s*(job|project|home|customer|client)/i);
           fallback.push({ value: jobsMatch ? `${jobsMatch[1].replace(/,/g, "")}+` : "200+", label: "Jobs Completed" });
-          // Area — use first part only to keep it short
-          const areaShort = (data.area || "Local Area").split(/[,&]/)[0].trim().split(" ").slice(0, 3).join(" ");
-          fallback.push({ value: areaShort, label: "Service Area" });
-          // Full opening hours (including Saturday)
-          fallback.push({ value: data.hours || "Mon–Fri 8am–5pm", label: "Opening Hours" });
+          // Area — city name only (first word of area, before any comma/&/space-and)
+          const areaCity = (data.area || "Local Area").split(/[,&]/)[0].trim().split(/\s+and\s+/i)[0].trim().split(" ").slice(0, 2).join(" ");
+          fallback.push({ value: areaCity, label: "Service Area" });
+          // Response time
+          fallback.push({ value: "1 Hour", label: "Response Time" });
           stats = fallback;
         }
         return (
