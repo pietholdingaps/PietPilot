@@ -222,13 +222,13 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
         return found;
       }
 
+      // First pass: build service details using AI-generated copy where available
+      const biz = submission.business_name || "We";
+      const areaStr = submission.area || "the local area";
       copy.serviceDetails = parsedServices.map((serviceName, idx) => {
         const existing = findDetailForService(serviceName, idx);
         const slug = serviceName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-        const biz = submission.business_name || "We";
-        const area = submission.area || "the local area";
-        // Use smart category-aware description generator as fallback
-        const description = existing?.description || generateServiceDescription(serviceName, biz, area);
+        const description = existing?.description || generateServiceDescription(serviceName, biz, areaStr);
         return {
           title: serviceName,
           slug,
@@ -236,6 +236,54 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
           faqs: existing?.faqs || [],
         };
       });
+
+      // Second pass: dedicated AI call to write unique SEO descriptions for ALL services.
+      // This runs for EVERY service the customer listed — no category limits.
+      try {
+        const descPrompt = `You are an SEO copywriter. Write a unique, specific 2-3 sentence description for each service below.
+
+Rules:
+- Each description must be COMPLETELY DIFFERENT from the others — not the same template with the service name swapped in
+- Mention the specific service by name in a natural way
+- Include the business name and location once each
+- Focus on what the customer gets: quality, peace of mind, specific process, materials, or outcome relevant to THAT service
+- Vary the opening sentence structure across descriptions
+- No generic filler like "professional services" or "get in touch today"
+
+Business: ${biz}
+Location: ${areaStr}
+Trade background: ${submission.trade || "general trades"}
+
+Services to describe:
+${parsedServices.map((s, i) => `${i + 1}. ${s}`).join("\n")}
+
+Return ONLY valid JSON with no markdown: {"descriptions": {"exact service name": "description", ...}}`;
+
+        const descMsg = await anthropic.messages.create({
+          model: "claude-sonnet-4-6",
+          max_tokens: 1500,
+          messages: [{ role: "user", content: descPrompt }],
+        });
+        const descText = descMsg.content.find((b) => b.type === "text");
+        const descRaw = descText && "text" in descText ? descText.text : "{}";
+        let descJson: { descriptions?: Record<string, string> } = {};
+        try {
+          descJson = JSON.parse(descRaw);
+        } catch {
+          const m = descRaw.match(/\{[\s\S]*\}/);
+          if (m) descJson = JSON.parse(m[0]);
+        }
+        if (descJson.descriptions) {
+          copy.serviceDetails = copy.serviceDetails.map((detail: { title: string; slug: string; description: string; faqs: unknown[] }) => {
+            const aiDesc = descJson.descriptions![detail.title]
+              || descJson.descriptions![detail.title.toLowerCase()]
+              || descJson.descriptions![Object.keys(descJson.descriptions!).find(k => k.toLowerCase() === detail.title.toLowerCase()) || ""];
+            return aiDesc ? { ...detail, description: aiDesc } : detail;
+          });
+        }
+      } catch {
+        // Description AI call failed — keep first-pass descriptions
+      }
     }
 
     // Pexels: fetch a relevant photo for each service if API key is available
