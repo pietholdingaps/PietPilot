@@ -28,6 +28,10 @@ export const themes: Record<string, Theme> = {
   },
 };
 
+function toTitleCase(s: string) {
+  return s.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 const DEFAULT_SECTION_ORDER = [
   "hero", "stats", "about", "why", "services",
   "process", "reviews", "area", "contact", "owner", "photos",
@@ -289,7 +293,9 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
           <h2 className="text-3xl md:text-4xl font-extrabold mb-4 tracking-tight text-white">
             {copy.trustLine || `Proudly serving ${data.area || "your local area"}`}
           </h2>
-          <p className="text-white/80 text-lg leading-relaxed">{data.area}</p>
+          {copy.responsePromise && (
+            <p className="text-white/75 text-lg leading-relaxed">{copy.responsePromise}</p>
+          )}
         </div>
       </section>
     );
@@ -463,7 +469,7 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] mb-3" style={{ color: theme.accent }}>Services</p>
             <ul className="space-y-1.5 text-sm" style={{ color: theme.muted }}>
-              {servicesGrid.slice(0, 5).map((s, i) => <li key={i}>{s}</li>)}
+              {servicesGrid.slice(0, 5).map((s, i) => <li key={i}>{toTitleCase(s)}</li>)}
             </ul>
           </div>
           <div>

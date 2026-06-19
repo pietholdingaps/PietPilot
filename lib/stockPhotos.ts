@@ -121,12 +121,11 @@ const sets: Record<string, { hero: string; gallery: string[] }> = {
     ],
   },
   bathroom: {
-    // verified: dark modern bathroom w/ freestanding tub, bright bathroom w/ glass shower
-    hero: "https://images.unsplash.com/photo-1600566752355-35792bedcfea",
+    hero: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14",
     gallery: [
       "https://images.unsplash.com/photo-1584622650111-993a426fbf0a",
       "https://images.unsplash.com/photo-1507089947368-19c1da9775ae",
-      "https://images.unsplash.com/photo-1620626011761-996317702149",
+      "https://images.unsplash.com/photo-1600566752355-35792bedcfea",
     ],
   },
   windows: {

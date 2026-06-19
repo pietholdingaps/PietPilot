@@ -8,16 +8,27 @@ function rebuildServiceDetails(
   businessName: string,
   area: string
 ) {
-  return newServices.map((title) => {
+  const existing = currentCopy.serviceDetails || [];
+  return newServices.map((title, idx) => {
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-    const existing = (currentCopy.serviceDetails || []).find(
-      (d) => d.title.toLowerCase() === title.toLowerCase() || d.slug === slug
+    const titleKey = title.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const words = title.toLowerCase().split(/\s+/);
+    // 1. Exact slug or case-insensitive title match
+    let found = existing.find(
+      (d) => d.slug === slug || d.title.toLowerCase().replace(/[^a-z0-9]/g, "") === titleKey
     );
-    return existing
-      ? { ...existing, title, slug }
+    // 2. Word-overlap match (any word > 3 chars in common)
+    if (!found) found = existing.find((d) =>
+      words.some((w) => w.length > 3 && d.title.toLowerCase().includes(w))
+    );
+    // 3. Same index — preserves order if AI used slightly different names
+    if (!found && existing[idx]) found = existing[idx];
+
+    return found
+      ? { ...found, title, slug }
       : {
           title, slug,
-          description: `${businessName || "We"} provide professional ${title.toLowerCase()} services across ${area || "the local area"}. Contact us today for a free, no-obligation quote.`,
+          description: `${businessName || "We"} provide professional ${title.toLowerCase()} services across ${area || "the local area"}. Contact us for a free, no-obligation quote.`,
           faqs: [],
         };
   });
