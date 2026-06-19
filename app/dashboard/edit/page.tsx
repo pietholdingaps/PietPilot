@@ -101,11 +101,21 @@ function EditSiteInner() {
           if (s.generated_copy) {
             setHeadline(s.generated_copy.headline || "");
             setSubheadline(s.generated_copy.subheadline || "");
-            setAbout(s.generated_copy.about || "");
-            setServices(s.generated_copy.services || []);
+            // Fallback to raw onboarding field if generated_copy doesn't have it yet
+            setAbout(s.generated_copy.about || s.about || "");
+            setServices(
+              s.generated_copy.services?.length > 0
+                ? s.generated_copy.services
+                : (s.services || "").split(/[\n,;•\-–]+/).map((x: string) => x.trim()).filter((x: string) => x.length > 1)
+            );
             const pts = s.generated_copy.whyChooseUs?.points || [];
             setWhyPoints(pts.length > 0 ? pts : ["", "", ""]);
             if (s.generated_copy.stats?.length > 0) setStats(s.generated_copy.stats);
+          } else {
+            // No generated_copy yet — load straight from onboarding answers
+            setAbout(s.about || "");
+            const rawServices = (s.services || "").split(/[\n,;•\-–]+/).map((x: string) => x.trim()).filter((x: string) => x.length > 1);
+            setServices(rawServices);
           }
           setTrustpilotUrl(s.trustpilot_url || "");
           setGoogleReviewsUrl(s.google_reviews_url || "");
