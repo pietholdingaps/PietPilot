@@ -495,7 +495,7 @@ function EditSiteInner() {
             </Section>
 
             {/* 5. REVIEWS */}
-            <Section title="Reviews" emoji="⭐" active={!!(trustpilotUrl || googleReviewsUrl)} toggleKey="reviews" isHidden={hiddenSections.includes("reviews")} onToggle={() => toggleSection("reviews")}>
+            <Section title="Reviews" emoji="⭐" active={!!(trustpilotUrl || googleReviewsUrl)}>
               <p className="text-white/45 text-sm">Connect your Trustpilot or Google Business profile. Your customers can click straight through to read your real reviews.</p>
               <div>
                 <label className="block text-sm font-semibold text-white/70 mb-2">Trustpilot profile URL</label>
@@ -521,7 +521,7 @@ function EditSiteInner() {
             </Section>
 
             {/* 6. ABOUT ME */}
-            <Section title="About you (owner)" emoji="👤" active={!!(ownerName || ownerBio)} toggleKey="owner" isHidden={hiddenSections.includes("owner")} onToggle={() => toggleSection("owner")}>
+            <Section title="About you (owner)" emoji="👤" active={!!(ownerName || ownerBio)}>
               <p className="text-white/45 text-sm">Leave blank to hide this section from your website.</p>
               <Field label="Your name" value={ownerName} onChange={setOwnerName} />
               <Field label="A bit about yourself" value={ownerBio} onChange={setOwnerBio} textarea />
