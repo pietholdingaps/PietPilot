@@ -1,10 +1,11 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Reorder, useDragControls } from "framer-motion";
-import { getPhotosForTrade } from "@/lib/stockPhotos";
+import { getPhotosForTrade, getPhotoForService } from "@/lib/stockPhotos";
+import { generateServiceDescription } from "@/lib/serviceDescriptions";
 
 // ─── Section definitions ────────────────────────────────────────────────────
 
@@ -176,6 +177,7 @@ function EditSiteInner() {
   const [services, setServices] = useState<string[]>([]);
   const [newService, setNewService] = useState("");
   const [serviceDescriptions, setServiceDescriptions] = useState<Record<string, string>>({});
+  const [expandedService, setExpandedService] = useState<string | null>(null);
 
   // ── How it works ──
   const [processSteps, setProcessSteps] = useState<{ title: string; description: string }[]>([
@@ -597,43 +599,70 @@ function EditSiteInner() {
                         className="flex-1 bg-[#0b1220] border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#f59e0b]/50 placeholder:text-white/25" />
                       <button type="button" onClick={addService} className="bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-sm font-bold px-4 py-2.5 rounded-lg transition-colors">+ Add</button>
                     </div>
-                    {/* Per-service image + description */}
+                    {/* Per-service accordion */}
                     {services.length > 0 && (
-                      <div className="flex flex-col gap-3 mt-1">
-                        <p className="text-xs font-bold uppercase tracking-widest text-white/30">Edit each service page</p>
+                      <div className="flex flex-col gap-2 mt-1">
+                        <p className="text-xs font-bold uppercase tracking-widest text-white/30">Click a service to edit its page</p>
                         {services.map((s, idx) => {
                           const slug = s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
                           const customImg = customImages?.services?.[slug];
+                          const stockImg = getPhotoForService(s, trade, idx);
+                          const displayImg = customImg || stockImg;
+                          const isOpen = expandedService === slug;
+                          // Show actual description or smart-generated fallback
+                          const desc = serviceDescriptions[s] || generateServiceDescription(s, businessName, address || "your local area");
                           return (
-                            <div key={slug} className="rounded-xl border border-white/[0.06] bg-[#0b1220] p-4 flex flex-col gap-3">
-                              <div className="flex items-center gap-3">
+                            <div key={slug} className={`rounded-xl border transition-colors overflow-hidden ${isOpen ? "border-[#f59e0b]/30 bg-[#0b1220]" : "border-white/[0.06] bg-[#080e1a]"}`}>
+                              {/* Row header — always visible */}
+                              <button
+                                type="button"
+                                onClick={() => setExpandedService(isOpen ? null : slug)}
+                                className="w-full flex items-center gap-3 p-3 text-left hover:bg-white/[0.02] transition-colors"
+                              >
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src={customImg || `https://images.unsplash.com/photo-1646324554833-f0b6a479fa5d?auto=format&fit=crop&w=80&q=50`}
-                                  alt={s} className="w-16 h-16 rounded-xl object-cover flex-none border border-white/10" />
+                                <img src={displayImg} alt={s} className="w-12 h-12 rounded-lg object-cover flex-none border border-white/10" />
                                 <div className="flex-1 min-w-0">
-                                  <p className="font-bold text-sm mb-2">{s}</p>
-                                  <div className="flex flex-wrap gap-1.5">
-                                    <label className="cursor-pointer text-xs font-semibold px-3 py-1.5 rounded-lg border border-white/10 hover:border-white/25 transition-colors">
-                                      {idx === 0 ? "Upload photo" : "Change photo"}
-                                      <input type="file" accept="image/*" className="hidden"
-                                        onChange={(e) => { const f = e.target.files?.[0]; if (f) handleServiceImageUpload(slug, f); }} />
-                                    </label>
-                                    {customImg && (
-                                      <button type="button" onClick={() => setCustomImages((ci) => { const ns = { ...(ci.services || {}) }; delete ns[slug]; return { ...ci, services: ns }; })}
-                                        className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-white/10 hover:border-white/25 text-white/45 transition-colors">
-                                        ↺ Reset
-                                      </button>
-                                    )}
+                                  <p className="font-bold text-sm capitalize">{s}</p>
+                                  <p className="text-xs text-white/35 truncate mt-0.5">{desc}</p>
+                                </div>
+                                <span className="text-white/25 text-xs flex-none">{isOpen ? "▲" : "▼"}</span>
+                              </button>
+                              {/* Expanded content */}
+                              {isOpen && (
+                                <div className="px-4 pb-4 pt-1 border-t border-white/[0.06] flex flex-col gap-3">
+                                  <div>
+                                    <p className="text-xs font-semibold text-white/40 mb-2">Description shown on the service page</p>
+                                    <textarea
+                                      value={serviceDescriptions[s] || desc}
+                                      onChange={(e) => setServiceDescriptions((prev) => ({ ...prev, [s]: e.target.value }))}
+                                      rows={4}
+                                      className="w-full bg-[#060c18] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white/80 focus:outline-none focus:border-[#f59e0b]/50 resize-none"
+                                    />
+                                  </div>
+                                  <div>
+                                    <p className="text-xs font-semibold text-white/40 mb-2">Photo</p>
+                                    <div className="flex items-center gap-3">
+                                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                                      <img src={displayImg} alt={s} className="w-20 h-20 rounded-xl object-cover border border-white/10 flex-none" />
+                                      <div className="flex flex-col gap-2">
+                                        <label className="cursor-pointer text-xs font-semibold px-3 py-2 rounded-lg border border-white/15 hover:border-white/30 transition-colors inline-block">
+                                          {customImg ? "Change photo" : "Upload your own photo"}
+                                          <input type="file" accept="image/*" className="hidden"
+                                            onChange={(e) => { const f = e.target.files?.[0]; if (f) handleServiceImageUpload(slug, f); }} />
+                                        </label>
+                                        {customImg && (
+                                          <button type="button"
+                                            onClick={() => setCustomImages((ci) => { const ns = { ...(ci.services || {}) }; delete ns[slug]; return { ...ci, services: ns }; })}
+                                            className="text-xs text-white/35 hover:text-white/60 transition-colors text-left">
+                                            ↺ Reset to auto photo
+                                          </button>
+                                        )}
+                                        {!customImg && <p className="text-xs text-white/25">Auto-selected based on service type</p>}
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                              <textarea
-                                value={serviceDescriptions[s] || ""}
-                                onChange={(e) => setServiceDescriptions((prev) => ({ ...prev, [s]: e.target.value }))}
-                                placeholder={`Describe your ${s.toLowerCase()} service...`}
-                                rows={3}
-                                className="w-full bg-[#080e1a] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white/80 focus:outline-none focus:border-[#f59e0b]/50 resize-none placeholder:text-white/20"
-                              />
+                              )}
                             </div>
                           );
                         })}
