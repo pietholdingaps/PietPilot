@@ -193,11 +193,11 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
         const nameKey = serviceName.toLowerCase().replace(/[^a-z0-9]/g, "");
         const words = serviceName.toLowerCase().split(/\s+/);
         // 1. Exact title match
-        let found = existingDetails.find((d) =>
+        let found = existingDetails.find((d: {title?: string}) =>
           (d.title || "").toLowerCase().replace(/[^a-z0-9]/g, "") === nameKey
         );
         // 2. Any word in common
-        if (!found) found = existingDetails.find((d) =>
+        if (!found) found = existingDetails.find((d: {title?: string}) =>
           words.some((w) => w.length > 3 && (d.title || "").toLowerCase().includes(w))
         );
         // 3. Same index position (AI usually outputs in same order)

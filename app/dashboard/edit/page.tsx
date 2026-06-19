@@ -698,21 +698,22 @@ function Section({ title, emoji, defaultOpen, active, toggleKey, isHidden, onTog
 }
 
 // Reusable field
-function Field({ label, value, onChange, textarea }: {
+function Field({ label, value, onChange, textarea, placeholder }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   textarea?: boolean;
+  placeholder?: string;
 }) {
   return (
     <label className="flex flex-col gap-1.5">
       <span className="text-xs font-bold uppercase tracking-wider text-white/45">{label}</span>
       {textarea ? (
-        <textarea value={value} onChange={(e) => onChange(e.target.value)} rows={4}
-          className="bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#f59e0b]/50 resize-none" />
+        <textarea value={value} onChange={(e) => onChange(e.target.value)} rows={4} placeholder={placeholder}
+          className="bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#f59e0b]/50 resize-none" />
       ) : (
-        <input type="text" value={value} onChange={(e) => onChange(e.target.value)}
-          className="bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#f59e0b]/50" />
+        <input type="text" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder}
+          className="bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#f59e0b]/50" />
       )}
     </label>
   );

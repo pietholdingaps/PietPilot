@@ -344,25 +344,6 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
         </section>
       )}
 
-      {/* LEGACY: manual reviews — kept for backwards compat, hidden going forward */}
-      {false && data.reviews && data.reviews.length > 0 && !hidden.has("reviews") && (
-        <section className="py-24 px-6">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
-              {data.reviews.map((r, i) => (
-                <div key={i} className="rounded-2xl p-7" style={{ background: theme.card, border: `1px solid ${theme.text}12` }}>
-                  <div className="mb-4" style={{ color: theme.accent }}>★★★★★</div>
-                  <p className="text-base leading-relaxed mb-5" style={{ color: theme.text }}>&ldquo;{r.text}&rdquo;</p>
-                  {r.author && (
-                    <p className="text-sm font-bold uppercase tracking-[0.2em]" style={{ color: theme.muted }}>— {r.author}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-            )}
-          </div>
-        </section>
-      )}
 
       {/* SERVICE AREA BANNER */}
       <section className="relative py-28 px-6">
