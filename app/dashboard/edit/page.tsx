@@ -45,8 +45,9 @@ function EditSiteInner() {
   const [about, setAbout] = useState("");
   const [whyPoints, setWhyPoints] = useState<string[]>(["", "", ""]);
 
-  // Reviews
-  const [reviews, setReviews] = useState<{ text: string; author: string }[]>([]);
+  // Reviews — now via platform links only
+  const [trustpilotUrl, setTrustpilotUrl] = useState("");
+  const [googleReviewsUrl, setGoogleReviewsUrl] = useState("");
 
   // Owner
   const [ownerName, setOwnerName] = useState("");
@@ -106,11 +107,8 @@ function EditSiteInner() {
             setWhyPoints(pts.length > 0 ? pts : ["", "", ""]);
             if (s.generated_copy.stats?.length > 0) setStats(s.generated_copy.stats);
           }
-          if (s.reviews?.length > 0) {
-            setReviews(s.reviews);
-          } else if (s.review_text) {
-            setReviews([{ text: s.review_text, author: s.review_author || "" }]);
-          }
+          setTrustpilotUrl(s.trustpilot_url || "");
+          setGoogleReviewsUrl(s.google_reviews_url || "");
           setProjectPhotos(s.project_photos || []);
           setOwnerName(s.owner_name || "");
           setOwnerBio(s.owner_bio || "");
@@ -215,7 +213,7 @@ function EditSiteInner() {
           services,
           whyPoints: whyPoints.filter((p) => p.trim()),
           stats: stats.filter((s) => s.value.trim()),
-          reviews: reviews.filter((r) => r.text.trim()),
+          trustpilotUrl, googleReviewsUrl,
           projectPhotos,
           ownerName, ownerBio, ownerPhotoUrl,
           customImages, template, hiddenSections,
@@ -276,7 +274,7 @@ function EditSiteInner() {
             { label: "Business info", done: !!(businessName && phone) },
             { label: "Services", done: services.length > 0 },
             { label: "About", done: !!about },
-            { label: "Reviews", done: reviews.filter(r => r.text.trim()).length > 0 },
+            { label: "Reviews", done: !!(trustpilotUrl || googleReviewsUrl) },
             { label: "About you", done: !!(ownerName || ownerBio) },
             { label: "Project photos", done: projectPhotos.length > 0 },
           ];
@@ -465,29 +463,28 @@ function EditSiteInner() {
             </Section>
 
             {/* 5. REVIEWS */}
-            <Section title="Customer reviews" emoji="💬" active={reviews.filter(r => r.text.trim()).length > 0} toggleKey="reviews" isHidden={hiddenSections.includes("reviews")} onToggle={() => toggleSection("reviews")}>
-              <div className="flex items-start gap-2.5 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 mb-2">
-                <span className="text-amber-400 mt-0.5 flex-none">⚠️</span>
-                <p className="text-amber-300/80 text-xs leading-relaxed">
-                  <strong className="text-amber-300">Only add real reviews from real customers.</strong> Fake or invented testimonials are against FTC guidelines in the US and consumer protection laws in most countries — and will hurt trust if spotted by potential customers.
-                </p>
+            <Section title="Reviews" emoji="⭐" active={!!(trustpilotUrl || googleReviewsUrl)} toggleKey="reviews" isHidden={hiddenSections.includes("reviews")} onToggle={() => toggleSection("reviews")}>
+              <p className="text-white/45 text-sm">Connect your Trustpilot or Google Business profile. Your customers can click straight through to read your real reviews.</p>
+              <div>
+                <label className="block text-sm font-semibold text-white/70 mb-2">Trustpilot profile URL</label>
+                <input
+                  type="url"
+                  value={trustpilotUrl}
+                  onChange={(e) => setTrustpilotUrl(e.target.value)}
+                  placeholder="https://www.trustpilot.com/review/yourbusiness.com"
+                  className="w-full bg-[#0b1220] border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#f59e0b]/50"
+                />
               </div>
-              <div className="flex flex-col gap-4">
-                {reviews.map((r, i) => (
-                  <div key={i} className="border border-white/[0.06] rounded-xl p-4 flex flex-col gap-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-white/40">Review {i + 1}</span>
-                      <button type="button" onClick={() => setReviews((r) => r.filter((_, j) => j !== i))}
-                        className="text-white/35 hover:text-red-400 text-xs font-semibold transition-colors">Remove</button>
-                    </div>
-                    <Field label="What they said" value={r.text} onChange={(v) => setReviews((rs) => rs.map((x, j) => j === i ? { ...x, text: v } : x))} textarea />
-                    <Field label="Name" value={r.author} onChange={(v) => setReviews((rs) => rs.map((x, j) => j === i ? { ...x, author: v } : x))} />
-                  </div>
-                ))}
-                <button type="button" onClick={() => setReviews((r) => [...r, { text: "", author: "" }])}
-                  className="self-start border border-white/10 hover:border-white/25 text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors">
-                  + Add review
-                </button>
+              <div>
+                <label className="block text-sm font-semibold text-white/70 mb-2">Google Business reviews URL</label>
+                <input
+                  type="url"
+                  value={googleReviewsUrl}
+                  onChange={(e) => setGoogleReviewsUrl(e.target.value)}
+                  placeholder="https://g.page/r/yourbusiness/review"
+                  className="w-full bg-[#0b1220] border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#f59e0b]/50"
+                />
+                <p className="text-white/30 text-xs mt-2">Find your Google link: Google Maps → your business → Share → Copy link</p>
               </div>
             </Section>
 

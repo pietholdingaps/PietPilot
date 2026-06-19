@@ -291,40 +291,74 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
         </div>
       </section>
 
-      {/* REVIEWS / TESTIMONIALS */}
-      {data.reviews && data.reviews.length > 0 && !hidden.has("reviews") && (
+      {/* REVIEWS — Trustpilot / Google */}
+      {(data.trustpilotUrl || data.googleReviewsUrl) && !hidden.has("reviews") && (
         <section className="py-24 px-6">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-14">
               <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: theme.accent }}>What customers say</div>
-              <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">Reviews</h2>
+              <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-4">Read our reviews</h2>
+              <p className="text-base max-w-xl mx-auto" style={{ color: theme.muted }}>
+                We&apos;re proud of the work we do — see what our customers have to say.
+              </p>
             </div>
-            {data.reviews.length === 1 ? (
-              /* Single review — featured centered quote */
-              <div className="max-w-2xl mx-auto text-center">
-                <div className="text-3xl mb-6" style={{ color: theme.accent }}>★★★★★</div>
-                <p className="text-xl md:text-2xl font-medium leading-relaxed mb-6" style={{ color: theme.text }}>
-                  &ldquo;{data.reviews[0].text}&rdquo;
-                </p>
-                {data.reviews[0].author && (
-                  <p className="text-sm font-bold uppercase tracking-[0.2em]" style={{ color: theme.muted }}>
-                    — {data.reviews[0].author}
-                  </p>
-                )}
-              </div>
-            ) : (
-              /* Multiple reviews — grid */
-              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
-                {data.reviews.map((r, i) => (
-                  <div key={i} className="rounded-2xl p-7" style={{ background: theme.card, border: `1px solid ${theme.text}12` }}>
-                    <div className="mb-4" style={{ color: theme.accent }}>★★★★★</div>
-                    <p className="text-base leading-relaxed mb-5" style={{ color: theme.text }}>&ldquo;{r.text}&rdquo;</p>
-                    {r.author && (
-                      <p className="text-sm font-bold uppercase tracking-[0.2em]" style={{ color: theme.muted }}>— {r.author}</p>
-                    )}
+            <div className="flex flex-wrap justify-center gap-5">
+              {data.trustpilotUrl && (
+                <a
+                  href={data.trustpilotUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-4 rounded-2xl px-8 py-6 hover:scale-[1.02] transition-transform"
+                  style={{ background: theme.card, border: `1px solid ${theme.text}12` }}
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="text-[#00b67a] text-3xl font-extrabold leading-none">★★★★★</div>
+                    <div className="text-xs font-bold tracking-widest uppercase" style={{ color: "#00b67a" }}>Trustpilot</div>
                   </div>
-                ))}
-              </div>
+                  <div>
+                    <div className="font-bold text-base mb-0.5">Read our Trustpilot reviews</div>
+                    <div className="text-sm" style={{ color: theme.muted }}>See what customers are saying →</div>
+                  </div>
+                </a>
+              )}
+              {data.googleReviewsUrl && (
+                <a
+                  href={data.googleReviewsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-4 rounded-2xl px-8 py-6 hover:scale-[1.02] transition-transform"
+                  style={{ background: theme.card, border: `1px solid ${theme.text}12` }}
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="text-2xl leading-none">⭐</div>
+                    <div className="text-xs font-bold tracking-widest uppercase" style={{ color: "#4285f4" }}>Google</div>
+                  </div>
+                  <div>
+                    <div className="font-bold text-base mb-0.5">Read our Google reviews</div>
+                    <div className="text-sm" style={{ color: theme.muted }}>See what customers are saying →</div>
+                  </div>
+                </a>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* LEGACY: manual reviews — kept for backwards compat, hidden going forward */}
+      {false && data.reviews && data.reviews.length > 0 && !hidden.has("reviews") && (
+        <section className="py-24 px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
+              {data.reviews.map((r, i) => (
+                <div key={i} className="rounded-2xl p-7" style={{ background: theme.card, border: `1px solid ${theme.text}12` }}>
+                  <div className="mb-4" style={{ color: theme.accent }}>★★★★★</div>
+                  <p className="text-base leading-relaxed mb-5" style={{ color: theme.text }}>&ldquo;{r.text}&rdquo;</p>
+                  {r.author && (
+                    <p className="text-sm font-bold uppercase tracking-[0.2em]" style={{ color: theme.muted }}>— {r.author}</p>
+                  )}
+                </div>
+              ))}
+            </div>
             )}
           </div>
         </section>

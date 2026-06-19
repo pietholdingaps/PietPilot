@@ -45,4 +45,6 @@ export type SiteData = {
     services?: Record<string, string>; // keyed by service slug
   };
   hiddenSections?: string[];
+  trustpilotUrl?: string;
+  googleReviewsUrl?: string;
 };
