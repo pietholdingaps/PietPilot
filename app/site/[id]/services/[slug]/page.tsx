@@ -4,6 +4,11 @@ import { themes } from "@/app/components/GeneratedSite";
 import { getPhotoForService } from "@/lib/stockPhotos";
 import { GeneratedSiteCopy } from "@/lib/siteTypes";
 import LeadForm from "@/app/components/LeadForm";
+import { generateServiceDescription } from "@/lib/serviceDescriptions";
+
+function toTitleCase(s: string) {
+  return s.replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +55,7 @@ const fallbackCopy = (businessName: string, trade: string, area: string, license
     serviceDetails: services.map((title) => ({
       title,
       slug: title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
-      description: `${businessName || "We"} provide professional ${title.toLowerCase()} services across ${area || "the local area"}. Get in touch today for a free, no-obligation quote.`,
+      description: generateServiceDescription(title, businessName, area || "the local area"),
       faqs: [
         { question: `How much does ${title.toLowerCase()} cost?`, answer: `Pricing depends on the scope of your project. Contact ${businessName || "us"} for a free, no-obligation quote.` },
         { question: "How soon can you start?", answer: "We aim to respond quickly — get in touch and we'll find a time that works for you." },
@@ -178,7 +183,7 @@ export default async function ServiceDetailPage({
               {submission.trade || "Our service"} · {submission.area || "Local area"}
             </div>
             <h1 className="text-[2.4rem] sm:text-5xl font-extrabold leading-[1.05] tracking-tight text-white max-w-2xl">
-              {service.title}
+              {toTitleCase(service.title)}
             </h1>
           </div>
         </div>

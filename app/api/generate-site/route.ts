@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import Anthropic from "@anthropic-ai/sdk";
+import { generateServiceDescription } from "@/lib/serviceDescriptions";
 
 export const maxDuration = 60; // Allow up to 60s for AI generation + Pexels calls
 
@@ -226,16 +227,8 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
         const slug = serviceName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
         const biz = submission.business_name || "We";
         const area = submission.area || "the local area";
-        // Varied fallback descriptions so they're never all identical
-        const fallbacks = [
-          `${biz} offers professional ${serviceName.toLowerCase()} across ${area}. Our experienced team handles every job efficiently, on time, and at a fair price — with no hidden costs.`,
-          `Need ${serviceName.toLowerCase()} in ${area}? ${biz} delivers quality workmanship backed by years of local experience. Get in touch today for a free, no-obligation quote.`,
-          `${biz}'s ${serviceName.toLowerCase()} service covers all of ${area}. We show up on time, communicate clearly, and get the job done right — every single time.`,
-          `${biz} specialises in ${serviceName.toLowerCase()} for homeowners and businesses across ${area}. Fast response, honest pricing, and guaranteed satisfaction.`,
-          `Whether it's a small fix or a large project, ${biz} handles ${serviceName.toLowerCase()} throughout ${area} with the same care and attention to detail. Call us for a free quote.`,
-          `${biz} brings expertise and reliability to every ${serviceName.toLowerCase()} job in ${area}. We're trusted by local customers for our quality work and transparent pricing.`,
-        ];
-        const description = existing?.description || fallbacks[idx % fallbacks.length];
+        // Use smart category-aware description generator as fallback
+        const description = existing?.description || generateServiceDescription(serviceName, biz, area);
         return {
           title: serviceName,
           slug,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { GeneratedSiteCopy } from "@/lib/siteTypes";
+import { generateServiceDescription } from "@/lib/serviceDescriptions";
 
 function rebuildServiceDetails(
   newServices: string[],
@@ -28,7 +29,7 @@ function rebuildServiceDetails(
       ? { ...found, title, slug }
       : {
           title, slug,
-          description: `${businessName || "We"} provide professional ${title.toLowerCase()} services across ${area || "the local area"}. Contact us for a free, no-obligation quote.`,
+          description: generateServiceDescription(title, businessName, area || "the local area"),
           faqs: [],
         };
   });
