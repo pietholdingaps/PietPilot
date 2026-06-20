@@ -102,7 +102,7 @@ function AdsInner() {
         <div className="flex items-start justify-between mb-8">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight">Google Ads</h1>
-            <p className="text-white/40 text-sm mt-1">AI writes ads that bring in exactly the customers you want.</p>
+            <p className="text-white/40 text-sm mt-1">We generate 3 variations — run them all, then delete the ones that don&apos;t convert.</p>
           </div>
           {generatedAds && (
             <div className="text-right">
