@@ -228,9 +228,23 @@ function AdsInner() {
               </div>
             )}
 
-            <div className="card rounded-2xl p-5 text-center">
-              <p className="text-sm font-bold text-white mb-1">Ready to launch</p>
-              <p className="text-white/30 text-xs">Google Ads API connection coming soon — your ads are saved.</p>
+            <div className="card rounded-2xl p-5">
+              <p className="text-xs font-bold text-white/30 uppercase tracking-widest mb-3">How it works</p>
+              <div className="space-y-3">
+                <div className="flex gap-3 items-start">
+                  <span className="w-5 h-5 rounded-full bg-[#f59e0b]/20 text-[#f59e0b] text-[10px] font-black flex items-center justify-center flex-none mt-0.5">1</span>
+                  <p className="text-xs text-white/50">All 3 ads run simultaneously, splitting your daily budget</p>
+                </div>
+                <div className="flex gap-3 items-start">
+                  <span className="w-5 h-5 rounded-full bg-[#f59e0b]/20 text-[#f59e0b] text-[10px] font-black flex items-center justify-center flex-none mt-0.5">2</span>
+                  <p className="text-xs text-white/50">After 14 days, AI identifies the best-performing ad</p>
+                </div>
+                <div className="flex gap-3 items-start">
+                  <span className="w-5 h-5 rounded-full bg-[#f59e0b]/20 text-[#f59e0b] text-[10px] font-black flex items-center justify-center flex-none mt-0.5">3</span>
+                  <p className="text-xs text-white/50">The winner gets the full budget — the others pause automatically</p>
+                </div>
+              </div>
+              <p className="text-white/20 text-xs mt-4 text-center">Google Ads API connection coming soon</p>
             </div>
           </div>
         )}
