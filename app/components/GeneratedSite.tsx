@@ -202,7 +202,7 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
               return {
                 title: s,
                 description: detail?.description || "",
-                image: customImg || stockFallback || pexelsPhoto,
+                image: customImg || stockFallback || pexelsPhoto || "",
                 fallbackImage: customImg ? undefined : stockFallback,
                 href: `/site/${data.id}/services/${slug}`,
               };
