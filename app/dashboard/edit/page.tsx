@@ -11,7 +11,7 @@ import { generateServiceDescription } from "@/lib/serviceDescriptions";
 
 export const DEFAULT_SECTION_ORDER = [
   "hero", "stats", "about", "why", "services",
-  "process", "reviews", "area", "contact", "owner", "photos",
+  "process", "reviews", "area", "contact", "owner", "photos", "domain",
 ];
 
 const SECTION_META: Record<string, { emoji: string; title: string; hint: string }> = {
@@ -26,6 +26,7 @@ const SECTION_META: Record<string, { emoji: string; title: string; hint: string 
   contact:  { emoji: "📞", title: "Contact",         hint: "Phone, email, hours and contact form" },
   owner:    { emoji: "👤", title: "About you",      hint: "Your name, photo and bio (optional)" },
   photos:   { emoji: "📸", title: "Project photos", hint: "Gallery of your work" },
+  domain:   { emoji: "🌐", title: "Custom domain",  hint: "Connect your own domain — e.g. www.yourbusiness.com" },
 };
 
 // ─── Tiny reusable components ───────────────────────────────────────────────
@@ -553,126 +554,6 @@ function EditSiteInner() {
               )}
             </div>
 
-            {/* ── DOMAIN ───────────────────────────────────────────────────── */}
-            <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden">
-              <div className="px-5 py-4 flex items-center gap-3">
-                <span className="text-lg">🌐</span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold">Custom domain</p>
-                  <p className="text-xs text-white/30">{customDomain ? customDomain : "Connect your own domain — e.g. www.jensensplumbing.com"}</p>
-                </div>
-                {customDomain && (
-                  <span className="text-xs font-bold px-2 py-1 rounded-full bg-green-500/10 text-green-400 border border-green-500/20 flex-none">Connected</span>
-                )}
-              </div>
-
-              <div className="px-5 pb-5 border-t border-white/[0.06] pt-4 space-y-4">
-                {!customDomain ? (
-                  <>
-                    <p className="text-white/50 text-sm">Enter your domain name below. We&apos;ll tell you exactly what to do — step by step.</p>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={domainInput}
-                        onChange={(e) => setDomainInput(e.target.value)}
-                        placeholder="www.yourbusiness.com"
-                        className="flex-1 bg-[#0b1220] border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#f59e0b]/50 placeholder:text-white/25"
-                        onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleConnectDomain())}
-                      />
-                      <button
-                        type="button"
-                        onClick={handleConnectDomain}
-                        disabled={domainLoading || !domainInput.trim()}
-                        className="bg-[#f59e0b] text-[#0b1220] font-bold text-sm px-5 py-2.5 rounded-lg hover:bg-[#fbbf24] disabled:opacity-50 transition-colors flex-none"
-                      >
-                        {domainLoading ? "Connecting…" : "Connect"}
-                      </button>
-                    </div>
-                    {domainError && <p className="text-red-400 text-xs">{domainError}</p>}
-                  </>
-                ) : (
-                  <>
-                    {domainResult && (
-                      <div className="space-y-3">
-                        <p className="text-white/70 text-sm font-semibold">Follow these steps in your domain provider (GoDaddy, Namecheap, etc.):</p>
-
-                        <div className="space-y-2">
-                          <div className="flex gap-3 items-start">
-                            <span className="w-6 h-6 rounded-full bg-[#f59e0b] text-[#0b1220] text-xs font-black flex items-center justify-center flex-none mt-0.5">1</span>
-                            <p className="text-sm text-white/60">Log in to wherever you bought your domain (GoDaddy, Namecheap, Google Domains, etc.)</p>
-                          </div>
-                          <div className="flex gap-3 items-start">
-                            <span className="w-6 h-6 rounded-full bg-[#f59e0b] text-[#0b1220] text-xs font-black flex items-center justify-center flex-none mt-0.5">2</span>
-                            <p className="text-sm text-white/60">Find <strong className="text-white">DNS Settings</strong> or <strong className="text-white">Manage DNS</strong></p>
-                          </div>
-                          <div className="flex gap-3 items-start">
-                            <span className="w-6 h-6 rounded-full bg-[#f59e0b] text-[#0b1220] text-xs font-black flex items-center justify-center flex-none mt-0.5">3</span>
-                            <div className="flex-1">
-                              <p className="text-sm text-white/60 mb-2">Add this record:</p>
-                              <div className="bg-[#0b1220] rounded-lg p-3 border border-white/10 font-mono text-xs space-y-1">
-                                {domainResult.isApex ? (
-                                  <>
-                                    <div className="flex gap-4">
-                                      <span className="text-white/40 w-12">Type</span>
-                                      <span className="text-white font-bold">A</span>
-                                    </div>
-                                    <div className="flex gap-4">
-                                      <span className="text-white/40 w-12">Name</span>
-                                      <span className="text-white font-bold">@</span>
-                                    </div>
-                                    <div className="flex gap-4 items-center">
-                                      <span className="text-white/40 w-12">Value</span>
-                                      <span className="text-[#f59e0b] font-bold">{domainResult.aRecord}</span>
-                                      <button type="button" onClick={() => navigator.clipboard.writeText(domainResult.aRecord)} className="text-white/30 hover:text-white text-[10px] ml-auto">Copy</button>
-                                    </div>
-                                  </>
-                                ) : (
-                                  <>
-                                    <div className="flex gap-4">
-                                      <span className="text-white/40 w-12">Type</span>
-                                      <span className="text-white font-bold">CNAME</span>
-                                    </div>
-                                    <div className="flex gap-4">
-                                      <span className="text-white/40 w-12">Name</span>
-                                      <span className="text-white font-bold">www</span>
-                                    </div>
-                                    <div className="flex gap-4 items-center">
-                                      <span className="text-white/40 w-12">Value</span>
-                                      <span className="text-[#f59e0b] font-bold">{domainResult.cname}</span>
-                                      <button type="button" onClick={() => navigator.clipboard.writeText(domainResult.cname)} className="text-white/30 hover:text-white text-[10px] ml-auto">Copy</button>
-                                    </div>
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex gap-3 items-start">
-                            <span className="w-6 h-6 rounded-full bg-[#f59e0b] text-[#0b1220] text-xs font-black flex items-center justify-center flex-none mt-0.5">4</span>
-                            <p className="text-sm text-white/60">Save — your site will be live on <strong className="text-white">{customDomain}</strong> within 10–30 minutes.</p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {!domainResult && (
-                      <div className="space-y-1">
-                        <p className="text-sm text-white/60">Connected to <strong className="text-white">{customDomain}</strong></p>
-                        <p className="text-xs text-white/30">DNS instructions were shown when you connected. It can take up to 30 minutes for your domain to go live.</p>
-                      </div>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={handleRemoveDomain}
-                      className="text-xs text-white/30 hover:text-red-400 transition-colors"
-                    >
-                      Remove domain
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-
             {/* ── BUSINESS INFO (pinned — not a page section) ──────────────── */}
             <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden mb-1">
               <button
@@ -709,7 +590,7 @@ function EditSiteInner() {
                   isOpen={openSection === id}
                   onToggleHidden={() => toggleHidden(id)}
                   onToggleOpen={() => setOpenSection(openSection === id ? null : id)}
-                  canHide={id !== "hero" && id !== "contact"}
+                  canHide={id !== "hero" && id !== "contact" && id !== "domain"}
                 >
                   {/* ── HERO ── */}
                   {id === "hero" && <>
@@ -971,6 +852,74 @@ function EditSiteInner() {
                         onChange={(e) => { if (e.target.files) handlePhotosUpload(e.target.files); }} />
                     </label>
                     {photosError && <p className="text-red-400 text-xs mt-1">{photosError}</p>}
+                  </>}
+
+                  {/* ── DOMAIN ── */}
+                  {id === "domain" && <>
+                    {!customDomain ? (
+                      <>
+                        <p className="text-white/50 text-sm">Enter your domain name below. We&apos;ll tell you exactly what to do — step by step.</p>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={domainInput}
+                            onChange={(e) => setDomainInput(e.target.value)}
+                            placeholder="www.yourbusiness.com"
+                            className="flex-1 bg-[#0b1220] border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#f59e0b]/50 placeholder:text-white/25"
+                            onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleConnectDomain())}
+                          />
+                          <button type="button" onClick={handleConnectDomain} disabled={domainLoading || !domainInput.trim()}
+                            className="bg-[#f59e0b] text-[#0b1220] font-bold text-sm px-5 py-2.5 rounded-lg hover:bg-[#fbbf24] disabled:opacity-50 transition-colors flex-none">
+                            {domainLoading ? "Connecting…" : "Connect"}
+                          </button>
+                        </div>
+                        {domainError && <p className="text-red-400 text-xs">{domainError}</p>}
+                      </>
+                    ) : (
+                      <>
+                        {domainResult ? (
+                          <div className="space-y-3">
+                            <p className="text-white/70 text-sm font-semibold">Follow these steps in your domain provider:</p>
+                            <div className="space-y-2">
+                              {[
+                                "Log in to wherever you bought your domain (GoDaddy, Namecheap, etc.)",
+                                "Find DNS Settings or Manage DNS",
+                              ].map((txt, i) => (
+                                <div key={i} className="flex gap-3 items-start">
+                                  <span className="w-6 h-6 rounded-full bg-[#f59e0b] text-[#0b1220] text-xs font-black flex items-center justify-center flex-none mt-0.5">{i + 1}</span>
+                                  <p className="text-sm text-white/60">{txt}</p>
+                                </div>
+                              ))}
+                              <div className="flex gap-3 items-start">
+                                <span className="w-6 h-6 rounded-full bg-[#f59e0b] text-[#0b1220] text-xs font-black flex items-center justify-center flex-none mt-0.5">3</span>
+                                <div className="flex-1">
+                                  <p className="text-sm text-white/60 mb-2">Add this record:</p>
+                                  <div className="bg-[#0b1220] rounded-lg p-3 border border-white/10 font-mono text-xs space-y-1">
+                                    <div className="flex gap-4"><span className="text-white/40 w-12">Type</span><span className="text-white font-bold">{domainResult.isApex ? "A" : "CNAME"}</span></div>
+                                    <div className="flex gap-4"><span className="text-white/40 w-12">Name</span><span className="text-white font-bold">{domainResult.isApex ? "@" : "www"}</span></div>
+                                    <div className="flex gap-4 items-center">
+                                      <span className="text-white/40 w-12">Value</span>
+                                      <span className="text-[#f59e0b] font-bold">{domainResult.isApex ? domainResult.aRecord : domainResult.cname}</span>
+                                      <button type="button" onClick={() => navigator.clipboard.writeText(domainResult.isApex ? domainResult.aRecord : domainResult.cname)} className="text-white/30 hover:text-white text-[10px] ml-auto">Copy</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex gap-3 items-start">
+                                <span className="w-6 h-6 rounded-full bg-[#f59e0b] text-[#0b1220] text-xs font-black flex items-center justify-center flex-none mt-0.5">4</span>
+                                <p className="text-sm text-white/60">Save — your site will be live on <strong className="text-white">{customDomain}</strong> within 10–30 minutes.</p>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="space-y-1">
+                            <p className="text-sm text-white/60">Connected to <strong className="text-white">{customDomain}</strong></p>
+                            <p className="text-xs text-white/30">It can take up to 30 minutes to go live.</p>
+                          </div>
+                        )}
+                        <button type="button" onClick={handleRemoveDomain} className="text-xs text-white/30 hover:text-red-400 transition-colors">Remove domain</button>
+                      </>
+                    )}
                   </>}
 
                 </SortableSection>
