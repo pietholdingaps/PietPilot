@@ -16,7 +16,7 @@ export type GeneratedSiteCopy = {
     title: string;
     slug: string;
     description: string;
-    faqs?: { question: string; answer: string }[];
+    faqs?: { question?: string; answer?: string; q?: string; a?: string }[];
   }[];
 };
 

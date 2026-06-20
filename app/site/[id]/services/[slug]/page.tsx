@@ -326,8 +326,8 @@ export default async function ServiceDetailPage({
                   className="rounded-2xl p-6"
                   style={{ background: theme.card, border: `1px solid ${theme.text}12` }}
                 >
-                  <h3 className="font-bold text-lg mb-2">{faq.question}</h3>
-                  <p className="text-base leading-relaxed" style={{ color: theme.muted }}>{faq.answer}</p>
+                  <h3 className="font-bold text-lg mb-2">{faq.question ?? faq.q}</h3>
+                  <p className="text-base leading-relaxed" style={{ color: theme.muted }}>{faq.answer ?? faq.a}</p>
                 </div>
               ))}
             </div>
