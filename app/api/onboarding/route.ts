@@ -72,6 +72,47 @@ export async function POST(req: NextRequest) {
       `,
     });
 
+    // ── Velkomstmail til kunden ───────────────────────────────────────────────
+    if (accountEmail && inserted?.id) {
+      const siteUrl = `https://pietpilot.com/site/${inserted.id}`;
+      const dashboardUrl = `https://pietpilot.com/dashboard?site=${inserted.id}`;
+      await resend.emails.send({
+        from: "PietPilot <noreply@pietpilot.com>",
+        to: accountEmail,
+        subject: `Your website is ready — ${businessName || "PietPilot"}`,
+        html: `
+          <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; padding: 40px 32px; background: #0b1220; color: #eef1f6; border-radius: 16px;">
+            <div style="margin-bottom: 32px;">
+              <span style="font-size: 22px; font-weight: 900; letter-spacing: -0.5px; color: #fff;">PietPilot</span>
+            </div>
+            <h1 style="font-size: 26px; font-weight: 800; margin: 0 0 12px; color: #fff;">Your website is live, ${accountName?.split(" ")[0] || "there"}!</h1>
+            <p style="color: #94a3b8; font-size: 16px; line-height: 1.6; margin: 0 0 32px;">
+              Your AI-powered website for <strong style="color:#fff;">${businessName}</strong> has been created and is ready to share with customers.
+            </p>
+
+            <a href="${siteUrl}" style="display: block; background: #f59e0b; color: #0b1220; font-weight: 800; font-size: 16px; text-align: center; padding: 16px 24px; border-radius: 12px; text-decoration: none; margin-bottom: 16px;">
+              View your website →
+            </a>
+            <a href="${dashboardUrl}" style="display: block; background: transparent; color: #f59e0b; font-weight: 700; font-size: 15px; text-align: center; padding: 14px 24px; border-radius: 12px; text-decoration: none; border: 1px solid #f59e0b33; margin-bottom: 32px;">
+              Open your dashboard
+            </a>
+
+            <div style="background: #1e293b; border-radius: 12px; padding: 20px 24px; margin-bottom: 32px;">
+              <p style="color: #94a3b8; font-size: 13px; margin: 0 0 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">What's next</p>
+              <p style="color: #cbd5e1; font-size: 14px; margin: 0 0 8px;">✓ Share your website link with customers</p>
+              <p style="color: #cbd5e1; font-size: 14px; margin: 0 0 8px;">✓ Add photos and reviews in your dashboard</p>
+              <p style="color: #cbd5e1; font-size: 14px; margin: 0;">✓ Get notified instantly when leads come in</p>
+            </div>
+
+            <p style="color: #475569; font-size: 13px; text-align: center; margin: 0;">
+              Questions? Reply to this email — we're here to help.<br/>
+              <span style="color: #334155;">PietPilot · AI Marketing for Tradespeople</span>
+            </p>
+          </div>
+        `,
+      });
+    }
+
     return NextResponse.json({ ok: true, id: inserted?.id || null });
   } catch (err) {
     console.error("Onboarding error:", err);
