@@ -6,8 +6,16 @@ import { GeneratedSiteCopy } from "@/lib/siteTypes";
 import LeadForm from "@/app/components/LeadForm";
 import { generateServiceDescription } from "@/lib/serviceDescriptions";
 
+const TITLE_LOWER = new Set(["and","or","of","in","the","a","an","to","for","at","by","with","from","on","as","but","nor","so","yet"]);
 function toTitleCase(s: string) {
-  return s.replace(/\b\w/g, (c) => c.toUpperCase());
+  return s
+    .split(" ")
+    .map((w, i) =>
+      i === 0 || !TITLE_LOWER.has(w.toLowerCase())
+        ? w.charAt(0).toUpperCase() + w.slice(1)
+        : w.toLowerCase()
+    )
+    .join(" ");
 }
 
 export const dynamic = "force-dynamic";
@@ -199,7 +207,7 @@ export default async function ServiceDetailPage({
             className="rounded-3xl p-10 text-center relative overflow-hidden"
             style={{ background: theme.card, border: `1px solid ${theme.text}14` }}
           >
-            <h2 className="text-2xl md:text-3xl font-extrabold mb-3 tracking-tight">Need {service.title.toLowerCase()}?</h2>
+            <h2 className="text-2xl md:text-3xl font-extrabold mb-3 tracking-tight">Need {toTitleCase(service.title)}?</h2>
             <p className="mb-7 text-base" style={{ color: theme.muted }}>{copy.responsePromise}</p>
             <div className="flex flex-wrap items-center justify-center gap-4">
               <a

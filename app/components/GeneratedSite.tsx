@@ -28,8 +28,16 @@ export const themes: Record<string, Theme> = {
   },
 };
 
+const LOWER_WORDS = new Set(["and","or","of","in","the","a","an","to","for","at","by","with","from","on","as","but","nor","so","yet"]);
 function toTitleCase(s: string) {
-  return s.replace(/\b\w/g, (c) => c.toUpperCase());
+  return s
+    .split(" ")
+    .map((w, i) =>
+      i === 0 || !LOWER_WORDS.has(w.toLowerCase())
+        ? w.charAt(0).toUpperCase() + w.slice(1)
+        : w.toLowerCase()
+    )
+    .join(" ");
 }
 
 const DEFAULT_SECTION_ORDER = [
@@ -474,7 +482,7 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] mb-3" style={{ color: theme.accent }}>Services</p>
             <ul className="space-y-1.5 text-sm" style={{ color: theme.muted }}>
-              {servicesGrid.slice(0, 5).map((s, i) => <li key={i}>{toTitleCase(s)}</li>)}
+              {servicesGrid.map((s, i) => <li key={i}>{toTitleCase(s)}</li>)}
             </ul>
           </div>
           <div>
