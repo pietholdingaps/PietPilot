@@ -125,7 +125,7 @@ function AdsInner() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-white/60 mb-2">Daily budget</label>
+              <label className="block text-sm font-semibold text-white/60 mb-2">Total daily budget <span className="text-white/25 font-normal">(split automatically across all 3 ads)</span></label>
               <div className="grid grid-cols-4 gap-2 mb-2">
                 {["10", "20", "30", "50"].map(b => (
                   <button key={b} type="button" onClick={() => setAdBudget(b)}
