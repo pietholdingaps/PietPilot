@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const {
-      siteId, businessName, phone, email, address, hours, logoUrl, template, licenseNumber,
+      siteId, businessName, phone, email, address, hours, logoUrl, template, licenseNumber, accountName, ownerEmail,
       headline, subheadline, ctaText, about, guaranteeLine, responsePromise, trustLine,
       services, serviceDescriptions, whyPoints, processSteps, stats,
       trustpilotUrl, googleReviewsUrl,
@@ -105,6 +105,8 @@ export async function POST(req: NextRequest) {
       .from("onboarding_submissions")
       .update({
         business_name: businessName,
+        ...(accountName !== undefined && { account_name: accountName }),
+        ...(ownerEmail !== undefined && { owner_email: ownerEmail }),
         phone,
         email,
         address,
