@@ -363,8 +363,8 @@ function EditSiteInner() {
 
   async function handlePhotosUpload(files: FileList) {
     setPhotosUploading(true);
-    for (const file of Array.from(files).slice(0, 6 - projectPhotos.length)) {
-      const url = await upload(file); if (url) setProjectPhotos((p) => [...p, url!].slice(0, 6));
+    for (const file of Array.from(files)) {
+      const url = await upload(file); if (url) setProjectPhotos((p) => [...p, url!]);
     }
     setPhotosUploading(false);
   }
@@ -749,7 +749,7 @@ function EditSiteInner() {
 
                   {/* ── PROJECT PHOTOS ── */}
                   {id === "photos" && <>
-                    <p className="text-white/40 text-xs">Upload up to 6 photos of your work. Real photos make the biggest difference.</p>
+                    <p className="text-white/40 text-xs">Upload photos of your work. Real photos make the biggest difference.</p>
                     {projectPhotos.length > 0 && (
                       <div className="grid grid-cols-3 gap-2">
                         {projectPhotos.map((url, i) => (
@@ -764,13 +764,11 @@ function EditSiteInner() {
                         ))}
                       </div>
                     )}
-                    {projectPhotos.length < 6 && (
-                      <label className="cursor-pointer flex items-center justify-center gap-2 border border-dashed border-white/15 hover:border-white/30 rounded-xl py-5 text-sm font-semibold text-white/40 hover:text-white/60 transition-colors">
-                        {photosUploading ? "Uploading…" : `+ Add photos (${projectPhotos.length}/6)`}
-                        <input type="file" accept="image/*" multiple className="hidden"
-                          onChange={(e) => { if (e.target.files) handlePhotosUpload(e.target.files); }} />
-                      </label>
-                    )}
+                    <label className="cursor-pointer flex items-center justify-center gap-2 border border-dashed border-white/15 hover:border-white/30 rounded-xl py-5 text-sm font-semibold text-white/40 hover:text-white/60 transition-colors">
+                      {photosUploading ? "Uploading…" : `+ Add photos${projectPhotos.length > 0 ? ` (${projectPhotos.length} added)` : ""}`}
+                      <input type="file" accept="image/*" multiple className="hidden"
+                        onChange={(e) => { if (e.target.files) handlePhotosUpload(e.target.files); }} />
+                    </label>
                   </>}
 
                 </SortableSection>
