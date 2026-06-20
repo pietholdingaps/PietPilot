@@ -446,7 +446,7 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
                 </div>
               </details>
             )}
-            {data.projectPhotos && data.projectPhotos.length > 0 && (
+            {data.projectPhotos && data.projectPhotos.length > 0 && !hidden.has("photos") && (
               <a href={`/site/${data.id}/work`} className="hover:opacity-70 transition-opacity">Our Work</a>
             )}
             <a href="#contact" className="hover:opacity-70 transition-opacity">Contact</a>

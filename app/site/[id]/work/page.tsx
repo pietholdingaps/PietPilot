@@ -22,7 +22,8 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
   if (!submission) notFound();
 
   const photos: string[] = submission.project_photos || [];
-  if (photos.length === 0) notFound();
+  const hiddenSections: string[] = submission.hidden_sections || [];
+  if (photos.length === 0 || hiddenSections.includes("photos")) notFound();
 
   const theme = themes[submission.template as string] || themes.classic;
   const businessName = submission.business_name || "Your Business";
