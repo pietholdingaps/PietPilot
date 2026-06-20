@@ -15,6 +15,17 @@ type Lead = {
   status: "new" | "contacted" | "done";
 };
 
+type AdVariant = { headlines: string[]; descriptions: string[] };
+type GeneratedAds = {
+  ads: AdVariant[];
+  keywords: string[];
+  negativeKeywords: string[];
+  estimatedClicksPerDay: number;
+  estimatedLeadsPerMonth: number;
+  focusService: string;
+  dailyBudget: number;
+};
+
 type SiteInfo = {
   id: string;
   business_name: string;
@@ -28,6 +39,8 @@ type SiteInfo = {
   template: string;
   owner_name?: string;
   account_name?: string;
+  generated_copy?: { services?: string[] };
+  generated_ads?: GeneratedAds;
 };
 
 export default function Dashboard() {
@@ -47,6 +60,31 @@ function DashboardInner() {
   const [regenerating, setRegenerating] = useState(false);
   const [regenDone, setRegenDone] = useState(false);
   const [expandedLead, setExpandedLead] = useState<string | null>(null);
+
+  // ── Google Ads ──
+  const [adFocus, setAdFocus] = useState("all");
+  const [adBudget, setAdBudget] = useState("20");
+  const [generatingAds, setGeneratingAds] = useState(false);
+  const [generatedAds, setGeneratedAds] = useState<GeneratedAds | null>(null);
+  const [adsError, setAdsError] = useState("");
+
+  async function handleGenerateAds() {
+    setGeneratingAds(true); setAdsError("");
+    try {
+      const res = await fetch("/api/generate-ads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ siteId, focusService: adFocus, dailyBudget: Number(adBudget) }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setAdsError(data.error || "Something went wrong"); return; }
+      setGeneratedAds(data);
+    } catch {
+      setAdsError("Could not generate ads. Please try again.");
+    } finally {
+      setGeneratingAds(false);
+    }
+  }
 
   async function updateLeadStatus(leadId: string, status: Lead["status"]) {
     setLeads((prev) => prev.map((l) => l.id === leadId ? { ...l, status } : l));
@@ -75,7 +113,14 @@ function DashboardInner() {
     fetch(`/api/dashboard?site=${siteId}`)
       .then((res) => res.json())
       .then((data) => {
-        if (data.site) setSite(data.site);
+        if (data.site) {
+          setSite(data.site);
+          if (data.site.generated_ads) {
+            setGeneratedAds(data.site.generated_ads);
+            setAdFocus(data.site.generated_ads.focusService || "all");
+            setAdBudget(String(data.site.generated_ads.dailyBudget || 20));
+          }
+        }
         if (data.leads) setLeads(data.leads);
       })
       .finally(() => setLoading(false));
@@ -286,6 +331,101 @@ function DashboardInner() {
                   })}
                 </div>
               )}
+            </div>
+
+            {/* GOOGLE ADS */}
+            <div className="card rounded-2xl p-7 mb-10">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-2">Google Ads</div>
+                  <h2 className="text-lg font-bold text-white">AI-generated ads for your business</h2>
+                  <p className="text-white/40 text-sm mt-1">Tell us what work you want — AI writes ads that bring in exactly those customers.</p>
+                </div>
+              </div>
+
+              <div className="space-y-5">
+                {/* Focus */}
+                <div>
+                  <label className="block text-sm font-semibold text-white/60 mb-2">What type of work do you want more of?</label>
+                  <select
+                    value={adFocus}
+                    onChange={(e) => setAdFocus(e.target.value)}
+                    className="w-full bg-[#0b1220] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#f59e0b]/50"
+                  >
+                    <option value="all">All services equally</option>
+                    {(site.generated_copy?.services || []).map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Budget */}
+                <div>
+                  <label className="block text-sm font-semibold text-white/60 mb-2">Daily budget (USD)</label>
+                  <div className="flex gap-2">
+                    {["10", "20", "30", "50"].map((b) => (
+                      <button key={b} type="button" onClick={() => setAdBudget(b)}
+                        className={`flex-1 py-2.5 rounded-xl text-sm font-bold border transition-colors ${adBudget === b ? "bg-[#f59e0b] text-[#0b1220] border-[#f59e0b]" : "border-white/10 text-white/50 hover:border-white/25"}`}>
+                        ${b}
+                      </button>
+                    ))}
+                    <input type="number" value={adBudget} onChange={(e) => setAdBudget(e.target.value)} min="5"
+                      className="w-20 bg-[#0b1220] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white text-center focus:outline-none focus:border-[#f59e0b]/50" />
+                  </div>
+                  <p className="text-white/25 text-xs mt-1.5">Estimated {Math.round(Number(adBudget) / 4)} clicks/day · ~{Math.round(Number(adBudget) * 0.4)} leads/month</p>
+                </div>
+
+                {adsError && <p className="text-red-400 text-sm">{adsError}</p>}
+
+                <button onClick={handleGenerateAds} disabled={generatingAds}
+                  className="w-full bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-extrabold text-sm py-3.5 rounded-xl transition-colors disabled:opacity-50">
+                  {generatingAds ? "Generating your ads…" : generatedAds ? "Regenerate ads ↺" : "Generate my ads →"}
+                </button>
+
+                {/* Generated ads */}
+                {generatedAds && (
+                  <div className="space-y-4 pt-2">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-green-400" />
+                      <p className="text-sm font-bold text-white">
+                        {generatedAds.focusService === "all" ? "General ads" : `Focused on: ${generatedAds.focusService}`}
+                        <span className="text-white/30 font-normal ml-2">· ${generatedAds.dailyBudget}/day budget</span>
+                      </p>
+                    </div>
+
+                    {/* Ad previews */}
+                    {generatedAds.ads.map((ad, i) => (
+                      <div key={i} className="rounded-xl border border-white/[0.07] bg-[#0b1220] p-4">
+                        <p className="text-xs font-bold text-white/30 uppercase tracking-widest mb-2">Ad variation {i + 1}</p>
+                        <div className="space-y-1 mb-3">
+                          {ad.headlines.map((h, j) => (
+                            <p key={j} className="text-[#4285f4] text-sm font-semibold">{h} {j < ad.headlines.length - 1 && <span className="text-white/20">|</span>}</p>
+                          ))}
+                        </div>
+                        {ad.descriptions.map((d, j) => (
+                          <p key={j} className="text-white/50 text-xs leading-relaxed">{d}</p>
+                        ))}
+                      </div>
+                    ))}
+
+                    {/* Keywords */}
+                    <div className="rounded-xl border border-white/[0.07] bg-[#0b1220] p-4">
+                      <p className="text-xs font-bold text-white/30 uppercase tracking-widest mb-3">Target keywords</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {generatedAds.keywords.map((k) => (
+                          <span key={k} className="text-xs px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/60">{k}</span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-[#f59e0b]/10 bg-[#f59e0b]/5 p-4 text-center">
+                      <p className="text-sm font-bold text-white mb-1">Ready to launch?</p>
+                      <p className="text-white/40 text-xs mb-3">Google Ads API integration coming soon — your ads are saved and ready to go live.</p>
+                      <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-[#f59e0b]/10 text-[#f59e0b] border border-[#f59e0b]/20">Coming soon</span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* SUPPORT */}
