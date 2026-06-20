@@ -455,47 +455,60 @@ function EditSiteInner() {
         {loading ? <p className="text-white/40 text-sm">Loading…</p> : (
           <form onSubmit={handleSave} className="flex flex-col gap-3">
 
-            {/* ── DESIGN PICKER (always visible) ──────────────────────────── */}
-            <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] px-5 py-4">
-              <p className="text-sm font-bold text-white/70 mb-3">🎨 Website design</p>
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  {
-                    id: "classic",
-                    label: "Classic",
-                    desc: "White & blue",
-                    colors: ["#ffffff", "#1d4ed8", "#f3f4f6"],
-                  },
-                  {
-                    id: "bold",
-                    label: "Bold",
-                    desc: "Dark & gold",
-                    colors: ["#0a0a0a", "#f59e0b", "#1a1a1a"],
-                  },
-                  {
-                    id: "warm",
-                    label: "Warm",
-                    desc: "Cream & terracotta",
-                    colors: ["#fdf6ef", "#c2703e", "#f5ebe0"],
-                  },
-                ].map((t) => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    onClick={() => setTemplate(t.id)}
-                    className={`rounded-xl border py-3 px-2 text-center transition-colors ${template === t.id ? "border-[#f59e0b] bg-[#f59e0b]/10" : "border-white/10 bg-white/[0.02] hover:border-white/25"}`}
-                  >
-                    <div className="flex justify-center gap-1 mb-2">
-                      {t.colors.map((c, i) => (
-                        <div key={i} className="w-4 h-4 rounded-full border border-white/10" style={{ background: c }} />
-                      ))}
-                    </div>
-                    <p className="text-sm font-bold">{t.label}</p>
-                    <p className="text-xs text-white/35 mt-0.5">{t.desc}</p>
-                    {template === t.id && <p className="text-[10px] font-bold text-[#f59e0b] mt-1">✓ Active</p>}
-                  </button>
-                ))}
-              </div>
+            {/* ── DESIGN PICKER ────────────────────────────────────────────── */}
+            <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setOpenSection(openSection === "design" ? null : "design")}
+                className="flex items-center gap-3 px-4 py-3.5 w-full text-left"
+              >
+                <span className="text-lg flex-none">🎨</span>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-sm leading-tight">Website design</p>
+                  <p className="text-xs text-white/30">
+                    {template === "classic" ? "Classic & Trustworthy" : template === "bold" ? "Modern & Bold" : "Warm & Personal"} — click to change
+                  </p>
+                </div>
+                <span className="text-white/30 text-xs">{openSection === "design" ? "▲" : "▼"}</span>
+              </button>
+              {openSection === "design" && (
+                <div className="px-5 pb-5 pt-4 border-t border-white/[0.06]">
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { id: "classic", name: "Classic & Trustworthy", desc: "Clean, professional, no-nonsense. Built for trades that win on reliability.", accent: "#38bdf8" },
+                      { id: "bold",    name: "Modern & Bold",          desc: "Sharp, confident, eye-catching. Stands out in a crowded local search.",    accent: "#f59e0b" },
+                      { id: "warm",    name: "Warm & Personal",        desc: "Friendly, approachable, community-feel. Great for owner-operated businesses.", accent: "#fb7185" },
+                    ].map((t) => (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => { setTemplate(t.id); setOpenSection(null); }}
+                        className={`rounded-2xl p-4 text-left transition-all hover:-translate-y-0.5 ${template === t.id ? "border-2 border-[#f59e0b] bg-[#f59e0b]/10" : "border border-white/10 bg-white/[0.02] hover:border-white/25"}`}
+                      >
+                        {/* Mini browser mockup */}
+                        <div className="rounded-lg overflow-hidden border border-white/10 mb-3 bg-[#0b1220]">
+                          <div className="flex items-center gap-1 px-2 py-1.5 border-b border-white/[0.06]">
+                            <span className="w-1.5 h-1.5 rounded-full bg-white/15" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-white/15" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-white/15" />
+                          </div>
+                          <div className="p-2.5 space-y-1.5">
+                            <div className="h-2.5 w-2/3 rounded" style={{ background: t.accent, opacity: 0.85 }} />
+                            <div className="h-1.5 w-full rounded bg-white/[0.08]" />
+                            <div className="h-1.5 w-5/6 rounded bg-white/[0.08]" />
+                            <div className="h-5 w-14 rounded mt-1.5" style={{ background: t.accent }} />
+                          </div>
+                        </div>
+                        <p className="text-xs font-bold text-white leading-snug mb-0.5">{t.name}</p>
+                        <p className="text-[10px] text-white/35 leading-relaxed">{t.desc}</p>
+                        {template === t.id && (
+                          <p className="text-[10px] font-bold text-[#f59e0b] mt-1.5">✓ Active</p>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* ── BUSINESS INFO (pinned — not a page section) ──────────────── */}
