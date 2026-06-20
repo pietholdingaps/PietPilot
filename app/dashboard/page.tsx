@@ -15,7 +15,7 @@ type Lead = {
   status: "new" | "contacted" | "done";
 };
 
-type AdVariant = { headlines: string[]; descriptions: string[] };
+type AdVariant = { headlines: string[]; descriptions: string[]; paused?: boolean };
 type GeneratedAds = {
   ads: AdVariant[];
   keywords: string[];
@@ -67,6 +67,26 @@ function DashboardInner() {
   const [generatingAds, setGeneratingAds] = useState(false);
   const [generatedAds, setGeneratedAds] = useState<GeneratedAds | null>(null);
   const [adsError, setAdsError] = useState("");
+
+  async function updateAds(newAds: AdVariant[]) {
+    setGeneratedAds((prev) => prev ? { ...prev, ads: newAds } : null);
+    await fetch("/api/update-ads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ siteId, ads: newAds }),
+    });
+  }
+
+  function toggleAdPause(index: number) {
+    if (!generatedAds) return;
+    const updated = generatedAds.ads.map((ad, i) => i === index ? { ...ad, paused: !ad.paused } : ad);
+    updateAds(updated);
+  }
+
+  function deleteAd(index: number) {
+    if (!generatedAds) return;
+    updateAds(generatedAds.ads.filter((_, i) => i !== index));
+  }
 
   async function handleGenerateAds() {
     setGeneratingAds(true); setAdsError("");
@@ -394,12 +414,27 @@ function DashboardInner() {
                     </div>
 
                     {/* Ad previews */}
+                    {generatedAds.ads.length === 0 && (
+                      <p className="text-white/30 text-sm text-center py-4">All ads deleted — generate new ones above.</p>
+                    )}
                     {generatedAds.ads.map((ad, i) => (
-                      <div key={i} className="rounded-xl border border-white/[0.07] bg-[#0b1220] p-4">
-                        <p className="text-xs font-bold text-white/30 uppercase tracking-widest mb-2">Ad variation {i + 1}</p>
-                        <div className="space-y-1 mb-3">
+                      <div key={i} className={`rounded-xl border bg-[#0b1220] p-4 transition-opacity ${ad.paused ? "opacity-40 border-white/[0.04]" : "border-white/[0.07]"}`}>
+                        <div className="flex items-center justify-between mb-3">
+                          <p className="text-xs font-bold text-white/30 uppercase tracking-widest">Ad {i + 1} {ad.paused && <span className="text-white/20 normal-case font-normal">· paused</span>}</p>
+                          <div className="flex items-center gap-2">
+                            <button type="button" onClick={() => toggleAdPause(i)}
+                              className={`text-xs font-bold px-3 py-1.5 rounded-lg border transition-colors ${ad.paused ? "border-green-500/30 text-green-400 hover:bg-green-500/10" : "border-white/10 text-white/40 hover:border-white/25"}`}>
+                              {ad.paused ? "▶ Resume" : "⏸ Pause"}
+                            </button>
+                            <button type="button" onClick={() => deleteAd(i)}
+                              className="text-xs font-bold px-3 py-1.5 rounded-lg border border-white/10 text-white/30 hover:border-red-500/30 hover:text-red-400 transition-colors">
+                              × Delete
+                            </button>
+                          </div>
+                        </div>
+                        <div className="space-y-0.5 mb-2">
                           {ad.headlines.map((h, j) => (
-                            <p key={j} className="text-[#4285f4] text-sm font-semibold">{h} {j < ad.headlines.length - 1 && <span className="text-white/20">|</span>}</p>
+                            <span key={j} className="text-[#4285f4] text-sm font-semibold">{h}{j < ad.headlines.length - 1 ? <span className="text-white/20 mx-1">|</span> : ""}</span>
                           ))}
                         </div>
                         {ad.descriptions.map((d, j) => (
