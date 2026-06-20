@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
 
     const { data: submission } = await supabase
       .from("onboarding_submissions")
-      .select("business_name, email, owner_email, trade, area, address, hours, generated_copy")
+      .select("business_name, email, owner_email, phone, trade, area, address, hours, generated_copy")
       .eq("id", siteId)
       .single();
 
