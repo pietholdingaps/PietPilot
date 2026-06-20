@@ -8,16 +8,16 @@ export const maxDuration = 60; // Allow up to 60s for AI generation + Pexels cal
 /** Maps a service name to a precise Pexels search query for the best photo result */
 function getPexelsQuery(serviceName: string): string {
   const s = serviceName.toLowerCase();
+  // Roofing — checked first to avoid "tile roof" matching flooring
+  if (/roof|roofing|gutter|fascia|soffit|shingle/.test(s)) return "roofer on rooftop shingles installation";
   // Decking / patio / terrace
   if (/deck|terrace|patio|veranda|pergola/.test(s)) return "wooden deck garden patio outdoor";
-  // Flooring
-  if (/floor|vinyl|laminate|hardwood|parquet|carpet|tile|tiling/.test(s)) return "hardwood floor installation wood planks";
+  // Flooring — tile/slate removed to avoid roofing ambiguity
+  if (/floor|flooring|vinyl|laminate|hardwood|parquet|carpet|tiling/.test(s)) return "hardwood floor installation wood planks";
   // Kitchen
   if (/kitchen|worktop|cabinet|cupboard/.test(s)) return "modern kitchen renovation white cabinets";
   // Bathroom
-  if (/bathroom|shower|bath|wet room/.test(s)) return "modern bathroom renovation shower tiles";
-  // Roofing
-  if (/roof|slate|tile|gutter|fascia|soffit/.test(s)) return "roofer roofing tiles roof repair";
+  if (/bathroom|shower|bath|wet room/.test(s)) return "modern bathroom renovation shower";
   // Fencing
   if (/fenc|gate|railing|balustrade/.test(s)) return "garden fence wood panel new fence";
   // Windows / doors
