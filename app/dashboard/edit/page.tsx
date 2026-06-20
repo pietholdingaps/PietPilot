@@ -204,6 +204,7 @@ function EditSiteInner() {
   // ── Project photos ──
   const [projectPhotos, setProjectPhotos] = useState<string[]>([]);
   const [photosUploading, setPhotosUploading] = useState(false);
+  const [photosError, setPhotosError] = useState("");
 
   // ── Custom images ──
   const [customImages, setCustomImages] = useState<{ hero?: string; services?: Record<string, string> }>({});
@@ -363,9 +364,20 @@ function EditSiteInner() {
 
   async function handlePhotosUpload(files: FileList) {
     setPhotosUploading(true);
+    setPhotosError("");
+    let anyFailed = false;
     for (const file of Array.from(files)) {
-      const url = await upload(file); if (url) setProjectPhotos((p) => [...p, url!]);
+      const fd = new FormData(); fd.append("file", file);
+      const r = await fetch("/api/upload-image", { method: "POST", body: fd });
+      const json = await r.json();
+      if (json.url) {
+        setProjectPhotos((p) => [...p, json.url]);
+      } else {
+        anyFailed = true;
+        console.error("Photo upload failed:", json.error);
+      }
     }
+    if (anyFailed) setPhotosError("One or more photos failed to upload. Check your internet connection and try again.");
     setPhotosUploading(false);
   }
 
@@ -795,6 +807,7 @@ function EditSiteInner() {
                       <input type="file" accept="image/*" multiple className="hidden"
                         onChange={(e) => { if (e.target.files) handlePhotosUpload(e.target.files); }} />
                     </label>
+                    {photosError && <p className="text-red-400 text-xs mt-1">{photosError}</p>}
                   </>}
 
                 </SortableSection>
