@@ -64,7 +64,6 @@ const questions = [
   { key: "about", label: "Tell us about you and your business — the more you write, the better your site will be", placeholder: "How long have you been in business? How many jobs have you done? What makes you different? What do customers say about you? What do you care about on the job?", type: "textarea" },
   { key: "whyChooseUs", label: "Why should customers choose you over the competition?", placeholder: "e.g. fast response times, fair prices, years of experience, guarantees, certifications...", type: "textarea" },
   { key: "reviews", label: "Do you have a Trustpilot or Google Business profile with reviews?", placeholder: "", type: "reviews" },
-  { key: "logo", label: "Do you have a logo you'd like to use?", placeholder: "Optional — upload an image, or skip and we'll use your business name as text", type: "logo" },
   { key: "photos", label: "Got photos of your own work?", placeholder: "Optional — upload a few (decks, roofs, kitchens, etc.) and we'll show them on your site instead of stock photos", type: "file" },
 ];
 
@@ -131,27 +130,10 @@ function OnboardingInner() {
   const [submitting, setSubmitting] = useState(false);
   const [previewCopy, setPreviewCopy] = useState<GeneratedSiteCopy | null>(null);
   const [generatingPreview, setGeneratingPreview] = useState(false);
-  const [logoUrl, setLogoUrl] = useState<string>("");
-  const [logoUploading, setLogoUploading] = useState(false);
   const [projectPhotos, setProjectPhotos] = useState<string[]>([]);
   const [photosUploading, setPhotosUploading] = useState(false);
   const [trustpilotUrl, setTrustpilotUrl] = useState("");
   const [googleReviewsUrl, setGoogleReviewsUrl] = useState("");
-
-  async function handleLogoUpload(file: File) {
-    setLogoUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const res = await fetch("/api/upload-logo", { method: "POST", body: formData });
-      const json = await res.json();
-      if (json.url) setLogoUrl(json.url);
-    } catch {
-      // ignore — logo is optional, user can continue without it
-    } finally {
-      setLogoUploading(false);
-    }
-  }
 
   async function handlePhotosUpload(files: FileList) {
     setPhotosUploading(true);
@@ -229,7 +211,7 @@ function OnboardingInner() {
       const res = await fetch("/api/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, logoUrl, projectPhotos, trustpilotUrl, googleReviewsUrl, template: id, accountName: account.name, accountEmail: account.email }),
+        body: JSON.stringify({ ...data, projectPhotos, trustpilotUrl, googleReviewsUrl, template: id, accountName: account.name, accountEmail: account.email }),
       });
       const json = await res.json();
       siteId = json?.id || null;
@@ -447,38 +429,7 @@ function OnboardingInner() {
                   <p className="text-white/30 text-xs">Optional — skip this if you don&apos;t have any yet. You can always add them later in your dashboard.</p>
                 </div>
               )}
-              {current.type === "logo" && (
-                <div className="border-2 border-dashed border-white/15 rounded-xl px-4 py-8 text-center">
-                  {logoUrl ? (
-                    <div className="flex flex-col items-center gap-3">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={logoUrl} alt="Your logo" className="max-h-20 max-w-[200px] object-contain" />
-                      <button
-                        onClick={() => setLogoUrl("")}
-                        className="text-white/40 hover:text-white text-xs font-medium transition-colors"
-                      >
-                        Remove and upload a different logo
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      <p className="text-white/40 text-sm mb-3">
-                        {logoUploading ? "Uploading..." : "Upload your logo, or skip this step"}
-                      </p>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        disabled={logoUploading}
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) handleLogoUpload(file);
-                        }}
-                        className="text-xs text-white/40"
-                      />
-                    </>
-                  )}
-                </div>
-              )}
+
 
               <div className="flex items-center justify-between mt-10">
                 <button
@@ -588,7 +539,6 @@ function OnboardingInner() {
                                 email: data.email || "",
                                 address: data.address || "",
                                 licenseNumber: data.license || "",
-                                logoUrl: logoUrl || "",
                                 hours: data.hours || "",
                                 template: t.id,
                                 copy: previewCopy,
