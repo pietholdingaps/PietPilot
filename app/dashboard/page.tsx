@@ -248,8 +248,11 @@ function DashboardInner() {
               </div>
             </div>
 
+            {/* LEADS + ADS row */}
+            <div className="grid md:grid-cols-2 gap-4 mb-10">
+
             {/* LEADS */}
-            <div className="card rounded-2xl p-7 mb-10">
+            <div className="card rounded-2xl p-7">
               <div className="flex items-center justify-between mb-5">
                 <div>
                   <h2 className="text-lg font-bold text-white">Leads</h2>
@@ -347,7 +350,7 @@ function DashboardInner() {
             </div>
 
             {/* GOOGLE ADS */}
-            <div className="card rounded-2xl p-7 mb-10">
+            <div className="card rounded-2xl p-7">
               <div className="flex items-center justify-between mb-5">
                 <div>
                   <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-1">Google Ads</div>
@@ -397,6 +400,8 @@ function DashboardInner() {
                 </div>
               )}
             </div>
+
+            </div> {/* end grid */}
 
             {/* SUPPORT */}
             <div className="card rounded-2xl p-7">
