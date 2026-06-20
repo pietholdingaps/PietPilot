@@ -140,6 +140,7 @@ function EditSiteInner() {
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [hours, setHours] = useState("");
+  const [licenseNumber, setLicenseNumber] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
   const [template, setTemplate] = useState("classic");
   const [uploading, setUploading] = useState(false);
@@ -224,6 +225,7 @@ function EditSiteInner() {
         setEmail(s.email || "");
         setAddress(s.address || "");
         setHours(s.hours || "");
+        setLicenseNumber(s.license_number || "");
         setLogoUrl(s.logo_url || "");
         setTemplate(s.template || "classic");
         // Start from whatever was saved, then enforce content rules:
@@ -400,7 +402,7 @@ function EditSiteInner() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          siteId, businessName, phone, email, address, hours, logoUrl, template,
+          siteId, businessName, phone, email, address, hours, logoUrl, template, licenseNumber,
           headline, subheadline, ctaText,
           about, guaranteeLine, responsePromise, trustLine,
           services, serviceDescriptions,
@@ -772,6 +774,9 @@ function EditSiteInner() {
                     <Field label="Email" value={email} onChange={setEmail} placeholder="info@yourbusiness.com" />
                     <Field label="Address" value={address} onChange={setAddress} placeholder="123 Main St, City" />
                     <Field label="Opening hours" value={hours} onChange={setHours} placeholder="Mon–Fri 7am–5pm, Sat 8am–2pm" />
+                    <Field label="License / Insurance number" value={licenseNumber} onChange={setLicenseNumber}
+                      placeholder="e.g. TX-PLB-12345"
+                      hint="Shown in footer and guarantee line. Leave blank to hide." />
                     <Field label="Response promise" value={responsePromise} onChange={setResponsePromise}
                       placeholder="We respond within 24 hours — guaranteed." />
                   </>}

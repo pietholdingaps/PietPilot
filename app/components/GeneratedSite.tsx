@@ -381,6 +381,8 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
 
   function renderPhotos() {
     if (hidden.has("photos") || !data.projectPhotos?.length) return null;
+    const preview = data.projectPhotos.slice(0, 3);
+    const hasMore = data.projectPhotos.length > 3;
     return (
       <section key="photos" className="py-24 px-6">
         <div className="max-w-6xl mx-auto">
@@ -388,14 +390,25 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
             <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: theme.accent }}>Our work</div>
             <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">See it for yourself</h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {data.projectPhotos.map((url, i) => (
-              <div key={i} className="rounded-2xl overflow-hidden aspect-square">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {preview.map((url, i) => (
+              <div key={i} className="rounded-2xl overflow-hidden aspect-[4/3]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={url} alt={`Project ${i + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
               </div>
             ))}
           </div>
+          {hasMore && (
+            <div className="text-center mt-10">
+              <a
+                href={`/site/${data.id}/work`}
+                className="inline-flex items-center gap-2 font-bold text-sm px-6 py-3 rounded-xl transition-opacity hover:opacity-80"
+                style={{ background: theme.accent, color: theme.accentText }}
+              >
+                See all {data.projectPhotos.length} photos →
+              </a>
+            </div>
+          )}
         </div>
       </section>
     );
@@ -425,7 +438,7 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
         <div className="max-w-6xl mx-auto px-6 h-[72px] flex items-center justify-between">
           {data.logoUrl
             // eslint-disable-next-line @next/next/no-img-element
-            ? <img src={data.logoUrl} alt={data.businessName} className="h-10 max-w-[180px] object-contain" />
+            ? <img src={data.logoUrl} alt={data.businessName} className="h-14 max-w-[220px] object-contain" />
             : <span className="text-lg font-extrabold tracking-tight">{data.businessName}</span>}
           <div className="hidden sm:flex items-center gap-8 text-sm font-medium" style={{ color: theme.muted }}>
             <a href="#about" className="hover:opacity-70 transition-opacity">About</a>

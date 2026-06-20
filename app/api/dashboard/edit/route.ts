@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const {
-      siteId, businessName, phone, email, address, hours, logoUrl, template,
+      siteId, businessName, phone, email, address, hours, logoUrl, template, licenseNumber,
       headline, subheadline, ctaText, about, guaranteeLine, responsePromise, trustLine,
       services, serviceDescriptions, whyPoints, processSteps, stats,
       trustpilotUrl, googleReviewsUrl,
@@ -111,6 +111,7 @@ export async function POST(req: NextRequest) {
         hours,
         logo_url: logoUrl || null,
         template: template || "classic",
+        license_number: licenseNumber !== undefined ? licenseNumber : undefined,
         trustpilot_url: trustpilotUrl || null,
         google_reviews_url: googleReviewsUrl || null,
         project_photos: projectPhotos?.length > 0 ? projectPhotos : null,
