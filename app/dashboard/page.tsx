@@ -392,7 +392,7 @@ function DashboardInner() {
                     <input type="number" value={adBudget} onChange={(e) => setAdBudget(e.target.value)} min="5"
                       className="w-20 bg-[#0b1220] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white text-center focus:outline-none focus:border-[#f59e0b]/50" />
                   </div>
-                  <p className="text-white/25 text-xs mt-1.5">Estimated {Math.round(Number(adBudget) / 4)} clicks/day · ~{Math.round(Number(adBudget) * 0.4)} leads/month</p>
+                  <p className="text-white/25 text-xs mt-1.5">Higher budget = more reach. Most trade businesses start with $15–30/day.</p>
                 </div>
 
                 {adsError && <p className="text-red-400 text-sm">{adsError}</p>}
