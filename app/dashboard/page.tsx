@@ -252,36 +252,26 @@ function DashboardInner() {
             <div className="grid md:grid-cols-2 gap-4 mb-10">
 
             {/* LEADS */}
-            <div className="card rounded-2xl p-7">
-              <div className="flex items-center justify-between mb-5">
-                <div>
-                  <h2 className="text-lg font-bold text-white">Leads</h2>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex gap-2 text-xs font-bold">
-                    <span className="px-2.5 py-1 rounded-full bg-[#f59e0b]/10 text-[#f59e0b] border border-[#f59e0b]/20">{leads.filter(l => l.status === "new").length} New</span>
-                    <span className="px-2.5 py-1 rounded-full bg-white/5 text-white/40 border border-white/10">{leads.filter(l => l.status === "contacted").length} Contacted</span>
-                    <span className="px-2.5 py-1 rounded-full bg-white/5 text-white/40 border border-white/10">{leads.filter(l => l.status === "done").length} Done</span>
-                  </div>
-                  {leads.length > 0 && (
-                    <Link href={`/leads?site=${siteId}`} className="text-sm font-bold text-[#f59e0b] hover:opacity-70 transition-opacity">
-                      See all →
-                    </Link>
-                  )}
+            <div className="card rounded-2xl p-6 flex flex-col">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-bold text-white">Leads</h2>
+                <div className="flex gap-2 text-xs font-bold">
+                  <span className="px-2.5 py-1 rounded-full bg-[#f59e0b]/10 text-[#f59e0b] border border-[#f59e0b]/20">{leads.filter(l => l.status === "new").length} New</span>
+                  <span className="px-2.5 py-1 rounded-full bg-white/5 text-white/40 border border-white/10">{leads.filter(l => l.status === "contacted").length} Contacted</span>
+                  <span className="px-2.5 py-1 rounded-full bg-white/5 text-white/40 border border-white/10">{leads.filter(l => l.status === "done").length} Done</span>
                 </div>
               </div>
 
               {leads.length === 0 ? (
-                <div className="text-center py-8">
+                <div className="flex-1 flex flex-col items-center justify-center py-8">
                   <p className="text-3xl mb-3">📭</p>
                   <p className="text-white/50 text-sm font-semibold">No leads yet</p>
-                  <p className="text-white/30 text-xs mt-1">When someone fills out your contact form, they&apos;ll appear here.</p>
+                  <p className="text-white/30 text-xs mt-1 text-center">When someone fills out your contact form, they&apos;ll appear here.</p>
                 </div>
               ) : (
-                <>
+                <div className="flex flex-col flex-1">
                   {(() => {
                     const lead = leads[0];
-                    const isExpanded = expandedLead === lead.id;
                     const contactEmail = lead.email || (lead.contact?.includes("@") ? lead.contact : null);
                     const contactPhone = lead.phone || (!lead.contact?.includes("@") ? lead.contact : null);
                     const statusColors: Record<string, string> = {
@@ -290,9 +280,8 @@ function DashboardInner() {
                       done: "bg-green-500/10 text-green-400 border-green-500/20",
                     };
                     return (
-                      <div className={`rounded-xl border bg-[#0b1220] ${lead.status === "new" ? "border-[#f59e0b]/20" : "border-white/[0.06]"}`}>
-                        <button type="button" onClick={() => setExpandedLead(isExpanded ? null : lead.id)}
-                          className="w-full flex items-center gap-3 p-4 text-left">
+                      <div className={`rounded-xl border bg-[#0b1220] mb-3 ${lead.status === "new" ? "border-[#f59e0b]/20" : "border-white/[0.06]"}`}>
+                        <div className="flex items-center gap-3 p-4">
                           <div className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center text-sm font-bold text-white/60 flex-none">
                             {lead.name.charAt(0).toUpperCase()}
                           </div>
@@ -306,73 +295,53 @@ function DashboardInner() {
                           <span className="text-white/25 text-xs flex-none">
                             {new Date(lead.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                           </span>
-                          <span className="text-white/25 text-xs flex-none">{isExpanded ? "▲" : "▼"}</span>
-                        </button>
-                        {isExpanded && (
-                          <div className="px-4 pb-4 border-t border-white/[0.06] pt-4 space-y-4">
-                            <p className="text-white/70 text-sm leading-relaxed whitespace-pre-wrap">{lead.message}</p>
-                            <div className="flex flex-wrap gap-2">
-                              {contactEmail && (
-                                <a href={`mailto:${contactEmail}?subject=Re: Your inquiry&body=Hi ${lead.name},%0D%0A%0D%0AThank you for reaching out!`}
-                                  className="text-xs font-bold px-3 py-2 rounded-lg bg-[#f59e0b] text-[#0b1220] hover:bg-[#fbbf24] transition-colors">
-                                  ✉ Reply
-                                </a>
-                              )}
-                              {contactPhone && (
-                                <a href={`tel:${contactPhone}`}
-                                  className="text-xs font-bold px-3 py-2 rounded-lg border border-white/10 hover:border-white/25 transition-colors">
-                                  📞 Call
-                                </a>
-                              )}
-                            </div>
-                            <div className="flex gap-2 items-center">
-                              <p className="text-xs text-white/30 mr-1">Mark as:</p>
-                              {(["new", "contacted", "done"] as const).map(s => (
-                                <button key={s} type="button" onClick={() => updateLeadStatus(lead.id, s)}
-                                  className={`text-xs font-bold px-3 py-1.5 rounded-lg border transition-colors ${lead.status === s ? statusColors[s] : "border-white/10 text-white/30 hover:border-white/25"}`}>
-                                  {s === "new" ? "New" : s === "contacted" ? "Contacted" : "Done"}
-                                </button>
-                              ))}
-                            </div>
+                        </div>
+                        <div className="px-4 pb-4 border-t border-white/[0.06] pt-3 space-y-3">
+                          <p className="text-white/60 text-sm leading-relaxed">{lead.message}</p>
+                          <div className="flex gap-2">
+                            {contactEmail && (
+                              <a href={`mailto:${contactEmail}?subject=Re: Your inquiry&body=Hi ${lead.name},%0D%0A%0D%0AThank you for reaching out!`}
+                                className="text-xs font-bold px-3 py-2 rounded-lg bg-[#f59e0b] text-[#0b1220] hover:bg-[#fbbf24] transition-colors">
+                                ✉ Reply
+                              </a>
+                            )}
+                            {contactPhone && (
+                              <a href={`tel:${contactPhone}`}
+                                className="text-xs font-bold px-3 py-2 rounded-lg border border-white/10 hover:border-white/25 transition-colors">
+                                📞 Call
+                              </a>
+                            )}
                           </div>
-                        )}
+                        </div>
                       </div>
                     );
                   })()}
-                  {leads.length > 1 && (
-                    <Link href={`/leads?site=${siteId}`}
-                      className="mt-3 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-white/[0.07] text-sm text-white/40 hover:text-white hover:border-white/20 transition-colors font-semibold">
-                      See all {leads.length} leads →
-                    </Link>
-                  )}
-                </>
+                  <Link href={`/leads?site=${siteId}`}
+                    className="mt-auto flex items-center justify-center w-full py-3 rounded-xl border border-white/[0.07] text-sm text-white/50 hover:text-white hover:border-white/20 transition-colors font-semibold">
+                    See all {leads.length} leads →
+                  </Link>
+                </div>
               )}
             </div>
 
             {/* GOOGLE ADS */}
-            <div className="card rounded-2xl p-7">
-              <div className="flex items-center justify-between mb-5">
-                <div>
-                  <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-1">Google Ads</div>
-                  <h2 className="text-lg font-bold text-white">AI-generated ads</h2>
-                </div>
-                <Link href={`/ads?site=${siteId}`}
-                  className="text-sm font-bold text-[#f59e0b] hover:opacity-70 transition-opacity">
-                  {generatedAds ? "Manage ads →" : "Set up →"}
-                </Link>
+            <div className="card rounded-2xl p-6 flex flex-col">
+              <div className="mb-4">
+                <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-1">Google Ads</div>
+                <h2 className="text-lg font-bold text-white">AI-generated ads</h2>
               </div>
 
               {!generatedAds ? (
-                <div className="text-center py-6">
-                  <p className="text-white/50 text-sm mb-4">AI writes ads that bring in exactly the customers you want.</p>
+                <div className="flex-1 flex flex-col items-center justify-center py-6">
+                  <p className="text-white/50 text-sm mb-6 text-center">AI writes ads that bring in exactly the customers you want.</p>
                   <Link href={`/ads?site=${siteId}`}
-                    className="inline-block bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-bold text-sm px-6 py-3 rounded-xl transition-colors">
+                    className="w-full flex items-center justify-center bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-bold text-sm py-3 rounded-xl transition-colors">
                     Generate my ads →
                   </Link>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-4 text-sm">
+                <div className="flex flex-col flex-1 space-y-3">
+                  <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm">
                     <span className="text-white/40">{generatedAds.ads.filter(a => !a.paused).length} active</span>
                     <span className="text-white/20">·</span>
                     <span className="text-white/40">{generatedAds.ads.filter(a => a.paused).length} paused</span>
@@ -394,7 +363,7 @@ function DashboardInner() {
                     </div>
                   ))}
                   <Link href={`/ads?site=${siteId}`}
-                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-white/[0.07] text-sm text-white/40 hover:text-white hover:border-white/20 transition-colors font-semibold">
+                    className="mt-auto flex items-center justify-center w-full py-3 rounded-xl border border-white/[0.07] text-sm text-white/50 hover:text-white hover:border-white/20 transition-colors font-semibold">
                     Manage all {generatedAds.ads.length} ads →
                   </Link>
                 </div>
