@@ -253,18 +253,19 @@ function DashboardInner() {
               <div className="flex items-center justify-between mb-5">
                 <div>
                   <h2 className="text-lg font-bold text-white">Leads</h2>
-                  <p className="text-white/40 text-xs mt-0.5">
-                    {leads.filter(l => l.status === "new").length > 0
-                      ? `${leads.filter(l => l.status === "new").length} new · ${leads.length} total`
-                      : `${leads.length} total`}
-                  </p>
                 </div>
-                {leads.length > 0 && (
-                  <Link href={`/leads?site=${siteId}`}
-                    className="text-sm font-bold text-[#f59e0b] hover:opacity-70 transition-opacity">
-                    See all →
-                  </Link>
-                )}
+                <div className="flex items-center gap-3">
+                  <div className="flex gap-2 text-xs font-bold">
+                    <span className="px-2.5 py-1 rounded-full bg-[#f59e0b]/10 text-[#f59e0b] border border-[#f59e0b]/20">{leads.filter(l => l.status === "new").length} New</span>
+                    <span className="px-2.5 py-1 rounded-full bg-white/5 text-white/40 border border-white/10">{leads.filter(l => l.status === "contacted").length} Contacted</span>
+                    <span className="px-2.5 py-1 rounded-full bg-white/5 text-white/40 border border-white/10">{leads.filter(l => l.status === "done").length} Done</span>
+                  </div>
+                  {leads.length > 0 && (
+                    <Link href={`/leads?site=${siteId}`} className="text-sm font-bold text-[#f59e0b] hover:opacity-70 transition-opacity">
+                      See all →
+                    </Link>
+                  )}
+                </div>
               </div>
 
               {leads.length === 0 ? (
@@ -275,9 +276,9 @@ function DashboardInner() {
                 </div>
               ) : (
                 <>
-                  {/* Latest lead only */}
                   {(() => {
                     const lead = leads[0];
+                    const isExpanded = expandedLead === lead.id;
                     const contactEmail = lead.email || (lead.contact?.includes("@") ? lead.contact : null);
                     const contactPhone = lead.phone || (!lead.contact?.includes("@") ? lead.contact : null);
                     const statusColors: Record<string, string> = {
@@ -287,12 +288,13 @@ function DashboardInner() {
                     };
                     return (
                       <div className={`rounded-xl border bg-[#0b1220] ${lead.status === "new" ? "border-[#f59e0b]/20" : "border-white/[0.06]"}`}>
-                        <div className="flex items-center gap-3 p-4">
+                        <button type="button" onClick={() => setExpandedLead(isExpanded ? null : lead.id)}
+                          className="w-full flex items-center gap-3 p-4 text-left">
                           <div className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center text-sm font-bold text-white/60 flex-none">
                             {lead.name.charAt(0).toUpperCase()}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-bold text-sm text-white">{lead.name}</p>
+                            <p className="font-bold text-sm text-white truncate">{lead.name}</p>
                             <p className="text-white/40 text-xs truncate">{contactEmail || contactPhone || lead.contact}</p>
                           </div>
                           <span className={`text-xs font-bold px-2.5 py-1 rounded-full border flex-none ${statusColors[lead.status || "new"]}`}>
@@ -301,30 +303,42 @@ function DashboardInner() {
                           <span className="text-white/25 text-xs flex-none">
                             {new Date(lead.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                           </span>
-                        </div>
-                        <div className="px-4 pb-4 border-t border-white/[0.06] pt-3">
-                          <p className="text-white/60 text-sm leading-relaxed line-clamp-2">{lead.message}</p>
-                          <div className="flex gap-2 mt-3">
-                            {contactEmail && (
-                              <a href={`mailto:${contactEmail}?subject=Re: Your inquiry&body=Hi ${lead.name},%0D%0A%0D%0AThank you for reaching out!`}
-                                className="text-xs font-bold px-3 py-2 rounded-lg bg-[#f59e0b] text-[#0b1220] hover:bg-[#fbbf24] transition-colors">
-                                ✉ Reply
-                              </a>
-                            )}
-                            {contactPhone && (
-                              <a href={`tel:${contactPhone}`}
-                                className="text-xs font-bold px-3 py-2 rounded-lg border border-white/10 hover:border-white/25 transition-colors">
-                                📞 Call
-                              </a>
-                            )}
+                          <span className="text-white/25 text-xs flex-none">{isExpanded ? "▲" : "▼"}</span>
+                        </button>
+                        {isExpanded && (
+                          <div className="px-4 pb-4 border-t border-white/[0.06] pt-4 space-y-4">
+                            <p className="text-white/70 text-sm leading-relaxed whitespace-pre-wrap">{lead.message}</p>
+                            <div className="flex flex-wrap gap-2">
+                              {contactEmail && (
+                                <a href={`mailto:${contactEmail}?subject=Re: Your inquiry&body=Hi ${lead.name},%0D%0A%0D%0AThank you for reaching out!`}
+                                  className="text-xs font-bold px-3 py-2 rounded-lg bg-[#f59e0b] text-[#0b1220] hover:bg-[#fbbf24] transition-colors">
+                                  ✉ Reply
+                                </a>
+                              )}
+                              {contactPhone && (
+                                <a href={`tel:${contactPhone}`}
+                                  className="text-xs font-bold px-3 py-2 rounded-lg border border-white/10 hover:border-white/25 transition-colors">
+                                  📞 Call
+                                </a>
+                              )}
+                            </div>
+                            <div className="flex gap-2 items-center">
+                              <p className="text-xs text-white/30 mr-1">Mark as:</p>
+                              {(["new", "contacted", "done"] as const).map(s => (
+                                <button key={s} type="button" onClick={() => updateLeadStatus(lead.id, s)}
+                                  className={`text-xs font-bold px-3 py-1.5 rounded-lg border transition-colors ${lead.status === s ? statusColors[s] : "border-white/10 text-white/30 hover:border-white/25"}`}>
+                                  {s === "new" ? "New" : s === "contacted" ? "Contacted" : "Done"}
+                                </button>
+                              ))}
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
                     );
                   })()}
                   {leads.length > 1 && (
                     <Link href={`/leads?site=${siteId}`}
-                      className="mt-3 flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-white/[0.07] text-sm text-white/40 hover:text-white hover:border-white/20 transition-colors font-semibold">
+                      className="mt-3 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-white/[0.07] text-sm text-white/40 hover:text-white hover:border-white/20 transition-colors font-semibold">
                       See all {leads.length} leads →
                     </Link>
                   )}
