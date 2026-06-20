@@ -13,8 +13,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const {
       businessName, trade, area, phone, email, address, license, hours,
-      services, experience, about, whyChooseUs, logoUrl, template,
-      accountName, accountEmail, projectPhotos, trustpilotUrl, googleReviewsUrl,
+      services, experience, about, whyChooseUs, template,
+      accountName, accountEmail, projectPhotos, trustpilotUrl, googleReviewsUrl, domain,
     } = body;
 
     const { data: inserted, error: dbError } = await supabase.from("onboarding_submissions").insert({
@@ -31,10 +31,11 @@ export async function POST(req: NextRequest) {
       experience: experience || null,
       about: about || null,
       why_choose_us: whyChooseUs || null,
-      logo_url: logoUrl || null,
+      logo_url: null,
       project_photos: projectPhotos && projectPhotos.length > 0 ? projectPhotos : null,
       trustpilot_url: trustpilotUrl || null,
       google_reviews_url: googleReviewsUrl || null,
+      custom_domain: domain || null,
       template: template || null,
       account_name: accountName || null,
       created_at: new Date().toISOString(),
@@ -42,6 +43,19 @@ export async function POST(req: NextRequest) {
 
     if (dbError) {
       console.error("Supabase onboarding error:", dbError);
+    }
+
+    // Auto-add domain to Vercel if provided
+    if (domain && inserted?.id) {
+      const cleanDomain = domain.toLowerCase().trim().replace(/^https?:\/\//, "").replace(/\/$/, "");
+      fetch(`https://api.vercel.com/v10/projects/${process.env.VERCEL_PROJECT_ID}/domains`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.VERCEL_API_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name: cleanDomain }),
+      }).catch(() => {});
     }
 
     await resend.emails.send({

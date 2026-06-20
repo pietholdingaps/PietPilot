@@ -65,6 +65,7 @@ const questions = [
   { key: "whyChooseUs", label: "Why should customers choose you over the competition?", placeholder: "e.g. fast response times, fair prices, years of experience, guarantees, certifications...", type: "textarea" },
   { key: "reviews", label: "Do you have a Trustpilot or Google Business profile with reviews?", placeholder: "", type: "reviews" },
   { key: "photos", label: "Got photos of your own work?", placeholder: "Optional — upload a few (decks, roofs, kitchens, etc.) and we'll show them on your site instead of stock photos", type: "file" },
+  { key: "domain", label: "Do you already have a domain name for your business?", placeholder: "e.g. www.jensensplumbing.com — leave blank to skip, you can add it later", type: "domain" },
 ];
 
 const templates = [
@@ -134,6 +135,7 @@ function OnboardingInner() {
   const [photosUploading, setPhotosUploading] = useState(false);
   const [trustpilotUrl, setTrustpilotUrl] = useState("");
   const [googleReviewsUrl, setGoogleReviewsUrl] = useState("");
+  const [domainInput, setDomainInput] = useState("");
 
   async function handlePhotosUpload(files: FileList) {
     setPhotosUploading(true);
@@ -211,7 +213,7 @@ function OnboardingInner() {
       const res = await fetch("/api/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, projectPhotos, trustpilotUrl, googleReviewsUrl, template: id, accountName: account.name, accountEmail: account.email }),
+        body: JSON.stringify({ ...data, projectPhotos, trustpilotUrl, googleReviewsUrl, domain: domainInput || null, template: id, accountName: account.name, accountEmail: account.email }),
       });
       const json = await res.json();
       siteId = json?.id || null;
@@ -430,6 +432,24 @@ function OnboardingInner() {
                 </div>
               )}
 
+              {current.type === "domain" && (
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    value={domainInput}
+                    onChange={(e) => setDomainInput(e.target.value)}
+                    placeholder="www.yourbusiness.com"
+                    className="w-full bg-[#0b1220] border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#f59e0b]/50 placeholder:text-white/25"
+                    onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
+                  />
+                  <p className="text-white/30 text-xs">Optional — if you don&apos;t have one yet, skip this and we&apos;ll set you up with a free link. You can always add a domain later.</p>
+                  {domainInput && (
+                    <div className="bg-[#0b1220] rounded-xl border border-white/10 p-4 space-y-3">
+                      <p className="text-sm font-semibold text-white/70">After your site is built, we&apos;ll show you exactly how to connect <span className="text-white">{domainInput}</span> — step by step, takes about 5 minutes.</p>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="flex items-center justify-between mt-10">
                 <button
