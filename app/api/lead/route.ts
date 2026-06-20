@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
 import Anthropic from "@anthropic-ai/sdk";
+import twilio from "twilio";
 
 export async function POST(req: NextRequest) {
   const supabase = createClient(
@@ -71,7 +72,22 @@ export async function POST(req: NextRequest) {
       `,
     });
 
-    // ── 3. Auto-reply to lead (if email provided) ─────────────────────────────
+    // ── 3. SMS til håndværkeren (hvis Twilio er sat op) ──────────────────────
+    const businessPhone = submission.phone;
+    if (businessPhone && process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+      try {
+        const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+        await twilioClient.messages.create({
+          from: process.env.TWILIO_PHONE_NUMBER!,
+          to: businessPhone,
+          body: `🔔 New lead from your website!\n\nName: ${name}\n${leadEmail ? `Email: ${leadEmail}\n` : ""}${leadPhone ? `Phone: ${leadPhone}\n` : ""}\nMessage: ${message.slice(0, 100)}${message.length > 100 ? "..." : ""}`,
+        });
+      } catch (smsErr) {
+        console.error("SMS notification failed:", smsErr);
+      }
+    }
+
+    // ── 4. Auto-reply to lead (if email provided) ─────────────────────────────
     if (leadEmail) {
       let replyText = "";
       try {
