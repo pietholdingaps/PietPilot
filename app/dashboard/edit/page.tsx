@@ -534,21 +534,6 @@ function EditSiteInner() {
                   <Field label="Contact email" value={email} onChange={setEmail} placeholder="info@yourbusiness.com" />
                   <Field label="Address" value={address} onChange={setAddress} placeholder="123 Main St, City" />
                   <Field label="Opening hours" value={hours} onChange={setHours} placeholder="Mon–Fri 7am–5pm, Sat 8am–2pm" />
-                  {/* Logo */}
-                  <div>
-                    <p className="text-sm font-semibold text-white/70 mb-2">Logo</p>
-                    <div className="flex items-center gap-4">
-                      {logoUrl
-                        // eslint-disable-next-line @next/next/no-img-element
-                        ? <img src={logoUrl} alt="Logo" className="w-14 h-14 rounded-lg object-contain bg-white/5 border border-white/10" />
-                        : <div className="w-14 h-14 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/25 text-xs">None</div>}
-                      <label className="cursor-pointer border border-white/10 hover:border-white/25 text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-                        {uploading ? "Uploading…" : logoUrl ? "Change logo" : "Upload logo"}
-                        <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleLogoUpload(f); }} />
-                      </label>
-                      {logoUrl && <button type="button" onClick={() => setLogoUrl("")} className="text-white/35 hover:text-red-400 text-xs font-semibold">Remove</button>}
-                    </div>
-                  </div>
                 </div>
               )}
             </div>
