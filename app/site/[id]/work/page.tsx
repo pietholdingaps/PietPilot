@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
 import { themes } from "@/app/components/GeneratedSite";
 import LeadForm from "@/app/components/LeadForm";
+import WorkGallery from "@/app/components/WorkGallery";
 
 export const dynamic = "force-dynamic";
 
@@ -71,13 +72,8 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
 
       {/* GALLERY */}
       <section className="pb-20 px-6">
-        <div className="max-w-6xl mx-auto grid sm:grid-cols-2 md:grid-cols-3 gap-5">
-          {photos.map((url, i) => (
-            <div key={i} className="rounded-2xl overflow-hidden aspect-[4/3]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={url} alt={`${businessName} project ${i + 1}`} className="w-full h-full object-cover" />
-            </div>
-          ))}
+        <div className="max-w-6xl mx-auto">
+          <WorkGallery photos={photos} businessName={businessName} accent={theme.accent} />
         </div>
       </section>
 
