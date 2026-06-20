@@ -335,7 +335,7 @@ function EditSiteInner() {
 
   async function upload(file: File): Promise<string | null> {
     const fd = new FormData(); fd.append("file", file);
-    const r = await fetch("/api/upload-logo", { method: "POST", body: fd });
+    const r = await fetch("/api/upload-image", { method: "POST", body: fd });
     return (await r.json()).url || null;
   }
 
