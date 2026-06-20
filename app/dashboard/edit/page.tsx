@@ -273,7 +273,7 @@ function EditSiteInner() {
         // Extract real stats numbers from raw onboarding fields
         const rawExp = (s.experience || "") + " " + (s.about || "");
         const yearsM = rawExp.match(/(\d[\d,\.]*)\s*\+?\s*(year|years|yr|yrs|år|årig)/i);
-        const jobsM  = rawExp.match(/(\d[\d,\.]*)\s*\+?\s*(job|jobs|project|projects|home|homes|customer|customers|client|clients|opgave|opgaver|kunde|kunder)/i);
+        const jobsM  = rawExp.match(/(\d[\d,\.]*)\s*\+?\s*(job|jobs|project|projects|home|homes|roof|roofs|house|houses|property|properties|customer|customers|client|clients|repair|repairs|install|installations|vehicle|vehicles|system|systems|unit|units|opgave|opgaver|kunde|kunder)/i);
         const extractedYears = yearsM ? yearsM[1].replace(/[,\.]/g, "") + "+" : null;
         const extractedJobs  = jobsM  ? jobsM[1].replace(/[,\.]/g, "") + "+" : null;
         const areaCity = area.split(/\s+and\s+/i)[0].split(/[,&]/)[0].trim().split(" ")[0];

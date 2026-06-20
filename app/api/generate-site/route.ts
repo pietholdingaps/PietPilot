@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
     const rawAbout = submission.about || "";
     // Match years in both English ("year", "years") and Danish ("år", "årig")
     const yearsMatch = (rawExperience + " " + rawAbout).match(/(\d+)\s*\+?\s*(year|years|yr|yrs|år|årig)/i);
-    const jobsMatch = (rawExperience + " " + rawAbout).match(/(\d[\d,\.]+)\s*\+?\s*(job|jobs|project|projects|home|homes|customer|customers|client|clients|repair|repairs|install|installations|opgave|opgaver|kunde|kunder)/i);
+    const jobsMatch = (rawExperience + " " + rawAbout).match(/(\d[\d,\.]+)\s*\+?\s*(job|jobs|project|projects|home|homes|roof|roofs|house|houses|property|properties|customer|customers|client|clients|repair|repairs|install|installations|vehicle|vehicles|system|systems|unit|units|opgave|opgaver|kunde|kunder)/i);
     const extractedYears = yearsMatch ? `${yearsMatch[1]}+` : null;
     const extractedJobs = jobsMatch ? `${jobsMatch[1].replace(/[,\.]/g, "")}+` : null;
 
@@ -133,7 +133,7 @@ About the business (in the owner's own words): ${rawAbout || "—"}
 
 Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape:
 {
-  "headline": "short punchy hero headline — lead with their exact years of experience if given (e.g. '13 Years of Trusted Plumbing Across Austin'). Max 10 words.",
+  "headline": "short punchy hero headline — lead with their exact years of experience if given (e.g. '13 Years of Trusted Plumbing Across Austin'). Max 10 words. NEVER end with 'services you can count on' or any generic suffix. NEVER repeat the word 'services' twice.",
   "subheadline": "one sentence using the business name, area, and a specific benefit from what they told us — not a generic line",
   "about": "3-4 sentences in third person using their specific details — years in business, specialties, what they care about, what makes them different. Reference specific things they mentioned (materials, methods, policies). Do NOT use filler like 'local trusted name'.",
   "servicesIntro": "one short sentence introducing the services — mention their trade and area",
@@ -195,6 +195,11 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
       return obj;
     }
     copy = stripDoubleLicense(copy) as typeof copy;
+
+    // Fix "Services services" / "Roofing services services" double-word in headline
+    if (typeof copy.headline === "string") {
+      copy.headline = copy.headline.replace(/\bservices\s+services\b/gi, "services");
+    }
 
     // Always enforce the owner's own services — never let AI substitute or invent
     if (parsedServices.length > 0) {

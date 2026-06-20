@@ -101,13 +101,18 @@ export default async function GeneratedSitePage({ params }: { params: Promise<{ 
   // Run stripDoubleLicense on EVERY string in the copy — catches any old saved copy with the bug
   const copy = stripDoubleLicense(rawCopy) as GeneratedSiteCopy;
 
+  // Fix "Services services" double-word bug in headline (e.g. "Roofing Services services you can count on")
+  if (typeof copy.headline === "string") {
+    copy.headline = copy.headline.replace(/\bservices\s+services\b/gi, "services");
+  }
+
   // ── STATS OVERRIDE ────────────────────────────────────────────────────────
   // Re-extract real numbers from raw onboarding fields at render time.
   // This guarantees the live site always shows the correct stats even if the
   // AI stored wrong defaults ("5+", "200+") during an earlier generation.
   const rawExp = (submission.experience || "") + " " + (submission.about || "");
   const yearsRaw  = extractNumber(rawExp, /year|years|yr|yrs|år|årig/);
-  const jobsRaw   = extractNumber(rawExp, /job|jobs|project|projects|home|homes|customer|customers|client|clients|opgave|opgaver|kunde|kunder/);
+  const jobsRaw   = extractNumber(rawExp, /job|jobs|project|projects|home|homes|roof|roofs|house|houses|property|properties|customer|customers|client|clients|repair|repairs|install|installations|vehicle|vehicles|system|systems|unit|units|opgave|opgaver|kunde|kunder/);
   if (yearsRaw || jobsRaw) {
     const currentStats: { value: string; label: string }[] = Array.isArray(copy.stats) && copy.stats.length > 0
       ? [...copy.stats]
