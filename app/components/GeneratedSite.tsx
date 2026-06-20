@@ -437,13 +437,8 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
       <nav className="sticky top-0 z-30 backdrop-blur-xl border-b" style={{ borderColor: `${theme.text}10`, background: theme.navBg }}>
         <div className="max-w-6xl mx-auto px-6 h-[72px] flex items-center justify-between">
           {data.logoUrl
-            ? (
-              <div className="flex items-center gap-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={data.logoUrl} alt={data.businessName} className="h-12 w-12 object-contain flex-none" />
-                <span className="text-base font-extrabold tracking-tight leading-tight">{data.businessName}</span>
-              </div>
-            )
+            // eslint-disable-next-line @next/next/no-img-element
+            ? <img src={data.logoUrl} alt={data.businessName} className="h-[60px] w-auto max-w-[200px] object-contain" style={{ imageRendering: "auto" }} />
             : <span className="text-lg font-extrabold tracking-tight">{data.businessName}</span>}
           <div className="hidden sm:flex items-center gap-8 text-sm font-medium" style={{ color: theme.muted }}>
             <a href="#about" className="hover:opacity-70 transition-opacity">About</a>
