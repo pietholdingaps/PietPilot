@@ -20,25 +20,24 @@ export default function LeadForm({
   borderColor: string;
 }) {
   const [name, setName] = useState("");
-  const [contact, setContact] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name || !contact || !message) return;
+    if (!name || !email || !message) return;
     setStatus("sending");
     try {
       const res = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ siteId, name, contact, message }),
+        body: JSON.stringify({ siteId, name, email, phone, message }),
       });
       if (!res.ok) throw new Error();
       setStatus("sent");
-      setName("");
-      setContact("");
-      setMessage("");
+      setName(""); setEmail(""); setPhone(""); setMessage("");
     } catch {
       setStatus("error");
     }
@@ -51,7 +50,7 @@ export default function LeadForm({
         style={{ background: cardBg, border: `1px solid ${borderColor}` }}
       >
         <p className="font-bold text-lg mb-1">Thanks — message sent! ✓</p>
-        <p className="text-sm" style={{ color: mutedColor }}>We'll get back to you as soon as possible.</p>
+        <p className="text-sm" style={{ color: mutedColor }}>Check your inbox — we've sent you a confirmation. We'll be in touch soon.</p>
       </div>
     );
   }
@@ -73,15 +72,23 @@ export default function LeadForm({
           style={{ background: "transparent", border: `1px solid ${borderColor}`, color: textColor }}
         />
         <input
-          type="text"
+          type="email"
           required
-          value={contact}
-          onChange={(e) => setContact(e.target.value)}
-          placeholder="Phone or email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Your email"
           className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-colors"
           style={{ background: "transparent", border: `1px solid ${borderColor}`, color: textColor }}
         />
       </div>
+      <input
+        type="tel"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        placeholder="Phone number (optional)"
+        className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-colors"
+        style={{ background: "transparent", border: `1px solid ${borderColor}`, color: textColor }}
+      />
       <textarea
         required
         rows={4}
