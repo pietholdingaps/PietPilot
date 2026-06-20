@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
 
   const { data: leads } = await supabase
     .from("leads")
-    .select("id, name, contact, message, created_at")
+    .select("id, name, contact, email, phone, message, created_at, status")
     .eq("site_id", siteId)
     .order("created_at", { ascending: false });
 
