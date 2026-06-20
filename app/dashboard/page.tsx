@@ -334,111 +334,54 @@ function DashboardInner() {
 
             {/* GOOGLE ADS */}
             <div className="card rounded-2xl p-7 mb-10">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-5">
                 <div>
-                  <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-2">Google Ads</div>
-                  <h2 className="text-lg font-bold text-white">AI-generated ads for your business</h2>
-                  <p className="text-white/40 text-sm mt-1">Tell us what work you want — AI writes ads that bring in exactly those customers.</p>
+                  <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-1">Google Ads</div>
+                  <h2 className="text-lg font-bold text-white">AI-generated ads</h2>
                 </div>
+                <Link href={`/ads?site=${siteId}`}
+                  className="text-sm font-bold text-[#f59e0b] hover:opacity-70 transition-opacity">
+                  {generatedAds ? "Manage ads →" : "Set up →"}
+                </Link>
               </div>
 
-              <div className="space-y-5">
-                {/* Focus */}
-                <div>
-                  <label className="block text-sm font-semibold text-white/60 mb-2">What type of work do you want more of?</label>
-                  <select
-                    value={adFocus}
-                    onChange={(e) => setAdFocus(e.target.value)}
-                    className="w-full bg-[#0b1220] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#f59e0b]/50"
-                  >
-                    <option value="all">All services equally</option>
-                    {(site.generated_copy?.services || []).map((s) => (
-                      <option key={s} value={s}>{s}</option>
-                    ))}
-                  </select>
+              {!generatedAds ? (
+                <div className="text-center py-6">
+                  <p className="text-white/50 text-sm mb-4">AI writes ads that bring in exactly the customers you want.</p>
+                  <Link href={`/ads?site=${siteId}`}
+                    className="inline-block bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-bold text-sm px-6 py-3 rounded-xl transition-colors">
+                    Generate my ads →
+                  </Link>
                 </div>
-
-                {/* Budget */}
-                <div>
-                  <label className="block text-sm font-semibold text-white/60 mb-2">Daily budget (USD)</label>
-                  <div className="flex gap-2">
-                    {["10", "20", "30", "50"].map((b) => (
-                      <button key={b} type="button" onClick={() => setAdBudget(b)}
-                        className={`flex-1 py-2.5 rounded-xl text-sm font-bold border transition-colors ${adBudget === b ? "bg-[#f59e0b] text-[#0b1220] border-[#f59e0b]" : "border-white/10 text-white/50 hover:border-white/25"}`}>
-                        ${b}
-                      </button>
-                    ))}
-                    <input type="number" value={adBudget} onChange={(e) => setAdBudget(e.target.value)} min="5"
-                      className="w-20 bg-[#0b1220] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white text-center focus:outline-none focus:border-[#f59e0b]/50" />
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-4 text-sm">
+                    <span className="text-white/40">{generatedAds.ads.filter(a => !a.paused).length} active</span>
+                    <span className="text-white/20">·</span>
+                    <span className="text-white/40">{generatedAds.ads.filter(a => a.paused).length} paused</span>
+                    <span className="text-white/20">·</span>
+                    <span className="text-white/40">${generatedAds.dailyBudget}/day</span>
+                    <span className="text-white/20">·</span>
+                    <span className="text-white/40">{generatedAds.focusService === "all" ? "All services" : generatedAds.focusService}</span>
                   </div>
-                </div>
-
-                {adsError && <p className="text-red-400 text-sm">{adsError}</p>}
-
-                <button onClick={handleGenerateAds} disabled={generatingAds}
-                  className="w-full bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-extrabold text-sm py-3.5 rounded-xl transition-colors disabled:opacity-50">
-                  {generatingAds ? "Generating your ads…" : generatedAds ? "Regenerate ads ↺" : "Generate my ads →"}
-                </button>
-
-                {/* Generated ads */}
-                {generatedAds && (
-                  <div className="space-y-4 pt-2">
-                    <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-green-400" />
-                      <p className="text-sm font-bold text-white">
-                        {generatedAds.focusService === "all" ? "General ads" : `Focused on: ${generatedAds.focusService}`}
-                        <span className="text-white/30 font-normal ml-2">· ${generatedAds.dailyBudget}/day budget</span>
-                      </p>
-                    </div>
-
-                    {/* Ad previews */}
-                    {generatedAds.ads.length === 0 && (
-                      <p className="text-white/30 text-sm text-center py-4">All ads deleted — generate new ones above.</p>
-                    )}
-                    {generatedAds.ads.map((ad, i) => (
-                      <div key={i} className={`rounded-xl border bg-[#0b1220] p-4 transition-opacity ${ad.paused ? "opacity-40 border-white/[0.04]" : "border-white/[0.07]"}`}>
-                        <div className="flex items-center justify-between mb-3">
-                          <p className="text-xs font-bold text-white/30 uppercase tracking-widest">Ad {i + 1} {ad.paused && <span className="text-white/20 normal-case font-normal">· paused</span>}</p>
-                          <div className="flex items-center gap-2">
-                            <button type="button" onClick={() => toggleAdPause(i)}
-                              className={`text-xs font-bold px-3 py-1.5 rounded-lg border transition-colors ${ad.paused ? "border-green-500/30 text-green-400 hover:bg-green-500/10" : "border-white/10 text-white/40 hover:border-white/25"}`}>
-                              {ad.paused ? "▶ Resume" : "⏸ Pause"}
-                            </button>
-                            <button type="button" onClick={() => deleteAd(i)}
-                              className="text-xs font-bold px-3 py-1.5 rounded-lg border border-white/10 text-white/30 hover:border-red-500/30 hover:text-red-400 transition-colors">
-                              × Delete
-                            </button>
-                          </div>
-                        </div>
-                        <div className="space-y-0.5 mb-2">
-                          {ad.headlines.map((h, j) => (
-                            <span key={j} className="text-[#4285f4] text-sm font-semibold">{h}{j < ad.headlines.length - 1 ? <span className="text-white/20 mx-1">|</span> : ""}</span>
-                          ))}
-                        </div>
-                        {ad.descriptions.map((d, j) => (
-                          <p key={j} className="text-white/50 text-xs leading-relaxed">{d}</p>
+                  {generatedAds.ads.slice(0, 1).map((ad, i) => (
+                    <div key={i} className={`rounded-xl border bg-[#0b1220] p-4 ${ad.paused ? "opacity-40 border-white/[0.04]" : "border-white/[0.07]"}`}>
+                      <div className="space-y-0.5 mb-1">
+                        {ad.headlines.map((h, j) => (
+                          <span key={j} className="text-[#4285f4] text-sm font-semibold">
+                            {h}{j < ad.headlines.length - 1 ? <span className="text-white/20 mx-1">|</span> : ""}
+                          </span>
                         ))}
                       </div>
-                    ))}
-
-                    {/* Keywords */}
-                    <div className="rounded-xl border border-white/[0.07] bg-[#0b1220] p-4">
-                      <p className="text-xs font-bold text-white/30 uppercase tracking-widest mb-3">Target keywords</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {generatedAds.keywords.map((k) => (
-                          <span key={k} className="text-xs px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/60">{k}</span>
-                        ))}
-                      </div>
+                      <p className="text-white/40 text-xs">{ad.descriptions[0]}</p>
                     </div>
-
-                    <div className="rounded-xl border border-[#f59e0b]/10 bg-[#f59e0b]/5 p-4 text-center">
-                      <p className="text-sm font-bold text-white mb-1">Ready to launch?</p>
-                      <p className="text-white/40 text-xs mb-3">Google Ads API integration coming soon — your ads are saved and ready to go live.</p>
-                      <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-[#f59e0b]/10 text-[#f59e0b] border border-[#f59e0b]/20">Coming soon</span>
-                    </div>
-                  </div>
-                )}
-              </div>
+                  ))}
+                  <Link href={`/ads?site=${siteId}`}
+                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-white/[0.07] text-sm text-white/40 hover:text-white hover:border-white/20 transition-colors font-semibold">
+                    Manage all {generatedAds.ads.length} ads →
+                  </Link>
+                </div>
+              )}
             </div>
 
             {/* SUPPORT */}
