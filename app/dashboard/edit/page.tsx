@@ -443,6 +443,49 @@ function EditSiteInner() {
         {loading ? <p className="text-white/40 text-sm">Loading…</p> : (
           <form onSubmit={handleSave} className="flex flex-col gap-3">
 
+            {/* ── DESIGN PICKER (always visible) ──────────────────────────── */}
+            <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] px-5 py-4">
+              <p className="text-sm font-bold text-white/70 mb-3">🎨 Website design</p>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  {
+                    id: "classic",
+                    label: "Classic",
+                    desc: "White & blue",
+                    colors: ["#ffffff", "#1d4ed8", "#f3f4f6"],
+                  },
+                  {
+                    id: "bold",
+                    label: "Bold",
+                    desc: "Dark & gold",
+                    colors: ["#0a0a0a", "#f59e0b", "#1a1a1a"],
+                  },
+                  {
+                    id: "warm",
+                    label: "Warm",
+                    desc: "Cream & terracotta",
+                    colors: ["#fdf6ef", "#c2703e", "#f5ebe0"],
+                  },
+                ].map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setTemplate(t.id)}
+                    className={`rounded-xl border py-3 px-2 text-center transition-colors ${template === t.id ? "border-[#f59e0b] bg-[#f59e0b]/10" : "border-white/10 bg-white/[0.02] hover:border-white/25"}`}
+                  >
+                    <div className="flex justify-center gap-1 mb-2">
+                      {t.colors.map((c, i) => (
+                        <div key={i} className="w-4 h-4 rounded-full border border-white/10" style={{ background: c }} />
+                      ))}
+                    </div>
+                    <p className="text-sm font-bold">{t.label}</p>
+                    <p className="text-xs text-white/35 mt-0.5">{t.desc}</p>
+                    {template === t.id && <p className="text-[10px] font-bold text-[#f59e0b] mt-1">✓ Active</p>}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* ── BUSINESS INFO (pinned — not a page section) ──────────────── */}
             <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden mb-1">
               <button
@@ -477,23 +520,6 @@ function EditSiteInner() {
                         <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleLogoUpload(f); }} />
                       </label>
                       {logoUrl && <button type="button" onClick={() => setLogoUrl("")} className="text-white/35 hover:text-red-400 text-xs font-semibold">Remove</button>}
-                    </div>
-                  </div>
-                  {/* Theme */}
-                  <div>
-                    <p className="text-sm font-semibold text-white/70 mb-2">Website theme</p>
-                    <div className="flex gap-2">
-                      {[
-                        { id: "classic", label: "Classic", desc: "White & blue" },
-                        { id: "bold",    label: "Bold",    desc: "Dark & gold" },
-                        { id: "warm",    label: "Warm",    desc: "Cream & terracotta" },
-                      ].map((t) => (
-                        <button key={t.id} type="button" onClick={() => setTemplate(t.id)}
-                          className={`flex-1 rounded-xl border py-3 text-center transition-colors ${template === t.id ? "border-[#f59e0b] bg-[#f59e0b]/10" : "border-white/10 bg-white/[0.02] hover:border-white/25"}`}>
-                          <p className="text-sm font-bold">{t.label}</p>
-                          <p className="text-xs text-white/35 mt-0.5">{t.desc}</p>
-                        </button>
-                      ))}
                     </div>
                   </div>
                 </div>
