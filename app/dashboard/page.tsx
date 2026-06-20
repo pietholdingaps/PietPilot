@@ -317,8 +317,8 @@ function DashboardInner() {
                     );
                   })()}
                   <Link href={`/leads?site=${siteId}`}
-                    className="mt-auto flex items-center justify-center w-full py-3 rounded-xl border border-white/[0.07] text-sm text-white/50 hover:text-white hover:border-white/20 transition-colors font-semibold">
-                    See all {leads.length} leads →
+                    className="mt-auto flex items-center justify-center w-full py-3 rounded-xl bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] text-sm font-bold transition-colors">
+                    See all leads →
                   </Link>
                 </div>
               )}
@@ -363,8 +363,8 @@ function DashboardInner() {
                     </div>
                   ))}
                   <Link href={`/ads?site=${siteId}`}
-                    className="mt-auto flex items-center justify-center w-full py-3 rounded-xl border border-white/[0.07] text-sm text-white/50 hover:text-white hover:border-white/20 transition-colors font-semibold">
-                    Manage all {generatedAds.ads.length} ads →
+                    className="mt-auto flex items-center justify-center w-full py-3 rounded-xl bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] text-sm font-bold transition-colors">
+                    Manage all ads →
                   </Link>
                 </div>
               )}
