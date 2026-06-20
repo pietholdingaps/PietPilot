@@ -27,8 +27,9 @@ const fallbackCopy = (businessName: string, trade: string, area: string, license
   const licLine = licenseNumber
     ? `Fully licensed & insured — License #${licenseNumber}.`
     : "Fully licensed & insured for your peace of mind.";
+  const tradeName = (trade || "Trusted local").replace(/\s*services?\s*$/i, "").trim() || "Trusted local";
   return {
-    headline: `${trade || "Trusted local"} services you can count on`,
+    headline: `${tradeName} services you can count on`,
     subheadline: `${businessName || "We"} proudly serve ${area || "the local area"} with fast, reliable work and honest pricing.`,
     about: `${businessName || "Our team"} serves ${area || "the local area"} with professional ${trade || "trade"} work. We get the job done right the first time, with honest pricing and clear communication every step of the way.`,
     servicesIntro: `Here's what ${businessName || "we"} can help you with:`,
@@ -136,7 +137,7 @@ export default async function ServiceDetailPage({
                     className="block px-4 py-2.5 text-sm hover:opacity-70 transition-opacity"
                     style={{ color: theme.text }}
                   >
-                    {s.title}
+                    {toTitleCase(s.title)}
                   </a>
                 ))}
               </div>

@@ -176,7 +176,7 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
         copy.stats = [
           { value: extractedYears || "5+", label: "Years Experience" },
           { value: extractedJobs || "200+", label: "Jobs Completed" },
-          { value: (submission.area || "").split(/[,&]/)[0].trim().split(/\s+/).slice(0, 2).join(" ") || "Local Area", label: "Service Area" },
+          { value: (submission.area || "").split(/\s+and\s+/i)[0].split(/[,&]/)[0].trim().split(/\s+/)[0] || "Local Area", label: "Service Area" },
           { value: "1 Hour", label: "Response Time" },
         ];
       } else {
@@ -196,9 +196,9 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
     }
     copy = stripDoubleLicense(copy) as typeof copy;
 
-    // Fix "Services services" / "Roofing services services" double-word in headline
+    // Fix "Services services" / "Service services" / any double-word variant in headline
     if (typeof copy.headline === "string") {
-      copy.headline = copy.headline.replace(/\bservices\s+services\b/gi, "services");
+      copy.headline = copy.headline.replace(/\bservices?\s+services?\b/gi, "services");
     }
 
     // Always enforce the owner's own services — never let AI substitute or invent

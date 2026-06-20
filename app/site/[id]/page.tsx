@@ -38,8 +38,10 @@ const fallbackCopy = (businessName: string, trade: string, area: string, license
   const licLine = licenseNumber
     ? `Fully licensed & insured — License #${licenseNumber}.`
     : "Fully licensed & insured for your peace of mind.";
+  // Strip trailing "service/services" from trade so headline never says "Roofing Services services..."
+  const tradeName = (trade || "Trusted local").replace(/\s*services?\s*$/i, "").trim() || "Trusted local";
   return {
-    headline: `${trade || "Trusted local"} services you can count on`,
+    headline: `${tradeName} services you can count on`,
     subheadline: `${businessName || "We"} proudly serve ${area || "the local area"} with fast, reliable work and honest pricing.`,
     about: `${businessName || "Our team"} serves ${area || "the local area"} with professional ${trade || "trade"} work. We get the job done right the first time, with honest pricing and clear communication every step of the way.`,
     servicesIntro: `Here's what ${businessName || "we"} can help you with:`,
@@ -101,9 +103,9 @@ export default async function GeneratedSitePage({ params }: { params: Promise<{ 
   // Run stripDoubleLicense on EVERY string in the copy — catches any old saved copy with the bug
   const copy = stripDoubleLicense(rawCopy) as GeneratedSiteCopy;
 
-  // Fix "Services services" double-word bug in headline (e.g. "Roofing Services services you can count on")
+  // Fix "Services services" / "Service services" double-word bug in headline
   if (typeof copy.headline === "string") {
-    copy.headline = copy.headline.replace(/\bservices\s+services\b/gi, "services");
+    copy.headline = copy.headline.replace(/\bservices?\s+services?\b/gi, "services");
   }
 
   // ── STATS OVERRIDE ────────────────────────────────────────────────────────
