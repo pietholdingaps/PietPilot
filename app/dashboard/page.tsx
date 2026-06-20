@@ -183,35 +183,6 @@ function DashboardInner() {
               </div>
             </div>
 
-            {/* REGENERATE — bruges til test, fjernes senere */}
-            <div className="card rounded-2xl p-7 mb-10">
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div>
-                  <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-3">AI Content</div>
-                  <h3 className="text-lg font-bold text-white mb-1">Regenerate your website</h3>
-                  <p className="text-white/45 text-sm leading-relaxed">
-                    Re-runs the AI using your original answers — useful if you want to refresh the text or apply the latest improvements.
-                  </p>
-                </div>
-                <button
-                  onClick={handleRegenerate}
-                  disabled={regenerating}
-                  className="flex-none bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-sm font-bold px-5 py-2.5 rounded-lg transition-colors disabled:opacity-50"
-                >
-                  {regenerating ? "Regenerating…" : regenDone ? "Done — refresh your site ✓" : "Regenerate ↺"}
-                </button>
-              </div>
-              {regenDone && (
-                <p className="mt-4 text-emerald-400 text-sm font-semibold">
-                  Website updated!{" "}
-                  <a href={`/site/${site.id}`} target="_blank" rel="noopener noreferrer" className="underline">
-                    Open your site ↗
-                  </a>{" "}
-                  to see the new content.
-                </p>
-              )}
-            </div>
-
             {/* LEADS */}
             <div className="card rounded-2xl p-7 mb-10">
               <div className="flex items-center justify-between mb-6">
