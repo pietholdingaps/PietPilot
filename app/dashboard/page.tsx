@@ -119,7 +119,7 @@ function DashboardInner() {
               <div className="flex items-center gap-3">
                 <Link
                   href={`/profile?site=${site.id}`}
-                  className="border border-white/10 hover:border-white/25 text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors text-white/60"
+                  className="border border-white/10 hover:border-white/25 text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors"
                 >
                   Profile
                 </Link>
