@@ -5,6 +5,7 @@ import { getPhotoForService } from "@/lib/stockPhotos";
 import { GeneratedSiteCopy } from "@/lib/siteTypes";
 import LeadForm from "@/app/components/LeadForm";
 import { generateServiceDescription } from "@/lib/serviceDescriptions";
+import Anthropic from "@anthropic-ai/sdk";
 
 const TITLE_LOWER = new Set(["and","or","of","in","the","a","an","to","for","at","by","with","from","on","as","but","nor","so","yet"]);
 function toTitleCase(s: string) {
@@ -19,6 +20,65 @@ function toTitleCase(s: string) {
 }
 
 export const dynamic = "force-dynamic";
+
+// Generic patterns that signal a fallback/template description — not real AI copy
+const GENERIC_PATTERN = /provide(s)? (expert|professional|skilled) .+ (services|work) (for|across|in)|Done right, on time|brings the right skills, tools, and experience/i;
+
+/** Generate a unique AI description for ONE service and save it back to Supabase */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function generateAndSaveDescription(
+  supabase: any,
+  siteId: string,
+  serviceName: string,
+  businessName: string,
+  area: string,
+  trade: string,
+  currentCopy: GeneratedSiteCopy
+): Promise<string> {
+  try {
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const msg = await anthropic.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 400,
+      messages: [{
+        role: "user",
+        content: `Write a unique, specific 2-3 sentence SEO description for the following trade service.
+
+Rules:
+- Be specific to THIS service — not generic trade copy that could apply to any service
+- Mention the business name (${businessName}) and location (${area}) naturally once each
+- Focus on what the customer gets: the specific outcome, process detail, or peace of mind relevant to ${serviceName}
+- Do NOT start with "${businessName}" — vary the opening
+- No generic filler like "professional services", "get in touch today", or "quality workmanship"
+- Return ONLY the description text, no quotes, no JSON
+
+Business: ${businessName}
+Trade: ${trade}
+Location: ${area}
+Service: ${serviceName}`,
+      }],
+    });
+    const text = msg.content.find((b) => b.type === "text");
+    const description = text && "text" in text ? text.text.trim() : "";
+    if (!description) return "";
+
+    // Save back: update the matching serviceDetail in generated_copy
+    const updatedDetails = (currentCopy.serviceDetails || []).map((d) =>
+      d.title.toLowerCase() === serviceName.toLowerCase()
+        ? { ...d, description }
+        : d
+    );
+    const updatedCopy = { ...currentCopy, serviceDetails: updatedDetails };
+    await supabase
+      .from("onboarding_submissions")
+      .update({ generated_copy: updatedCopy })
+      .eq("id", siteId);
+
+    return description;
+  } catch {
+    return "";
+  }
+}
 
 function parseServices(raw: string): string[] {
   if (!raw || raw.trim() === "—") return [];
@@ -110,9 +170,23 @@ export default async function ServiceDetailPage({
     );
   })();
 
-  const service = copy.serviceDetails?.[serviceIndex];
+  let service = copy.serviceDetails?.[serviceIndex];
 
   if (!service) notFound();
+
+  // If description is missing or looks like a generic fallback template,
+  // generate a real AI description on the fly and save it for next time.
+  if (!service.description || GENERIC_PATTERN.test(service.description)) {
+    const aiDesc = await generateAndSaveDescription(
+      supabase, id,
+      service.title,
+      submission.business_name || "",
+      submission.area || "",
+      submission.trade || "",
+      copy
+    );
+    if (aiDesc) service = { ...service, description: aiDesc };
+  }
 
   const theme = themes[submission.template as string] || themes.classic;
   const image = getPhotoForService(service.title, submission.trade || "", serviceIndex);
