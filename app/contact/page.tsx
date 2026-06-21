@@ -25,9 +25,13 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-[#0b1220] text-[#eef1f6] flex flex-col items-center justify-center px-6 py-20">
-      <a href="/" className="text-2xl font-extrabold tracking-tight mb-10">
-        Piet<span className="text-[#f59e0b]">Pilot</span>
-      </a>
+      <div className="flex items-center justify-between w-full max-w-md mb-10">
+        <a href="/" className="text-white/30 text-sm hover:text-white transition-colors">← Back</a>
+        <a href="/" className="text-2xl font-extrabold tracking-tight">
+          Piet<span className="text-[#f59e0b]">Pilot</span>
+        </a>
+        <div className="w-12" />
+      </div>
 
       <div className="w-full max-w-md">
         {status === "done" ? (
