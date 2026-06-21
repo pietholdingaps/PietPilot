@@ -23,6 +23,10 @@ const items = [
     q: "Will my site actually show up in local Google searches?",
     a: "That's our specialty. Every site is built with local SEO from day one, so when someone nearby searches for your service, you have a real shot at showing up.",
   },
+  {
+    q: "What web address will my site have?",
+    a: "By default, your site gets a clean address like pietpilot.com/your-business-name — completely free and shareable. We strongly recommend also connecting your own domain (like www.jensensplumbing.com), as it looks far more professional to customers and builds trust. You can connect your existing domain or buy a new one for around $10–15/year. We'll walk you through the setup step by step — it takes about 5 minutes.",
+  },
 ];
 
 export default function Faq() {
