@@ -92,7 +92,7 @@ export default function GeneratedSite({ data }: { data: SiteData }) {
             <p className="text-lg text-white/80 mb-9 max-w-xl leading-relaxed">{copy.subheadline}</p>
             <div className="flex flex-wrap items-center gap-4">
               <a
-                href={`tel:${data.phone}`}
+                href="#contact"
                 style={{ background: theme.accent, color: theme.accentText }}
                 className="inline-flex items-center justify-center gap-2 font-bold text-base px-8 py-4 rounded-xl shadow-[0_12px_40px_-8px_rgba(0,0,0,0.5)] hover:scale-[1.02] transition-transform"
               >
