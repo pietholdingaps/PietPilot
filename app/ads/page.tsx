@@ -242,19 +242,68 @@ function AdsInner() {
 
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-extrabold">Google Ads</h1>
-            {campaigns.length > 0 && (
-              <p className="text-white/40 text-sm mt-0.5">
-                {activeCampaigns.length} active · ${totalDaily}/day total spend
-              </p>
-            )}
-          </div>
+          <h1 className="text-2xl font-extrabold">Google Ads</h1>
           <button onClick={() => { setStep(1); setFocus("all"); setBudget(20); setView("setup"); }}
             className="bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-bold text-sm px-5 py-2.5 rounded-xl transition-colors">
             + New campaign
           </button>
         </div>
+
+        {/* Overview card — only shown when campaigns exist */}
+        {campaigns.length > 0 && (
+          <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-7">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-base font-bold">Overview — all campaigns</h2>
+              <span className="text-xs text-white/30 bg-white/5 px-3 py-1 rounded-full">Last 30 days</span>
+            </div>
+
+            {/* Spend summary */}
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              <div className="rounded-xl bg-[#080e1a] border border-white/[0.05] p-4 text-center">
+                <p className="text-2xl font-extrabold text-[#f59e0b] mb-0.5">${totalDaily}</p>
+                <p className="text-xs text-white/30">Per day</p>
+              </div>
+              <div className="rounded-xl bg-[#080e1a] border border-white/[0.05] p-4 text-center">
+                <p className="text-2xl font-extrabold text-[#f59e0b] mb-0.5">${totalDaily * 30}</p>
+                <p className="text-xs text-white/30">Per month (est.)</p>
+              </div>
+              <div className="rounded-xl bg-[#080e1a] border border-white/[0.05] p-4 text-center">
+                <p className="text-2xl font-extrabold text-white mb-0.5">{activeCampaigns.length}</p>
+                <p className="text-xs text-white/30">Active campaigns</p>
+              </div>
+            </div>
+
+            {/* Performance stats */}
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              {[
+                { label: "Total clicks", value: "—" },
+                { label: "Total leads", value: "—" },
+                { label: "Avg. cost/lead", value: "—" },
+              ].map(({ label, value }) => (
+                <div key={label} className="rounded-xl bg-[#080e1a] border border-white/[0.05] p-4 text-center">
+                  <p className="text-2xl font-extrabold text-white mb-0.5">{value}</p>
+                  <p className="text-xs text-white/30">{label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Chart placeholder */}
+            <div>
+              <p className="text-xs text-white/20 mb-3">Clicks per day</p>
+              <div className="h-24 flex items-end gap-1">
+                {Array.from({ length: 30 }).map((_, i) => (
+                  <div key={i} className="flex-1 rounded-t-sm"
+                    style={{ background: i === 29 ? "#f59e0b33" : "#ffffff08", height: `${15 + Math.sin(i * 0.4) * 10 + Math.random() * 15}%` }} />
+                ))}
+              </div>
+              <div className="flex justify-between text-xs text-white/15 mt-1.5">
+                <span>30 days ago</span>
+                <span>Today</span>
+              </div>
+              <p className="text-white/15 text-xs text-center mt-3">Live data when Google Ads is connected</p>
+            </div>
+          </div>
+        )}
 
         {/* No campaigns */}
         {campaigns.length === 0 && (
