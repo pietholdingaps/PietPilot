@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
+import { generateSlug } from "@/lib/generateSlug";
 
 export async function POST(req: NextRequest) {
   const supabase = createClient(
@@ -36,6 +37,7 @@ export async function POST(req: NextRequest) {
       trustpilot_url: trustpilotUrl || null,
       google_reviews_url: googleReviewsUrl || null,
       custom_domain: domain || null,
+      slug: businessName ? generateSlug(businessName) : null,
       template: template || null,
       account_name: accountName || null,
       created_at: new Date().toISOString(),
@@ -88,7 +90,8 @@ export async function POST(req: NextRequest) {
 
     // ── Velkomstmail til kunden ───────────────────────────────────────────────
     if (accountEmail && inserted?.id) {
-      const siteUrl = `https://pietpilot.com/site/${inserted.id}`;
+      const siteSlug = businessName ? generateSlug(businessName) : null;
+      const siteUrl = siteSlug ? `https://pietpilot.com/${siteSlug}` : `https://pietpilot.com/site/${inserted.id}`;
       const dashboardUrl = `https://pietpilot.com/dashboard?site=${inserted.id}`;
       await resend.emails.send({
         from: "PietPilot <noreply@pietpilot.com>",

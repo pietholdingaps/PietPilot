@@ -39,6 +39,7 @@ type SiteInfo = {
   template: string;
   owner_name?: string;
   account_name?: string;
+  slug?: string;
   generated_copy?: { services?: string[] };
   generated_ads?: GeneratedAds;
 };
@@ -202,7 +203,7 @@ function DashboardInner() {
                   Profile
                 </Link>
                 <a
-                  href={`/site/${site.id}`}
+                  href={site.slug ? `/${site.slug}` : `/site/${site.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="border border-white/10 hover:border-white/25 text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
