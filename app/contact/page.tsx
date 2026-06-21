@@ -38,7 +38,10 @@ export default function Contact() {
               </svg>
             </div>
             <h1 className="text-2xl font-bold tracking-tight mb-2">Message sent 🎉</h1>
-            <p className="text-white/45 text-sm">Thanks for reaching out — we'll get back to you within a day.</p>
+            <p className="text-white/45 text-sm mb-8">Thanks for reaching out — we'll get back to you within a day.</p>
+            <a href="/" className="inline-block bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-bold text-sm px-7 py-3.5 rounded-xl transition-colors">
+              ← Back to home
+            </a>
           </div>
         ) : (
           <>
