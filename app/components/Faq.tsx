@@ -24,6 +24,10 @@ const items = [
     a: "Every site we build is set up correctly for local SEO from day one — the right structure, keywords, and location signals that Google looks for. That said, SEO takes time to build up. Most businesses start seeing results within a few weeks to a few months. Google Ads will get you in front of customers immediately while your organic ranking grows.",
   },
   {
+    q: "Is Google Ads spend included in the $149/month?",
+    a: "No — and we want to be upfront about that. Your $149/month covers everything we do: building and hosting your website, managing your Google Ads campaigns, and your leads dashboard. The actual money you spend on Google Ads (what Google charges per click) is separate and paid directly to Google. You set your own daily budget — most tradespeople start with $10–30/day. You're always in control of what you spend.",
+  },
+  {
     q: "What web address will my site have?",
     a: "By default, your site gets a clean address like pietpilot.com/your-business-name — completely free and shareable. We strongly recommend also connecting your own domain (like www.jensensplumbing.com), as it looks far more professional to customers and builds trust. You can connect your existing domain or buy a new one for around $10–15/year. We'll walk you through the setup step by step — it takes about 5 minutes.",
   },

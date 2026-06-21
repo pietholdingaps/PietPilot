@@ -288,12 +288,13 @@ export default function Home() {
                 <span className="text-5xl font-extrabold text-white">$149</span>
                 <span className="text-white/40 text-base mb-1.5">/month after trial</span>
               </div>
-              <p className="text-white/50 text-sm mb-8">Card required to start your trial — you won't be charged for 14 days. No contracts. Cancel anytime.</p>
+              <p className="text-white/50 text-sm mb-2">Card required to start your trial — you won't be charged for 14 days. No contracts. Cancel anytime.</p>
+              <p className="text-white/30 text-xs mb-8">⚠️ Google Ads spend is <strong className="text-white/50">not included</strong> — you pay Google directly for your ad budget (typically $10–50/day). We handle the setup and management.</p>
               <ul className="text-left max-w-xs mx-auto space-y-3 mb-9">
                 {[
                   "A professional website built & hosted for you",
                   "SEO built in — so locals can find you",
-                  "Google Ads set up and managed",
+                  "Google Ads set up and managed (you pay Google directly for ad spend)",
                   "Simple dashboard for leads & results",
                   "Hands-on support, zero tech skills needed",
                 ].map((f) => (
