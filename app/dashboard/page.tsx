@@ -241,46 +241,18 @@ function DashboardInner() {
                 </p>
               </div>
 
-              <div className="card rounded-2xl p-7">
-                <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-3">Plan</div>
-                <h3 className="text-lg font-bold text-white mb-2">AI Website</h3>
-                <p className="text-white/45 text-sm leading-relaxed">
-                  Google Ads & lead-follow-up coming soon as add-ons.
-                </p>
-              </div>
-            </div>
-
-            {/* GOOGLE BUSINESS PROFILE BANNER */}
-            <div className="card rounded-2xl p-6 mb-6 border border-[#f59e0b]/20 bg-[#f59e0b]/[0.03]">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-4">
-                  <div className="text-3xl flex-none">🗺️</div>
-                  <div>
-                    <p className="text-sm font-bold text-[#f59e0b] uppercase tracking-widest mb-1">Free — Takes 10 minutes</p>
-                    <h3 className="text-base font-bold text-white mb-1">Set up your Google Business Profile</h3>
-                    <p className="text-white/40 text-sm leading-relaxed">
-                      Show up on Google Maps when locals search for your service — completely free. This is the single biggest thing you can do to get more customers from Google.
-                    </p>
-                    <div className="flex flex-wrap gap-3 mt-4">
-                      <a
-                        href="https://business.google.com/create"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-bold text-sm px-5 py-2.5 rounded-xl transition-colors"
-                      >
-                        Set up for free →
-                      </a>
-                      <a
-                        href="https://support.google.com/business/answer/2911778"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="border border-white/10 hover:border-white/25 text-white/50 font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors"
-                      >
-                        What is it?
-                      </a>
-                    </div>
-                  </div>
-                </div>
+              <div className="card rounded-2xl p-7 border border-[#f59e0b]/15">
+                <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-3">🗺️ Google Maps</div>
+                <h3 className="text-base font-bold text-white mb-1">Get found on Google Maps</h3>
+                <p className="text-white/40 text-sm leading-relaxed mb-4">Set up your free Google Business Profile — the #1 thing you can do to get more local customers.</p>
+                <a
+                  href="https://business.google.com/create"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-bold text-xs px-4 py-2 rounded-lg transition-colors"
+                >
+                  Set up for free →
+                </a>
               </div>
             </div>
 
