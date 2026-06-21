@@ -53,9 +53,9 @@ export default function Home() {
               <span className="text-[#f59e0b]">on Google right now.</span>
             </h1>
             <p className="text-lg text-white/50 mb-10 leading-relaxed max-w-md">
-              Can they find you? We build your website, run your ads, and make sure
-              every lead gets followed up — so the phone rings more, without you
-              touching a computer.
+              Can they find you? We build your website, run your ads, and send every
+              new enquiry straight to your phone — so the phone rings more, without
+              you touching a computer.
             </p>
             <a
               href="/onboarding"
@@ -113,7 +113,7 @@ export default function Home() {
                 </svg>
               </span>
               <div>
-                <div className="text-xs font-semibold text-white">New lead just called</div>
+                <div className="text-xs font-semibold text-white">New enquiry from your site</div>
                 <div className="text-[11px] text-white/35">2 minutes ago</div>
               </div>
             </div>
@@ -142,7 +142,7 @@ export default function Home() {
               Everything a marketing agency does. None of the markup.
             </h2>
             <p className="text-white/45 text-base max-w-xl mb-14">
-              One system that builds your site, runs your ads, and follows up on every lead — automatically.
+              One system that builds your site, runs your ads, and brings in more customers — automatically.
             </p>
           </ScrollReveal>
 
@@ -207,7 +207,7 @@ export default function Home() {
             {[
               ["Tell us about your business", "Name, location, services, phone number — plain English."],
               ["We build & launch your site", "Professional copy and pages, published and live."],
-              ["Leads start coming in", "Site's live, ads are running, follow-ups are automatic."],
+              ["Leads start coming in", "Your site is live, your ads are running, and new enquiries go straight to your phone."],
             ].map(([title, desc], i) => (
               <ScrollReveal key={title} delay={i * 100}>
                 <div className="text-center px-6 relative">
@@ -257,7 +257,7 @@ export default function Home() {
               <div className="card rounded-2xl p-7 h-full border-[#f59e0b]/30 bg-[#f59e0b]/[0.04]">
                 <h3 className="text-base font-bold text-[#f59e0b] mb-2">PietPilot</h3>
                 <p className="text-white/55 text-sm leading-relaxed">
-                  All the work an agency does — website, SEO, ads, follow-up — for a
+                  All the work an agency does — website, SEO, and ads — for a
                   fraction of the price, with no contracts and a dashboard that actually
                   makes sense.
                 </p>
