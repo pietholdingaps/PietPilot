@@ -206,13 +206,9 @@ function AdsInner() {
                   <p className="text-white/40">Focus</p>
                   <p className="font-bold text-lg">{focus === "all" ? "All job types" : focus}</p>
                 </div>
-                <div className="flex justify-between items-center py-4 border-b border-white/[0.06]">
+                <div className="flex justify-between items-center py-4">
                   <p className="text-white/40">Daily budget</p>
                   <p className="font-bold text-lg">${budget}/day</p>
-                </div>
-                <div className="flex justify-between items-center py-4">
-                  <p className="text-white/40">Contract</p>
-                  <p className="font-bold text-lg text-green-400">Cancel anytime</p>
                 </div>
               </div>
               <button onClick={handleStart} disabled={starting}
