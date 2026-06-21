@@ -257,11 +257,11 @@ function AdsInner() {
             <div className="grid grid-cols-3 gap-3 mb-6">
               <div className="rounded-xl bg-[#080e1a] border border-white/[0.05] p-4 text-center">
                 <p className="text-2xl font-extrabold text-[#f59e0b] mb-0.5">${totalDaily}</p>
-                <p className="text-xs text-white/30">Per day</p>
+                <p className="text-xs text-white/30">Active daily spend</p>
               </div>
               <div className="rounded-xl bg-[#080e1a] border border-white/[0.05] p-4 text-center">
-                <p className="text-2xl font-extrabold text-[#f59e0b] mb-0.5">${totalDaily * 30}</p>
-                <p className="text-xs text-white/30">Per month (est.)</p>
+                <p className="text-2xl font-extrabold text-white mb-0.5">$0</p>
+                <p className="text-xs text-white/30">Total spent ever</p>
               </div>
               <div className="rounded-xl bg-[#080e1a] border border-white/[0.05] p-4 text-center">
                 <p className="text-2xl font-extrabold text-white mb-0.5">{activeCampaigns.length}</p>
