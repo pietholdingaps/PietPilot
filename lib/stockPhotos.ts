@@ -143,17 +143,18 @@ const sets: Record<string, { hero: string; gallery: string[] }> = {
 
 const tradeKeywordMap: { keywords: string[]; key: keyof typeof sets }[] = [
   { keywords: ["plumb", "drain", "pipe", "water heater", "vvs"], key: "plumbing" },
-  { keywords: ["electric", "wiring", "wire", "panel", "electrician"], key: "electrical" },
+  { keywords: ["electric", "wiring", "wire", "panel", "electrician", "solar", "ev charger"], key: "electrical" },
   { keywords: ["hvac", "heating", "cooling", "air condition", "furnace"], key: "hvac" },
   { keywords: ["roof", "shingle", "gutter", "roofer", "tagdækker"], key: "roofing" },
-  { keywords: ["paint", "drywall", "decorator", "maler"], key: "painting" },
-  { keywords: ["carpen", "joiner", "timber", "framing", "tømrer"], key: "carpentry" },
-  { keywords: ["mason", "brick", "concrete", "stone", "paving", "murermester"], key: "masonry" },
-  { keywords: ["landscap", "lawn", "garden", "tree", "turf"], key: "landscaping" },
-  { keywords: ["clean", "janitor", "pressure wash"], key: "cleaning" },
+  { keywords: ["paint", "drywall", "decorator", "maler", "plaster"], key: "painting" },
+  { keywords: ["carpen", "joiner", "timber", "framing", "tømrer", "general contractor", "handyman", "garage door", "insulation"], key: "carpentry" },
+  { keywords: ["mason", "brick", "concrete", "stone", "paving", "murermester", "pool", "spa"], key: "masonry" },
+  { keywords: ["landscap", "lawn", "garden", "tree", "turf", "fenc"], key: "landscaping" },
+  { keywords: ["clean", "janitor", "pressure wash", "pest control", "pest", "exterminator"], key: "cleaning" },
   { keywords: ["floor", "tiling", "tile"], key: "flooring" },
   { keywords: ["kitchen", "cabinet", "køkken"], key: "kitchen" },
   { keywords: ["bathroom", "bath", "bad"], key: "bathroom" },
+  { keywords: ["window", "door", "glazing"], key: "windows" },
 ];
 
 function setForTrade(trade: string) {
@@ -317,7 +318,7 @@ const servicePhotoMap: { keywords: string[]; key: keyof typeof sets }[] = [
     ],
     key: "landscaping",
   },
-  // Carpentry / structural / general building
+  // Carpentry / structural / general building / garage door / insulation
   {
     keywords: [
       "carpen", "carpentry", "joiner", "joinery", "timber", "framing",
@@ -325,8 +326,47 @@ const servicePhotoMap: { keywords: string[]; key: keyof typeof sets }[] = [
       "loft conversion", "attic", "extension", "addition", "new build",
       "structural", "renovation", "remodel", "fit-out", "fitout",
       "formwork", "pergola build", "shed", "garage", "granny flat",
+      "garage door", "spring replacement", "opener", "panel replacement",
+      "insulation", "spray foam", "blown-in", "crawl space", "air sealing",
+      "basement finish", "home addition", "tenant improvement",
+      "furniture assembly", "tv mounting", "handyman",
     ],
     key: "carpentry",
+  },
+  // Pool / spa / water features
+  {
+    keywords: [
+      "pool", "swimming pool", "spa", "hot tub", "pool deck",
+      "pool resurfac", "pool equipment", "pool clean", "water feature",
+      "pool fence", "pool safety", "pool repair",
+    ],
+    key: "masonry",
+  },
+  // Solar / energy
+  {
+    keywords: [
+      "solar", "solar panel", "battery storage", "inverter",
+      "solar clean", "ground-mounted", "roof-mounted", "solar wiring",
+      "energy audit", "energy efficien",
+    ],
+    key: "electrical",
+  },
+  // Pest control / cleaning
+  {
+    keywords: [
+      "pest", "termite", "rodent", "bed bug", "mosquito", "exterminator",
+      "wildlife removal", "ant", "roach", "cockroach", "wasp", "bee",
+      "quarterly prevention",
+    ],
+    key: "cleaning",
+  },
+  // Fencing
+  {
+    keywords: [
+      "fenc", "fence", "chain link", "vinyl fence", "wood fence",
+      "wrought iron", "automatic gate", "farm fencing", "ranch fencing",
+    ],
+    key: "decking",
   },
 ];
 
