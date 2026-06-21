@@ -327,49 +327,65 @@ function DashboardInner() {
             </div>
 
             {/* GOOGLE ADS */}
-            <div className="card rounded-2xl p-6 flex flex-col">
-              <div className="mb-4">
-                <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-1">Google Ads</div>
-                <h2 className="text-lg font-bold text-white">AI-generated ads</h2>
-              </div>
-
-              {!generatedAds ? (
-                <div className="flex-1 flex flex-col items-center justify-center py-6">
-                  <p className="text-white/50 text-sm mb-6 text-center">AI writes ads that bring in exactly the customers you want.</p>
-                  <Link href={`/ads?site=${siteId}`}
-                    className="w-full flex items-center justify-center bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-bold text-sm py-3 rounded-xl transition-colors">
-                    Generate my ads →
-                  </Link>
-                </div>
-              ) : (
-                <div className="flex flex-col flex-1 space-y-3">
-                  <div className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full flex-none ${generatedAds.paused ? "bg-white/20" : "bg-green-400"}`} />
-                    <span className="text-sm text-white/60">
-                      {generatedAds.paused ? "Paused · $0/day" : `Running · $${generatedAds.dailyBudget}/day`}
-                    </span>
-                    <span className="text-white/20">·</span>
-                    <span className="text-white/40 text-sm">{generatedAds.focusService === "all" ? "All services" : generatedAds.focusService}</span>
+            {(() => {
+              const hasActiveCampaign = generatedAds && generatedAds.ads && generatedAds.ads.length > 0;
+              return (
+                <div className="card rounded-2xl p-6 flex flex-col">
+                  <div className="mb-4">
+                    <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-1">Google Ads</div>
+                    <h2 className="text-lg font-bold text-white">AI-generated ads</h2>
                   </div>
-                  {generatedAds.ads.slice(0, 1).map((ad, i) => (
-                    <div key={i} className={`rounded-xl border bg-[#0b1220] p-4 ${ad.paused ? "opacity-40 border-white/[0.04]" : "border-white/[0.07]"}`}>
-                      <div className="space-y-0.5 mb-1">
-                        {ad.headlines.map((h, j) => (
-                          <span key={j} className="text-[#4285f4] text-sm font-semibold">
-                            {h}{j < ad.headlines.length - 1 ? <span className="text-white/20 mx-1">|</span> : ""}
-                          </span>
+
+                  {!hasActiveCampaign ? (
+                    <div className="flex-1 flex flex-col justify-between">
+                      <div className="space-y-3 mb-5">
+                        {[
+                          { emoji: "🎯", text: "Targets people searching for your exact services" },
+                          { emoji: "🤖", text: "AI writes and tests the ads automatically" },
+                          { emoji: "📈", text: "Only pay when someone clicks your ad" },
+                        ].map(({ emoji, text }) => (
+                          <div key={text} className="flex items-center gap-3">
+                            <span className="text-lg flex-none">{emoji}</span>
+                            <p className="text-sm text-white/50">{text}</p>
+                          </div>
                         ))}
                       </div>
-                      <p className="text-white/40 text-xs">{ad.descriptions[0]}</p>
+                      <Link href={`/ads?site=${siteId}`}
+                        className="flex items-center justify-center w-full py-3 rounded-xl bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] text-sm font-bold transition-colors">
+                        Set up Google Ads →
+                      </Link>
                     </div>
-                  ))}
-                  <Link href={`/ads?site=${siteId}`}
-                    className="mt-auto flex items-center justify-center w-full py-3 rounded-xl bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] text-sm font-bold transition-colors">
-                    Manage all ads →
-                  </Link>
+                  ) : (
+                    <div className="flex flex-col flex-1 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full flex-none ${generatedAds.paused ? "bg-white/20" : "bg-green-400"}`} />
+                        <span className="text-sm text-white/60">
+                          {generatedAds.paused ? "Paused · $0/day" : `Running · $${generatedAds.dailyBudget}/day`}
+                        </span>
+                        <span className="text-white/20">·</span>
+                        <span className="text-white/40 text-sm">{generatedAds.focusService === "all" ? "All services" : generatedAds.focusService}</span>
+                      </div>
+                      {generatedAds.ads.slice(0, 1).map((ad, i) => (
+                        <div key={i} className="rounded-xl border bg-[#0b1220] border-white/[0.07] p-4">
+                          <div className="space-y-0.5 mb-1">
+                            {ad.headlines.map((h, j) => (
+                              <span key={j} className="text-[#4285f4] text-sm font-semibold">
+                                {h}{j < ad.headlines.length - 1 ? <span className="text-white/20 mx-1">|</span> : ""}
+                              </span>
+                            ))}
+                          </div>
+                          <p className="text-white/40 text-xs">{ad.descriptions[0]}</p>
+                        </div>
+                      ))}
+                      <Link href={`/ads?site=${siteId}`}
+                        className="mt-auto flex items-center justify-center w-full py-3 rounded-xl bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] text-sm font-bold transition-colors">
+                        Manage all ads →
+                      </Link>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              );
+            })()}
 
             </div> {/* end grid */}
 
