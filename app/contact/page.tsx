@@ -38,7 +38,7 @@ export default function Contact() {
               </svg>
             </div>
             <h1 className="text-2xl font-bold tracking-tight mb-2">Message sent 🎉</h1>
-            <p className="text-white/45 text-sm mb-8">Thanks for reaching out — we'll get back to you within a day.</p>
+            <p className="text-white/45 text-sm mb-8">Thanks for reaching out — we'll get back to you as soon as possible.</p>
             <a href="/" className="inline-block bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-bold text-sm px-7 py-3.5 rounded-xl transition-colors">
               ← Back to home
             </a>
@@ -47,7 +47,7 @@ export default function Contact() {
           <>
             <h1 className="text-2xl font-bold tracking-tight mb-2 text-center">Get in touch</h1>
             <p className="text-white/40 text-sm mb-8 text-center">
-              Questions, feedback, or need a hand? Drop us a message and we'll reply quickly.
+              Questions, feedback, or need a hand? Drop us a message and we'll get back to you.
             </p>
 
             <div className="space-y-4">
