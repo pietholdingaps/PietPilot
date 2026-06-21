@@ -274,7 +274,7 @@ function AdsInner() {
               {[
                 { label: "Total clicks", value: "—" },
                 { label: "Total leads", value: "—" },
-                { label: "Avg. cost/lead", value: "—" },
+                { label: "Avg. cost/click", value: "—" },
               ].map(({ label, value }) => (
                 <div key={label} className="rounded-xl bg-[#080e1a] border border-white/[0.05] p-4 text-center">
                   <p className="text-2xl font-extrabold text-white mb-0.5">{value}</p>
@@ -338,7 +338,7 @@ function AdsInner() {
 
             {/* Stats */}
             <div className="grid grid-cols-3 gap-2 mb-4">
-              {[{ label: "Clicks", value: "—" }, { label: "Leads", value: "—" }, { label: "Cost/lead", value: "—" }].map(({ label, value }) => (
+              {[{ label: "Clicks", value: "—" }, { label: "Leads", value: "—" }, { label: "Cost/click", value: "—" }].map(({ label, value }) => (
                 <div key={label} className="rounded-xl bg-[#080e1a] border border-white/[0.05] p-3 text-center">
                   <p className="text-xl font-extrabold text-white">{value}</p>
                   <p className="text-xs text-white/30 mt-0.5">{label}</p>
