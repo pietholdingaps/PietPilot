@@ -199,7 +199,7 @@ export default function Home() {
         <div className="max-w-5xl mx-auto">
           <ScrollReveal>
             <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-center mb-16">
-              From signup to live site — under 5 minutes
+              From signup to live site — in minutes
             </h2>
           </ScrollReveal>
           <div className="grid md:grid-cols-3 gap-0 relative">
