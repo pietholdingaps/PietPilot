@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
     const rawAbout = submission.about || "";
     // Match years in both English ("year", "years") and Danish ("år", "årig")
     const yearsMatch = (rawExperience + " " + rawAbout).match(/(\d+)\s*\+?\s*(year|years|yr|yrs|år|årig)/i);
-    const jobsMatch = (rawExperience + " " + rawAbout).match(/(\d[\d,\.]+)\s*\+?\s*(job|jobs|project|projects|home|homes|roof|roofs|house|houses|property|properties|customer|customers|client|clients|repair|repairs|install|installations|vehicle|vehicles|system|systems|unit|units|opgave|opgaver|kunde|kunder)/i);
+    const jobsMatch = (rawExperience + " " + rawAbout).match(/(\d[\d,\.]+)\s*\+?\s*(?:\w+\s+)?(job|jobs|project|projects|home|homes|roof|roofs|house|houses|property|properties|customer|customers|client|clients|repair|repairs|install|installations|vehicle|vehicles|system|systems|unit|units|call|calls|treatment|treatments|service|fence|pool|opgave|opgaver|kunde|kunder)/i);
     const extractedYears = yearsMatch ? `${yearsMatch[1]}+` : null;
     const extractedJobs = jobsMatch ? `${jobsMatch[1].replace(/[,\.]/g, "")}+` : null;
 
