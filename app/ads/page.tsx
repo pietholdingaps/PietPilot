@@ -185,7 +185,32 @@ function AdsInner() {
                 ))}
               </div>
 
-              <button onClick={() => setStep(1)} className="text-white/25 text-sm mt-8 hover:text-white transition-colors">← Back</button>
+              <div className="mt-4">
+                <label className="block text-xs text-white/30 mb-2 text-center">Or enter your own amount</label>
+                <div className="flex items-center gap-2 bg-white/[0.02] border border-white/10 rounded-xl px-4 py-3 focus-within:border-[#f59e0b]/50 transition-colors">
+                  <span className="text-white/40 text-sm">$</span>
+                  <input
+                    type="number"
+                    min={5}
+                    placeholder="e.g. 25"
+                    className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/20"
+                    onChange={e => {
+                      const val = Number(e.target.value);
+                      if (val >= 5) setBudget(val);
+                    }}
+                  />
+                  <span className="text-white/40 text-sm">/day</span>
+                  <button
+                    type="button"
+                    onClick={() => setStep(3)}
+                    className="bg-[#f59e0b] text-[#0b1220] font-bold text-xs px-3 py-1.5 rounded-lg"
+                  >
+                    Use this →
+                  </button>
+                </div>
+              </div>
+
+              <button onClick={() => setStep(1)} className="text-white/25 text-sm mt-6 hover:text-white transition-colors">← Back</button>
             </div>
           )}
 
