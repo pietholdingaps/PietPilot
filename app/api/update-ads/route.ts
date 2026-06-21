@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
-  const { siteId, ads } = await req.json();
+  const { siteId, ads, paused, dailyBudget } = await req.json();
   if (!siteId) return NextResponse.json({ error: "Missing siteId" }, { status: 400 });
 
   const { data: current } = await supabase
@@ -15,9 +15,14 @@ export async function POST(req: NextRequest) {
     .eq("id", siteId)
     .single();
 
-  await supabase.from("onboarding_submissions").update({
-    generated_ads: { ...current?.generated_ads, ads }
-  }).eq("id", siteId);
+  const updated = {
+    ...current?.generated_ads,
+    ...(ads !== undefined && { ads }),
+    ...(paused !== undefined && { paused }),
+    ...(dailyBudget !== undefined && { dailyBudget }),
+  };
+
+  await supabase.from("onboarding_submissions").update({ generated_ads: updated }).eq("id", siteId);
 
   return NextResponse.json({ ok: true });
 }
