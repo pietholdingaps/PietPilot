@@ -119,9 +119,69 @@ const templates: ServiceTemplate[] = [
   },
   // Driveway / masonry
   {
-    keywords: ["driveway", "paving", "concrete", "masonry", "brick", "stone", "pathway", "kerb"],
+    keywords: ["driveway", "paving", "concrete", "masonry", "brick", "stone", "pathway", "kerb", "retaining wall", "chimney"],
     copy: (title, biz, area) =>
-      `Your driveway and paths are the first thing visitors see — and ${biz} makes sure they make the right impression. We handle ${title.toLowerCase()} across ${area} using block paving, exposed aggregate, stamped concrete, and natural stone, properly graded for drainage and bedded to handle heavy traffic without cracking or shifting. Built once, built right.`,
+      `Your driveway and outdoor surfaces are the first thing visitors see — and ${biz} makes sure they make the right impression. We handle ${title.toLowerCase()} across ${area} using quality materials properly graded for drainage and built to handle the demands of the local climate without cracking or settling. Every project is completed by experienced masons who take pride in work that lasts.`,
+  },
+  // Pool / spa
+  {
+    keywords: ["pool", "spa", "hot tub", "swimming", "pool deck", "pool fence", "pool clean", "pool equipment", "pool resurfac", "water feature"],
+    copy: (title, biz, area) =>
+      `A professionally built pool or spa transforms how you use your outdoor space — and ${biz} builds them to perform beautifully for decades. We handle ${title.toLowerCase()} across ${area} with in-house crews who manage every step from design and permitting through construction, finishing, and final inspection. Our work is fully licensed and backed by a craftsmanship warranty.`,
+  },
+  // Solar / energy
+  {
+    keywords: ["solar", "battery storage", "solar panel", "inverter", "solar clean", "energy audit", "roof-mounted", "ground-mounted", "ev charger"],
+    copy: (title, biz, area) =>
+      `Going solar is one of the highest-return investments a homeowner can make — and ${biz} handles every aspect of ${title.toLowerCase()} across ${area} from design and permitting through installation and utility interconnection. Our licensed team manages the full process so you never have to chase paperwork or coordinate between multiple contractors. Every system is monitored for performance from day one.`,
+  },
+  // Pest control
+  {
+    keywords: ["pest", "termite", "rodent", "bed bug", "mosquito", "ant", "roach", "exterminator", "wildlife removal", "prevention plan"],
+    copy: (title, biz, area) =>
+      `${biz} provides professional ${title.toLowerCase()} services for homes and businesses across ${area} — using family and pet safe products that target infestations at the source, not just the surface. Our licensed technicians identify the root cause of every pest problem and apply treatments specific to the species and conditions found at your property. With regular service plans available, we keep your home protected year-round.`,
+  },
+  // Garage door
+  {
+    keywords: ["garage door", "spring replacement", "opener", "garage door repair", "garage door install", "panel replacement", "cable", "roller", "smart garage"],
+    copy: (title, biz, area) =>
+      `A broken garage door disrupts your day immediately — and ${biz} provides fast, professional ${title.toLowerCase()} across ${area} with factory-trained technicians who arrive in fully stocked trucks. Most repairs are completed in a single visit because we carry the parts most commonly needed on every call. Our work is backed by a service warranty and performed by licensed, background-checked technicians.`,
+  },
+  // Insulation / spray foam / air sealing
+  {
+    keywords: ["insulation", "spray foam", "blown-in", "crawl space", "attic insulation", "air sealing", "energy audit", "basement insulation", "weatherstripping"],
+    copy: (title, biz, area) =>
+      `Proper insulation is the single most impactful upgrade you can make to a home's year-round comfort and energy bills — and ${biz} handles ${title.toLowerCase()} across ${area} with BPI-certified crews who diagnose your home's specific losses before recommending a solution. We use the right materials for each application rather than a one-size-fits-all approach, and every project is completed by our own team with no subcontracting.`,
+  },
+  // Fencing
+  {
+    keywords: ["fence", "fencing", "chain link", "vinyl fence", "wood fence", "gate", "wrought iron", "pool fence", "farm fence", "ranch fence"],
+    copy: (title, biz, area) =>
+      `A well-built fence adds security, privacy, and curb appeal to your property — and ${biz} installs ${title.toLowerCase()} across ${area} with properly set posts, correct material specifications, and all required permits handled on your behalf. Our crews build every fence to stand up to local weather conditions for decades, and we back our installations with a workmanship warranty.`,
+  },
+  // Drywall / plastering / skim coat / texture
+  {
+    keywords: ["drywall", "plaster", "skim coat", "texture", "popcorn ceiling", "fire-rated", "soundproof", "tenant improvement", "drywall repair", "drywall patch"],
+    copy: (title, biz, area) =>
+      `${biz} delivers professional ${title.toLowerCase()} across ${area} with experienced crews who work clean, work efficiently, and produce a paint-ready finish every time. We handle everything from single-room repairs to full new-construction hangs and commercial tenant improvements, using the right compound, technique, and finish level for each application. Your walls will be straight, smooth, and done right.`,
+  },
+  // Tile
+  {
+    keywords: ["tile", "backsplash", "mosaic", "grout", "shower tile", "floor tile", "pool tile", "outdoor tile", "tile repair", "tile install"],
+    copy: (title, biz, area) =>
+      `Tile installation done right starts with proper substrate preparation — and ${biz} doesn't skip that step. We provide professional ${title.toLowerCase()} across ${area} using the correct waterproofing membranes, mortars, and grout systems for each application, so your tile looks great and stays in place for years. Our crews work precisely, match patterns intentionally, and leave your space clean when the job is done.`,
+  },
+  // Handyman
+  {
+    keywords: ["handyman", "furniture assembly", "tv mounting", "door repair", "lock repair", "gutter cleaning", "deck repair", "drywall patch", "ceiling fan", "light fixture", "caulking"],
+    copy: (title, biz, area) =>
+      `${biz} handles ${title.toLowerCase()} for homeowners across ${area} with experienced, background-checked technicians who arrive on time and fully equipped. We tackle small and medium repairs efficiently — often bundling multiple tasks into a single visit so you get more done in less time. Every job is done right the first time, backed by our workmanship guarantee.`,
+  },
+  // General contractor / home additions / remodeling
+  {
+    keywords: ["home addition", "kitchen remodel", "bathroom remodel", "basement finish", "renovation", "remodel", "tenant improvement", "general contractor"],
+    copy: (title, biz, area) =>
+      `${biz} manages ${title.toLowerCase()} for homeowners across ${area} with dedicated project managers who oversee every trade from start to finish, keeping your project on schedule and on budget. With years of local experience and a fully licensed, bonded crew, we handle permits, coordination, and daily communication so you never have to chase contractors. The result is a finished space that looks exactly as you envisioned.`,
   },
 ];
 
