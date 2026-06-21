@@ -1,12 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 export default function Contact() {
+  return <Suspense fallback={null}><ContactInner /></Suspense>;
+}
+
+function ContactInner() {
+  const searchParams = useSearchParams();
+  const fromDashboard = searchParams.get("from") === "dashboard";
+  const siteId = searchParams.get("site");
+  const backUrl = fromDashboard && siteId ? `/dashboard?site=${siteId}` : "/";
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
+
+  useEffect(() => {}, []);
 
   async function submit() {
     setStatus("loading");
@@ -29,7 +42,7 @@ export default function Contact() {
       <div className="w-full max-w-md">
         {status === "done" ? (
           <div className="text-center">
-            <a href="/" className="text-2xl font-extrabold tracking-tight block mb-10">
+            <a href={backUrl} className="text-2xl font-extrabold tracking-tight block mb-10">
               Piet<span className="text-[#f59e0b]">Pilot</span>
             </a>
             <div className="w-14 h-14 rounded-full bg-[#f59e0b]/15 border border-[#f59e0b]/30 flex items-center justify-center mx-auto mb-6">
@@ -39,15 +52,15 @@ export default function Contact() {
             </div>
             <h1 className="text-2xl font-bold tracking-tight mb-2">Message sent 🎉</h1>
             <p className="text-white/45 text-sm mb-8">Thanks for reaching out — we'll get back to you as soon as possible.</p>
-            <a href="/" className="inline-block bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-bold text-sm px-7 py-3.5 rounded-xl transition-colors">
+            <a href={backUrl} className="inline-block bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-bold text-sm px-7 py-3.5 rounded-xl transition-colors">
               ← Back to home
             </a>
           </div>
         ) : (
           <>
             <div className="flex items-center justify-between mb-10">
-              <a href="/" className="text-white/30 text-sm hover:text-white transition-colors">← Back</a>
-              <a href="/" className="text-2xl font-extrabold tracking-tight">Piet<span className="text-[#f59e0b]">Pilot</span></a>
+              <a href={backUrl} className="text-white/30 text-sm hover:text-white transition-colors">← Back</a>
+              <a href={backUrl} className="text-2xl font-extrabold tracking-tight">Piet<span className="text-[#f59e0b]">Pilot</span></a>
               <div className="w-12" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight mb-2 text-center">Get in touch</h1>
