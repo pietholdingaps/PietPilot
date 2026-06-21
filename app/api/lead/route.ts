@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
 
     const { data: submission } = await supabase
       .from("onboarding_submissions")
-      .select("business_name, email, owner_email, phone, trade, area, address, hours, generated_copy")
+      .select("business_name, email, owner_email, phone, trade, area, address, hours, generated_copy, notify_email, notify_sms")
       .eq("id", siteId)
       .single();
 
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     });
 
     // ── 2. Notify the tradesperson ────────────────────────────────────────────
-    await resend.emails.send({
+    if (submission.notify_email !== false) await resend.emails.send({
       from: "PietPilot <noreply@pietpilot.com>",
       to: businessEmail,
       replyTo: leadEmail || undefined,
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
     });
 
     // ── 3. SMS til håndværkeren (hvis Twilio er sat op) ──────────────────────
-    const businessPhone = submission.phone;
+    const businessPhone = submission.notify_sms !== false ? submission.phone : null;
     if (businessPhone && process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
       try {
         const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);

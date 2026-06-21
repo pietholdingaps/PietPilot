@@ -142,6 +142,8 @@ function EditSiteInner() {
   const [address, setAddress] = useState("");
   const [hours, setHours] = useState("");
   const [licenseNumber, setLicenseNumber] = useState("");
+  const [notifyEmail, setNotifyEmail] = useState(true);
+  const [notifySms, setNotifySms] = useState(true);
   const [logoUrl, setLogoUrl] = useState("");
   const [template, setTemplate] = useState("classic");
   const [uploading, setUploading] = useState(false);
@@ -234,6 +236,8 @@ function EditSiteInner() {
         setAddress(s.address || "");
         setHours(s.hours || "");
         setLicenseNumber(s.license_number || "");
+        setNotifyEmail(s.notify_email !== false);
+        setNotifySms(s.notify_sms !== false);
         setLogoUrl(s.logo_url || "");
         setTemplate(s.template || "classic");
         // Start from whatever was saved, then enforce content rules:
@@ -443,7 +447,7 @@ function EditSiteInner() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          siteId, businessName, phone, email, address, hours, logoUrl, template, licenseNumber,
+          siteId, businessName, phone, email, address, hours, logoUrl, template, licenseNumber, notifyEmail, notifySms,
           headline, subheadline, ctaText,
           about, guaranteeLine, responsePromise, trustLine,
           services, serviceDescriptions,
@@ -880,6 +884,27 @@ function EditSiteInner() {
                       hint="Shown in footer and guarantee line. Leave blank to hide." />
                     <Field label="Response promise" value={responsePromise} onChange={setResponsePromise}
                       placeholder="We respond within 24 hours — guaranteed." />
+
+                    {/* Notification preferences */}
+                    <div>
+                      <p className="text-sm font-semibold text-white/70 mb-3">Lead notifications</p>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-semibold text-white">Email notification</p>
+                            <p className="text-xs text-white/30">Receive an email when a new lead comes in</p>
+                          </div>
+                          <Toggle on={notifyEmail} onToggle={() => setNotifyEmail(v => !v)} />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-semibold text-white">SMS notification</p>
+                            <p className="text-xs text-white/30">Receive a text message when a new lead comes in</p>
+                          </div>
+                          <Toggle on={notifySms} onToggle={() => setNotifySms(v => !v)} />
+                        </div>
+                      </div>
+                    </div>
                   </>}
 
                   {/* ── OWNER ── */}
