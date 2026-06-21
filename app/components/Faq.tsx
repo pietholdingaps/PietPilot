@@ -17,7 +17,7 @@ const items = [
   },
   {
     q: "How long does it take to get my website live?",
-    a: "Most businesses are live within a few days of signing up. We handle the setup, copywriting, and SEO — you just tell us about your business.",
+    a: "Your website is typically live within minutes of completing the setup. Answer a few questions about your business, pick a design, and we generate your full site on the spot — copy, SEO, and all.",
   },
   {
     q: "Will my site show up in local Google searches?",
