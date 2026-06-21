@@ -25,13 +25,13 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-[#0b1220] text-[#eef1f6] flex flex-col items-center justify-center px-6 py-20">
-      <a href="/" className="text-2xl font-extrabold tracking-tight mb-10">
-        Piet<span className="text-[#f59e0b]">Pilot</span>
-      </a>
 
       <div className="w-full max-w-md">
         {status === "done" ? (
           <div className="text-center">
+            <a href="/" className="text-2xl font-extrabold tracking-tight block mb-10">
+              Piet<span className="text-[#f59e0b]">Pilot</span>
+            </a>
             <div className="w-14 h-14 rounded-full bg-[#f59e0b]/15 border border-[#f59e0b]/30 flex items-center justify-center mx-auto mb-6">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12"/>
@@ -45,6 +45,11 @@ export default function Contact() {
           </div>
         ) : (
           <>
+            <div className="flex items-center justify-between mb-10">
+              <a href="/" className="text-white/30 text-sm hover:text-white transition-colors">← Back</a>
+              <a href="/" className="text-2xl font-extrabold tracking-tight">Piet<span className="text-[#f59e0b]">Pilot</span></a>
+              <div className="w-12" />
+            </div>
             <h1 className="text-2xl font-bold tracking-tight mb-2 text-center">Get in touch</h1>
             <p className="text-white/40 text-sm mb-8 text-center">
               Questions, feedback, or need a hand? Drop us a message and we'll get back to you.
