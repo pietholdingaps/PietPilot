@@ -368,7 +368,7 @@ function AdsInner() {
             ))}
           </div>
         </div>
-          </> {/* end campaign conditional */}
+          </>
         )}
 
       </div>
