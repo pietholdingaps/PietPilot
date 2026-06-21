@@ -172,10 +172,10 @@ export default function Home() {
 
             <ScrollReveal delay={140}>
               <div className="card rounded-2xl p-8 h-full">
-                <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-3">Follow-up</div>
-                <h3 className="text-lg font-bold text-white mb-2">Never miss a lead</h3>
+                <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-3">Leads</div>
+                <h3 className="text-lg font-bold text-white mb-2">Every lead in one place</h3>
                 <p className="text-white/45 text-sm leading-relaxed">
-                  Missed call on the job? An automatic text fires off in seconds, every time.
+                  New enquiry from your website? You get an instant email and text — so you can respond before anyone else does.
                 </p>
               </div>
             </ScrollReveal>
