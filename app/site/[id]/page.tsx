@@ -1,8 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 import GeneratedSite from "@/app/components/GeneratedSite";
 import { GeneratedSiteCopy } from "@/lib/siteTypes";
 import { generateServiceDescription } from "@/lib/serviceDescriptions";
+import { buildSiteMetadata, buildLocalBusinessSchema } from "@/lib/seo";
 
 // Extract a number + unit match from free text (supports English and Danish)
 function extractNumber(text: string, unitPattern: RegExp): string | null {
@@ -11,6 +13,32 @@ function extractNumber(text: string, unitPattern: RegExp): string | null {
 }
 
 export const dynamic = "force-dynamic";
+
+// ── SEO Metadata ────────────────────────────────────────────────────────────
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+  const { data } = await supabase.from("onboarding_submissions")
+    .select("business_name, trade, area, phone, email, hours, license_number, slug, generated_copy")
+    .eq("id", id).single();
+  if (!data) return { title: "PietPilot" };
+  const copy = data.generated_copy as { stats?: { value: string; label: string }[] } | null;
+  const meta = buildSiteMetadata({
+    businessName: data.business_name || "Your Business",
+    trade: data.trade || "",
+    area: data.area || "",
+    phone: data.phone || "",
+    email: data.email || "",
+    hours: data.hours || "",
+    licenseNumber: data.license_number || "",
+    slug: data.slug || undefined,
+    siteId: id,
+    stats: copy?.stats,
+  });
+  // Noindex /site/[id] if a slug exists — Google should index /slug instead
+  if (data.slug) meta.robots = { index: false, follow: true };
+  return meta;
+}
 
 // Strip double "License #License #" from any string recursively
 function stripDoubleLicense(obj: unknown): unknown {
@@ -148,7 +176,23 @@ export default async function GeneratedSitePage({ params }: { params: Promise<{ 
     });
   }
 
+  const localBusinessSchema = buildLocalBusinessSchema({
+    businessName: submission.business_name || "Your Business",
+    trade: submission.trade || "",
+    area: submission.area || "",
+    phone: submission.phone || "",
+    email: submission.email || "",
+    address: submission.address || "",
+    hours: submission.hours || "",
+    licenseNumber: submission.license_number || "",
+    slug: submission.slug || undefined,
+    siteId: id,
+    stats: (copy as { stats?: { value: string; label: string }[] } | null)?.stats,
+  });
+
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }} />
     <GeneratedSite
       data={{
         id,
@@ -179,5 +223,6 @@ export default async function GeneratedSitePage({ params }: { params: Promise<{ 
         googleReviewsUrl: submission.google_reviews_url || "",
       }}
     />
+    </>
   );
 }

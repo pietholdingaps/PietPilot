@@ -1,11 +1,13 @@
 import { createClient } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 import { themes } from "@/app/components/GeneratedSite";
 import { getPhotoForService } from "@/lib/stockPhotos";
 import { GeneratedSiteCopy } from "@/lib/siteTypes";
 import LeadForm from "@/app/components/LeadForm";
 import { generateServiceDescription } from "@/lib/serviceDescriptions";
 import Anthropic from "@anthropic-ai/sdk";
+import { buildServicePageMetadata, buildServiceSchema, buildFaqSchema } from "@/lib/seo";
 
 const TITLE_LOWER = new Set(["and","or","of","in","the","a","an","to","for","at","by","with","from","on","as","but","nor","so","yet"]);
 function toTitleCase(s: string) {
@@ -20,6 +22,26 @@ function toTitleCase(s: string) {
 }
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string; slug: string }> }): Promise<Metadata> {
+  const { id, slug } = await params;
+  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+  const { data } = await supabase.from("onboarding_submissions")
+    .select("business_name, trade, area, phone, slug, generated_copy")
+    .eq("id", id).single();
+  if (!data) return { title: "PietPilot" };
+  const copy = data.generated_copy as { serviceDetails?: { title: string; slug: string }[] } | null;
+  const service = copy?.serviceDetails?.find(s => s.slug === slug);
+  const serviceName = service?.title || slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+  return buildServicePageMetadata(serviceName, {
+    businessName: data.business_name || "Your Business",
+    trade: data.trade || "",
+    area: data.area || "",
+    phone: data.phone || "",
+    slug: data.slug || undefined,
+    siteId: id,
+  }, slug);
+}
 
 // Generic patterns that signal a fallback/template description — not real AI copy
 const GENERIC_PATTERN = /provide(s)? (expert|professional|skilled) .+ (services|work) (for|across|in)|Done right, on time|brings the right skills, tools, and experience/i;
@@ -194,8 +216,19 @@ export default async function ServiceDetailPage({
   const businessName = submission.business_name || "Your Business";
   const phone = submission.phone || "";
   const email = submission.email || "";
+  const area = submission.area || "";
+
+  // Build JSON-LD schemas
+  const siteSlug = submission.slug;
+  const siteUrl = siteSlug ? `https://pietpilot.com/${siteSlug}` : `https://pietpilot.com/site/${id}`;
+  const serviceUrl = `${siteUrl}/services/${slug}`;
+  const serviceSchema = buildServiceSchema(service.title, service.description || "", businessName, phone, area, serviceUrl);
+  const faqSchema = service.faqs && service.faqs.length > 0 ? buildFaqSchema(service.faqs) : null;
 
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }} />
+      {faqSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />}
     <div style={{ background: theme.bg, color: theme.text }} className="min-h-screen font-sans antialiased">
       {/* NAV */}
       <nav className="sticky top-0 z-30 backdrop-blur-xl border-b" style={{ borderColor: `${theme.text}10`, background: theme.navBg }}>
@@ -389,5 +422,6 @@ export default async function ServiceDetailPage({
         </p>
       </footer>
     </div>
+    </>
   );
 }
