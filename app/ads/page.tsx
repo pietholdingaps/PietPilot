@@ -24,7 +24,12 @@ function AdsInner() {
   const [services, setServices] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [view, setView] = useState<"dashboard" | "setup">("dashboard");
+  const [view, setView] = useState<"connect" | "dashboard" | "setup">("connect");
+  const [googleConnected, setGoogleConnected] = useState(false);
+  const [googleCustomerId, setGoogleCustomerId] = useState("");
+  const [customerIdInput, setCustomerIdInput] = useState("");
+  const [connecting, setConnecting] = useState(false);
+  const [connectError, setConnectError] = useState("");
 
   // Setup
   const [step, setStep] = useState(1);
@@ -42,6 +47,10 @@ function AdsInner() {
       .then(r => r.json())
       .then(d => {
         setServices(d.site?.generated_copy?.services || []);
+        const connected = d.site?.google_ads_connected || false;
+        setGoogleConnected(connected);
+        setGoogleCustomerId(d.site?.google_ads_customer_id || "");
+        setCustomerIdInput(d.site?.google_ads_customer_id || "");
         const data = d.site?.generated_ads;
         // Support both old format (single) and new format (campaigns array)
         if (data?.campaigns) {
@@ -58,9 +67,36 @@ function AdsInner() {
             startedAt: data.startedAt || new Date().toISOString(),
           }]);
         }
+        setView(connected ? "dashboard" : "connect");
         setLoading(false);
       });
   }, [siteId]);
+
+  async function handleConnect() {
+    const clean = customerIdInput.replace(/[-\s]/g, "");
+    if (clean.length !== 10) { setConnectError("A Google Ads Customer ID is 10 digits — e.g. 123-456-7890"); return; }
+    setConnecting(true); setConnectError("");
+    await fetch("/api/dashboard/edit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ siteId, googleAdsCustomerId: clean, googleAdsConnected: true }),
+    });
+    setGoogleConnected(true);
+    setGoogleCustomerId(clean);
+    setView("dashboard");
+    setConnecting(false);
+  }
+
+  async function handleDisconnect() {
+    await fetch("/api/dashboard/edit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ siteId, googleAdsCustomerId: null, googleAdsConnected: false }),
+    });
+    setGoogleConnected(false);
+    setGoogleCustomerId("");
+    setView("connect");
+  }
 
   async function handleStart() {
     setStarting(true);
@@ -113,6 +149,77 @@ function AdsInner() {
       <div className="w-6 h-6 border-2 border-white/20 border-t-[#f59e0b] rounded-full animate-spin" />
     </div>
   );
+
+  // ── CONNECT GOOGLE ADS ──────────────────────────────────────────────────
+  if (view === "connect") {
+    return (
+      <div className="min-h-screen bg-[#0b1220] text-[#eef1f6] flex flex-col">
+        <div className="border-b border-white/[0.06]">
+          <div className="max-w-2xl mx-auto px-6 h-16 flex items-center justify-between">
+            <span className="text-xl font-extrabold tracking-tight">Piet<span className="text-[#f59e0b]">Pilot</span></span>
+            <Link href={`/dashboard?site=${siteId}`} className="text-white/30 text-sm hover:text-white transition-colors">← Dashboard</Link>
+          </div>
+        </div>
+
+        <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 py-16">
+          <div className="text-center mb-10">
+            <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-3xl mx-auto mb-6">🔗</div>
+            <h1 className="text-3xl font-extrabold mb-3">Connect Google Ads</h1>
+            <p className="text-white/40 text-base">Before we can run your ads, we need to connect to your Google Ads account.</p>
+          </div>
+
+          {/* Steps */}
+          <div className="space-y-3 mb-10">
+            <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
+              <div className="flex gap-4 items-start">
+                <span className="w-7 h-7 rounded-full bg-[#f59e0b]/15 text-[#f59e0b] text-xs font-black flex items-center justify-center flex-none mt-0.5">1</span>
+                <div>
+                  <p className="font-bold text-sm mb-1">Create a Google Ads account</p>
+                  <p className="text-white/40 text-sm">Go to <span className="text-[#f59e0b]">ads.google.com</span> and sign in with your Google account. It&apos;s free to create.</p>
+                </div>
+              </div>
+            </div>
+            <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
+              <div className="flex gap-4 items-start">
+                <span className="w-7 h-7 rounded-full bg-[#f59e0b]/15 text-[#f59e0b] text-xs font-black flex items-center justify-center flex-none mt-0.5">2</span>
+                <div>
+                  <p className="font-bold text-sm mb-1">Add a payment method</p>
+                  <p className="text-white/40 text-sm">In Google Ads go to <strong className="text-white">Billing → Payment methods</strong> and add your credit card. You only pay Google when people click your ads.</p>
+                </div>
+              </div>
+            </div>
+            <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
+              <div className="flex gap-4 items-start">
+                <span className="w-7 h-7 rounded-full bg-[#f59e0b]/15 text-[#f59e0b] text-xs font-black flex items-center justify-center flex-none mt-0.5">3</span>
+                <div>
+                  <p className="font-bold text-sm mb-1">Enter your Customer ID below</p>
+                  <p className="text-white/40 text-sm">In Google Ads, click the question mark ❓ in the top right. Your Customer ID is the 10-digit number shown — e.g. <span className="text-white font-mono">123-456-7890</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Input */}
+          <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 space-y-4">
+            <label className="block text-sm font-semibold text-white/60">Your Google Ads Customer ID</label>
+            <input
+              type="text"
+              value={customerIdInput}
+              onChange={e => setCustomerIdInput(e.target.value)}
+              placeholder="123-456-7890"
+              className="w-full bg-[#080e1a] border border-white/10 rounded-xl px-4 py-3.5 text-lg font-mono text-white focus:outline-none focus:border-[#f59e0b]/50 placeholder:text-white/20 tracking-widest"
+            />
+            {connectError && <p className="text-red-400 text-sm">{connectError}</p>}
+            <button onClick={handleConnect} disabled={connecting || !customerIdInput.trim()}
+              className="w-full bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-extrabold text-base py-4 rounded-xl transition-colors disabled:opacity-50">
+              {connecting ? "Connecting…" : "Connect my Google Ads account →"}
+            </button>
+            <p className="text-white/20 text-xs text-center">We&apos;ll use this to run your campaigns. You stay in control of your billing directly with Google.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // ── SETUP FLOW ───────────────────────────────────────────────────────────
   if (view === "setup") {
@@ -389,6 +496,33 @@ function AdsInner() {
         ))}
 
         {/* How it works */}
+        {/* Google Account — always visible */}
+        <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-base font-bold">Google Ads account</h2>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-green-400" />
+              <span className="text-xs text-green-400 font-semibold">Connected</span>
+            </div>
+          </div>
+          <div className="flex items-center justify-between py-3 border-b border-white/[0.05]">
+            <p className="text-white/40 text-sm">Customer ID</p>
+            <p className="font-mono text-sm font-semibold">
+              {googleCustomerId.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3")}
+            </p>
+          </div>
+          <div className="flex gap-2 mt-4">
+            <button onClick={() => setView("connect")}
+              className="flex-1 text-sm font-semibold py-2.5 rounded-xl border border-white/10 hover:border-white/25 transition-colors text-white/50">
+              Change account
+            </button>
+            <button onClick={handleDisconnect}
+              className="text-sm font-semibold py-2.5 px-5 rounded-xl border border-white/10 hover:border-red-500/30 hover:text-red-400 transition-colors text-white/30">
+              Disconnect
+            </button>
+          </div>
+        </div>
+
         {campaigns.length > 0 && (
           <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-7">
             <h2 className="text-base font-bold mb-5">How your ads work</h2>

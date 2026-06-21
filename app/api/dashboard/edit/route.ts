@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const {
-      siteId, businessName, phone, email, address, hours, logoUrl, template, licenseNumber, accountName, ownerEmail, notifyEmail, notifySms,
+      siteId, businessName, phone, email, address, hours, logoUrl, template, licenseNumber, accountName, ownerEmail, notifyEmail, notifySms, googleAdsCustomerId, googleAdsConnected,
       headline, subheadline, ctaText, about, guaranteeLine, responsePromise, trustLine,
       services, serviceDescriptions, whyPoints, processSteps, stats,
       trustpilotUrl, googleReviewsUrl,
@@ -109,6 +109,8 @@ export async function POST(req: NextRequest) {
         ...(ownerEmail !== undefined && { owner_email: ownerEmail }),
         ...(notifyEmail !== undefined && { notify_email: notifyEmail }),
         ...(notifySms !== undefined && { notify_sms: notifySms }),
+        ...(googleAdsCustomerId !== undefined && { google_ads_customer_id: googleAdsCustomerId }),
+        ...(googleAdsConnected !== undefined && { google_ads_connected: googleAdsConnected }),
         phone,
         email,
         address,
