@@ -18,11 +18,12 @@ type Lead = {
 type AdVariant = { headlines: string[]; descriptions: string[]; paused?: boolean };
 type GeneratedAds = {
   ads: AdVariant[];
-  keywords: string[];
-  negativeKeywords: string[];
-  estimatedClicksPerDay: number;
-  estimatedLeadsPerMonth: number;
+  keywords?: string[];
+  negativeKeywords?: string[];
+  estimatedClicksPerDay?: number;
+  estimatedLeadsPerMonth?: number;
   focusService: string;
+  paused?: boolean;
   dailyBudget: number;
 };
 
