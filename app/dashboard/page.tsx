@@ -352,7 +352,7 @@ function DashboardInner() {
                       </div>
                       <Link href={`/ads?site=${siteId}`}
                         className="flex items-center justify-center w-full py-3 rounded-xl bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] text-sm font-bold transition-colors">
-                        Set up Google Ads →
+                        Manage Google Ads →
                       </Link>
                     </div>
                   ) : (
@@ -379,7 +379,7 @@ function DashboardInner() {
                       ))}
                       <Link href={`/ads?site=${siteId}`}
                         className="mt-auto flex items-center justify-center w-full py-3 rounded-xl bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] text-sm font-bold transition-colors">
-                        Manage all ads →
+                        Manage Google Ads →
                       </Link>
                     </div>
                   )}
