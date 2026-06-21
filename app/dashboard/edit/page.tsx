@@ -164,10 +164,10 @@ function EditSiteInner() {
 
   // ── Stats ──
   const [stats, setStats] = useState<{ value: string; label: string }[]>([
-    { value: "5+", label: "Years Experience" },
+    { value: "5+", label: "Years in Business" },
     { value: "200+", label: "Jobs Completed" },
-    { value: "", label: "Service Area" },
-    { value: "1 Hour", label: "Response Time" },
+    { value: "5★", label: "Average Rating" },
+    { value: "100%", label: "Licensed & Insured" },
   ]);
 
   // ── About ──
@@ -309,13 +309,15 @@ function EditSiteInner() {
           if (g.process?.length > 0) setProcessSteps(g.process);
           // Stats — prefer generated but override years/jobs with real extracted numbers
           const baseStats = g.stats?.length > 0 ? [...g.stats] : [
-            { value: extractedYears || "5+", label: "Years Experience" },
+            { value: extractedYears || "5+", label: "Years in Business" },
             { value: extractedJobs || "200+", label: "Jobs Completed" },
-            { value: areaCity || "Local", label: "Service Area" },
-            { value: "1 Hour", label: "Response Time" },
+            { value: "5★", label: "Average Rating" },
+            { value: "100%", label: "Licensed & Insured" },
           ];
-          if (extractedYears) baseStats[0] = { ...baseStats[0], value: extractedYears };
+          if (extractedYears) baseStats[0] = { ...baseStats[0], value: extractedYears, label: "Years in Business" };
           if (extractedJobs)  baseStats[1] = { ...baseStats[1], value: extractedJobs };
+          baseStats[2] = { value: "5★", label: "Average Rating" };
+          baseStats[3] = { value: "100%", label: "Licensed & Insured" };
           setStats(baseStats);
           const descs: Record<string, string> = {};
           for (const d of g.serviceDetails || []) { if (d.title && d.description) descs[d.title] = d.description; }
@@ -327,16 +329,16 @@ function EditSiteInner() {
           setCtaText("Get a Free Quote");
           setAbout(s.about || "");
           setGuaranteeLine(fallbackGuaranteeLine);
-          setResponsePromise("We respond within 24 hours — guaranteed.");
+          setResponsePromise("Contact us for a free quote — we respond promptly to all enquiries.");
           setTrustLine(`Proudly serving ${area}`);
           setServices(parseRaw(s.services || ""));
           setWhyPoints(fallbackWhyPoints);
           setProcessSteps(fallbackProcess);
           setStats([
-            { value: extractedYears || "5+", label: "Years Experience" },
+            { value: extractedYears || "5+", label: "Years in Business" },
             { value: extractedJobs || "200+", label: "Jobs Completed" },
-            { value: areaCity || "Local", label: "Service Area" },
-            { value: "1 Hour", label: "Response Time" },
+            { value: "5★", label: "Average Rating" },
+            { value: "100%", label: "Licensed & Insured" },
           ]);
         }
       })
@@ -706,7 +708,7 @@ function EditSiteInner() {
                           <input
                             type="text" value={stat.value} maxLength={12}
                             onChange={(e) => setStats((prev) => prev.map((s, j) => j === i ? { ...s, value: e.target.value } : s))}
-                            placeholder={i === 0 ? "e.g. 10+" : i === 1 ? "e.g. 500+" : i === 2 ? "e.g. Austin" : "e.g. 1 Hour"}
+                            placeholder={i === 0 ? "e.g. 10+" : i === 1 ? "e.g. 500+" : i === 2 ? "e.g. 5★" : "e.g. 100%"}
                             className="w-full bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm font-bold text-white focus:outline-none focus:border-[#f59e0b]/50 mb-2 placeholder:text-white/20"
                           />
                           <input

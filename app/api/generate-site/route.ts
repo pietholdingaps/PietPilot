@@ -141,11 +141,11 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
   "allServices": ["identical to services"],
   "ctaText": "short CTA button text",
   "trustLine": "credibility line leading with their exact years of experience — e.g. '13+ years serving homeowners across Austin and surrounding areas'",
-  "responsePromise": "short reassuring line about response time — use what they said or invent something reasonable",
+  "responsePromise": "short reassuring line about getting in touch — NEVER promise a specific time frame like '1 hour' or '24 hours'. Instead use phrases like 'get in touch and we will respond promptly' or 'contact us for a free quote'",
   "guaranteeLine": "trust line with license if provided — format: 'Fully licensed & insured — License #${licenseClean || "XXXXX"}' — ONE 'License #' only, never doubled",
   "whyChooseUs": { "title": "Why choose [Business Name]?", "points": ["3 punchy points taken DIRECTLY from what the owner wrote — their actual reasons"] },
   "process": [{ "title": "2-4 word step title", "description": "one sentence" }, { "title": "...", "description": "..." }, { "title": "...", "description": "..." }, { "title": "...", "description": "..." }],
-  "stats": [{ "value": "${extractedYears || "5+"}", "label": "Years Experience" }, { "value": "${extractedJobs || "200+"}", "label": "Jobs Completed" }, { "value": "CITY_ONLY_1_OR_2_WORDS", "label": "Service Area" }, { "value": "1 Hour", "label": "Response Time" }],
+  "stats": [{ "value": "${extractedYears || "5+"}", "label": "Years in Business" }, { "value": "${extractedJobs || "200+"}", "label": "Jobs Completed" }, { "value": "5★", "label": "Average Rating" }, { "value": "100%", "label": "Licensed & Insured" }],
   "serviceDetails": [{ "title": "exact service name", "slug": "url-slug", "description": "3-4 sentences specific to THIS service — mention the service name, what the customer gets, any relevant specifics from the owner's input. MUST be unique — not the same template repeated.", "faqs": [{ "question": "specific question about this service", "answer": "..." }, { "question": "...", "answer": "..." }, { "question": "...", "answer": "..." }] }]
 }`;
 
@@ -174,14 +174,17 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
     if (extractedYears || extractedJobs) {
       if (!Array.isArray(copy.stats)) {
         copy.stats = [
-          { value: extractedYears || "5+", label: "Years Experience" },
+          { value: extractedYears || "5+", label: "Years in Business" },
           { value: extractedJobs || "200+", label: "Jobs Completed" },
-          { value: (submission.area || "").split(/\s+and\s+/i)[0].split(/[,&]/)[0].trim().split(/\s+/)[0] || "Local Area", label: "Service Area" },
-          { value: "1 Hour", label: "Response Time" },
+          { value: "5★", label: "Average Rating" },
+          { value: "100%", label: "Licensed & Insured" },
         ];
       } else {
-        if (extractedYears) copy.stats[0] = { value: extractedYears, label: "Years Experience" };
-        if (extractedJobs) copy.stats[1] = { value: extractedJobs, label: "Jobs Completed" };
+        if (extractedYears) copy.stats[0] = { ...copy.stats[0], value: extractedYears, label: "Years in Business" };
+        if (extractedJobs) copy.stats[1] = { ...copy.stats[1], value: extractedJobs, label: "Jobs Completed" };
+        // Always fix stats 3 and 4
+        copy.stats[2] = { value: "5★", label: "Average Rating" };
+        copy.stats[3] = { value: "100%", label: "Licensed & Insured" };
       }
     }
 

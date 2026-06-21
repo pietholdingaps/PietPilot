@@ -119,13 +119,15 @@ export default async function GeneratedSitePage({ params }: { params: Promise<{ 
     const currentStats: { value: string; label: string }[] = Array.isArray(copy.stats) && copy.stats.length > 0
       ? [...copy.stats]
       : [
-          { value: "5+", label: "Years Experience" },
+          { value: "5+", label: "Years in Business" },
           { value: "200+", label: "Jobs Completed" },
-          { value: (submission.area || "Local").split(/[,&\s]+and\s+/i)[0].split(/,/)[0].trim().split(" ").slice(0, 2).join(" "), label: "Service Area" },
-          { value: "1 Hour", label: "Response Time" },
+          { value: "5★", label: "Average Rating" },
+          { value: "100%", label: "Licensed & Insured" },
         ];
-    if (yearsRaw) currentStats[0] = { value: `${yearsRaw}+`, label: "Years Experience" };
+    if (yearsRaw) currentStats[0] = { value: `${yearsRaw}+`, label: "Years in Business" };
     if (jobsRaw)  currentStats[1] = { value: `${jobsRaw}+`,  label: "Jobs Completed" };
+    currentStats[2] = { value: "5★", label: "Average Rating" };
+    currentStats[3] = { value: "100%", label: "Licensed & Insured" };
     (copy as GeneratedSiteCopy).stats = currentStats;
   }
 
