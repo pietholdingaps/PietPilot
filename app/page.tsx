@@ -207,7 +207,7 @@ export default function Home() {
             {[
               ["Tell us about your business", "Name, location, services, phone number — plain English."],
               ["We build & launch your site", "Professional copy and pages, published and live."],
-              ["Leads start coming in", "Your site is live, your ads are running, and new enquiries go straight to your phone."],
+              ["Your ads go live", "We set up and run your Google Ads so customers searching for your service find you first."],
             ].map(([title, desc], i) => (
               <ScrollReveal key={title} delay={i * 100}>
                 <div className="text-center px-6 relative">
