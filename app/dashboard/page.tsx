@@ -222,15 +222,28 @@ function DashboardInner() {
 
             {/* STATS */}
             <div className="grid sm:grid-cols-3 gap-4 mb-10">
-              <div className="card rounded-2xl p-7">
-                <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-3">Status</div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                  <h3 className="text-lg font-bold text-white">Live & published</h3>
+              <div className="card rounded-2xl p-7 flex flex-col justify-between">
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-3">Status</div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse flex-none" />
+                    <h3 className="text-lg font-bold text-white">Live & published</h3>
+                  </div>
+                  <p className="text-white/40 text-sm mb-4">{site.trade || "Your business"} · {site.area?.split(",")[0] || "Local area"}</p>
                 </div>
-                <p className="text-white/45 text-sm leading-relaxed">
-                  {site.trade || "Your business"} · {site.area || "Local area"}
-                </p>
+                <div className="grid grid-cols-2 gap-2 pt-4 border-t border-white/[0.06]">
+                  <a href={site.slug ? `/${site.slug}` : `/site/${site.id}`} target="_blank" rel="noopener noreferrer"
+                    className="text-center py-2 rounded-xl border border-white/10 hover:border-white/25 transition-colors">
+                    <p className="text-xs text-white/40">Website</p>
+                    <p className="text-xs font-bold text-[#f59e0b] mt-0.5 truncate px-1">
+                      {site.slug ? `/${site.slug}` : "View →"}
+                    </p>
+                  </a>
+                  <div className="text-center py-2 rounded-xl border border-white/10">
+                    <p className="text-xs text-white/40">Plan</p>
+                    <p className="text-xs font-bold text-white mt-0.5">$149/mo</p>
+                  </div>
+                </div>
               </div>
 
               <div className="card rounded-2xl p-7 flex flex-col justify-between">
