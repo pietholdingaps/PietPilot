@@ -69,12 +69,31 @@ Return ONLY valid JSON:
     const raw = (msg.content[0] as { text: string }).text.replace(/```json\n?|```/g, "").trim();
     const ads = JSON.parse(raw);
 
-    // Save to DB
+    const newCampaign = {
+      id: `camp_${Date.now()}`,
+      ads: ads.ads,
+      keywords: ads.keywords,
+      focusService: targetService || "all",
+      dailyBudget: dailyBudget || 20,
+      paused: false,
+      startedAt: new Date().toISOString(),
+    };
+
+    // Load existing campaigns and add new one
+    const { data: existing } = await supabase
+      .from("onboarding_submissions")
+      .select("generated_ads")
+      .eq("id", siteId)
+      .single();
+
+    const existingCampaigns: unknown[] = (existing?.generated_ads as { campaigns?: unknown[] })?.campaigns || [];
+    const campaigns = [...existingCampaigns, newCampaign];
+
     await supabase.from("onboarding_submissions").update({
-      generated_ads: { ...ads, focusService: targetService || "all", dailyBudget: dailyBudget || 20, generatedAt: new Date().toISOString() }
+      generated_ads: { campaigns }
     }).eq("id", siteId);
 
-    return NextResponse.json({ ok: true, ...ads });
+    return NextResponse.json({ ok: true, campaign: newCampaign, campaigns });
   } catch (err) {
     console.error("Generate ads error:", err);
     return NextResponse.json({ error: "Could not generate ads" }, { status: 500 });
