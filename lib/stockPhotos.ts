@@ -112,12 +112,11 @@ const sets: Record<string, { hero: string; gallery: string[] }> = {
     ],
   },
   kitchen: {
-    // verified via Unsplash kitchen collection
     hero: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136",
     gallery: [
+      "https://images.unsplash.com/photo-1565538810643-b5bdb714032a",
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858",
       "https://images.unsplash.com/photo-1556909172-54557c7e4fb7",
-      "https://images.unsplash.com/photo-1556909045-bf6def6afd43",
-      "https://images.unsplash.com/photo-1556909078-59fe292e5bb3",
     ],
   },
   bathroom: {

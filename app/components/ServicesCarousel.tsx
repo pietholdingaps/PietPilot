@@ -109,8 +109,12 @@ export default function ServicesCarousel({ items, theme }: { items: ServiceCardI
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 draggable={false}
                 onError={(e) => {
-                  if (item.fallbackImage && e.currentTarget.src !== item.fallbackImage) {
-                    e.currentTarget.src = item.fallbackImage;
+                  const el = e.currentTarget;
+                  if (item.fallbackImage && el.src !== item.fallbackImage) {
+                    el.src = item.fallbackImage;
+                  } else if (el.src !== "https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&fit=crop&w=800&q=70") {
+                    // Last resort: generic tradesperson photo that will never break
+                    el.src = "https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&fit=crop&w=800&q=70";
                   }
                 }}
               />
