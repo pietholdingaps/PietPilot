@@ -342,14 +342,13 @@ function DashboardInner() {
                 </div>
               ) : (
                 <div className="flex flex-col flex-1 space-y-3">
-                  <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm">
-                    <span className="text-white/40">{generatedAds.ads.filter(a => !a.paused).length} active</span>
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full flex-none ${generatedAds.paused ? "bg-white/20" : "bg-green-400"}`} />
+                    <span className="text-sm text-white/60">
+                      {generatedAds.paused ? "Paused · $0/day" : `Running · $${generatedAds.dailyBudget}/day`}
+                    </span>
                     <span className="text-white/20">·</span>
-                    <span className="text-white/40">{generatedAds.ads.filter(a => a.paused).length} paused</span>
-                    <span className="text-white/20">·</span>
-                    <span className="text-white/40">${generatedAds.dailyBudget}/day</span>
-                    <span className="text-white/20">·</span>
-                    <span className="text-white/40">{generatedAds.focusService === "all" ? "All services" : generatedAds.focusService}</span>
+                    <span className="text-white/40 text-sm">{generatedAds.focusService === "all" ? "All services" : generatedAds.focusService}</span>
                   </div>
                   {generatedAds.ads.slice(0, 1).map((ad, i) => (
                     <div key={i} className={`rounded-xl border bg-[#0b1220] p-4 ${ad.paused ? "opacity-40 border-white/[0.04]" : "border-white/[0.07]"}`}>
