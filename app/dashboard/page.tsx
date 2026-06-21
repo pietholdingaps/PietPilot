@@ -235,10 +235,39 @@ function DashboardInner() {
 
               <div className="card rounded-2xl p-7">
                 <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-3">Leads</div>
-                <h3 className="text-3xl font-extrabold text-white mb-1">{leads.length}</h3>
-                <p className="text-white/45 text-sm leading-relaxed">
-                  {leads.length === 0 ? "No messages yet" : "total messages received"}
-                </p>
+                <div className="flex items-end justify-between mb-3">
+                  <div>
+                    <h3 className="text-3xl font-extrabold text-white">{leads.length}</h3>
+                    <p className="text-white/45 text-sm">{leads.length === 0 ? "No messages yet" : "total received"}</p>
+                  </div>
+                  <div className="flex items-end gap-1 h-10">
+                    {(() => {
+                      const days = Array.from({ length: 7 }, (_, i) => {
+                        const d = new Date();
+                        d.setDate(d.getDate() - (6 - i));
+                        return d.toDateString();
+                      });
+                      const counts = days.map(day =>
+                        leads.filter(l => new Date(l.created_at).toDateString() === day).length
+                      );
+                      const max = Math.max(...counts, 1);
+                      return counts.map((count, i) => (
+                        <div key={i} className="w-4 rounded-t transition-all"
+                          style={{
+                            height: `${Math.max(4, (count / max) * 100)}%`,
+                            background: count > 0 ? "#f59e0b" : "rgba(255,255,255,0.08)"
+                          }}
+                          title={`${days[i].split(" ")[0]}: ${count} lead${count !== 1 ? "s" : ""}`}
+                        />
+                      ));
+                    })()}
+                  </div>
+                </div>
+                <div className="flex gap-3 text-xs text-white/30">
+                  <span><span className="text-[#f59e0b] font-bold">{leads.filter(l => l.status === "new").length}</span> new</span>
+                  <span><span className="text-blue-400 font-bold">{leads.filter(l => l.status === "contacted").length}</span> contacted</span>
+                  <span><span className="text-green-400 font-bold">{leads.filter(l => l.status === "done").length}</span> done</span>
+                </div>
               </div>
 
               <div className="card rounded-2xl p-7 border border-[#f59e0b]/15">
