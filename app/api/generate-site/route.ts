@@ -149,25 +149,63 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
   "serviceDetails": [{ "title": "exact service name", "slug": "url-slug", "description": "3-4 sentences specific to THIS service — mention the service name, what the customer gets, any relevant specifics from the owner's input. MUST be unique — not the same template repeated.", "faqs": [{ "question": "specific question about this service", "answer": "..." }, { "question": "...", "answer": "..." }, { "question": "...", "answer": "..." }] }]
 }`;
 
-    const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 4096,
-      messages: [{ role: "user", content: prompt }],
-    });
+    // Validation function — detects failed/generic generations
+    function isValidCopy(c: Record<string, unknown>): boolean {
+      if (!c || typeof c !== "object") return false;
+      const headline = (c.headline as string || "").toLowerCase();
+      // Reject generic headlines
+      if (headline.includes("services you can count on")) return false;
+      if (headline.includes("proudly serve")) return false;
+      if (headline.length < 10) return false;
+      // Reject if service descriptions are all identical
+      const details = c.serviceDetails as { description?: string }[] | undefined;
+      if (details && details.length >= 2) {
+        const first = details[0]?.description?.slice(0, 80) || "";
+        const second = details[1]?.description?.slice(0, 80) || "";
+        if (first && first === second) return false;
+        // Reject if descriptions use wrong-trade templates
+        const allDescs = details.map(d => d.description || "").join(" ").toLowerCase();
+        if (allDescs.includes("poor windows and doors cost you") ||
+            allDescs.includes("your roof is your home's first line of defence") ||
+            allDescs.includes("from safety inspections to full rewires")) return false;
+      }
+      return true;
+    }
 
-    const textBlock = message.content.find((b) => b.type === "text");
-    const raw = textBlock && "text" in textBlock ? textBlock.text : "{}";
+    let copy: Record<string, unknown> | null = null;
 
-    let copy;
-    try {
-      copy = JSON.parse(raw);
-    } catch {
-      const match = raw.match(/\{[\s\S]*\}/);
-      copy = match ? JSON.parse(match[0]) : null;
+    // Try up to 3 times
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const message = await anthropic.messages.create({
+          model: "claude-sonnet-4-6",
+          max_tokens: 4096,
+          messages: [{ role: "user", content: prompt }],
+        });
+
+        const textBlock = message.content.find((b) => b.type === "text");
+        const raw = textBlock && "text" in textBlock ? textBlock.text : "{}";
+
+        let parsed: Record<string, unknown> | null = null;
+        try {
+          parsed = JSON.parse(raw);
+        } catch {
+          const match = raw.match(/\{[\s\S]*\}/);
+          parsed = match ? JSON.parse(match[0]) : null;
+        }
+
+        if (parsed && isValidCopy(parsed)) {
+          copy = parsed;
+          break;
+        }
+        console.warn(`generate-site attempt ${attempt} failed validation for site ${id}`);
+      } catch (err) {
+        console.warn(`generate-site attempt ${attempt} error:`, err);
+      }
     }
 
     if (!copy) {
-      return NextResponse.json({ error: "Could not generate site copy" }, { status: 500 });
+      return NextResponse.json({ error: "Could not generate site copy after 3 attempts" }, { status: 500 });
     }
 
     // FORCE the extracted stats values — never let AI use default placeholders when we have real numbers
@@ -282,7 +320,7 @@ Return ONLY valid JSON with no markdown: {"descriptions": {"exact service name":
           if (m) descJson = JSON.parse(m[0]);
         }
         if (descJson.descriptions) {
-          copy.serviceDetails = copy.serviceDetails.map((detail: { title: string; slug: string; description: string; faqs: unknown[] }) => {
+          (copy.serviceDetails as { title: string; slug: string; description: string; faqs: unknown[] }[]) = (copy.serviceDetails as { title: string; slug: string; description: string; faqs: unknown[] }[]).map((detail) => {
             const aiDesc = descJson.descriptions![detail.title]
               || descJson.descriptions![detail.title.toLowerCase()]
               || descJson.descriptions![Object.keys(descJson.descriptions!).find(k => k.toLowerCase() === detail.title.toLowerCase()) || ""];
