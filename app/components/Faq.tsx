@@ -20,8 +20,8 @@ const items = [
     a: "Most businesses are live within a few days of signing up. We handle the setup, copywriting, and SEO — you just tell us about your business.",
   },
   {
-    q: "Will my site actually show up in local Google searches?",
-    a: "That's our specialty. Every site is built with local SEO from day one, so when someone nearby searches for your service, you have a real shot at showing up.",
+    q: "Will my site show up in local Google searches?",
+    a: "Every site we build is set up correctly for local SEO from day one — the right structure, keywords, and location signals that Google looks for. That said, SEO takes time to build up. Most businesses start seeing results within a few weeks to a few months. Google Ads will get you in front of customers immediately while your organic ranking grows.",
   },
   {
     q: "What web address will my site have?",
