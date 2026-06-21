@@ -245,8 +245,8 @@ function AdsInner() {
           </button>
         </div>
 
-        {/* Overview card — only shown when campaigns exist */}
-        {campaigns.length > 0 && (
+        {/* Overview card — always visible */}
+        {(
           <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-7">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-base font-bold">Overview — all campaigns</h2>
