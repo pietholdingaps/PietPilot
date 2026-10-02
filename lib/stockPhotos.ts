@@ -135,6 +135,30 @@ const sets: Record<string, { hero: string; gallery: string[] }> = {
       "https://images.unsplash.com/photo-1516455590571-18256e5bb9ff",
     ],
   },
+  pool: {
+    hero: "https://images.unsplash.com/photo-1575429198097-0414ec08e8cd",
+    gallery: [
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6",
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64",
+    ],
+  },
+  insulation: {
+    hero: "https://images.unsplash.com/photo-1642749776312-aa42ce20c9f5",
+    gallery: [
+      "https://images.unsplash.com/photo-1660330589827-da8ab7dd3c02",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+      "https://images.unsplash.com/photo-1568605114967-8130f3a36994",
+    ],
+  },
+  garage: {
+    hero: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13",
+    gallery: [
+      "https://images.unsplash.com/photo-1523217582562-09d0def993a6",
+      "https://images.unsplash.com/photo-1568605114967-8130f3a36994",
+      "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6",
+    ],
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -142,13 +166,16 @@ const sets: Record<string, { hero: string; gallery: string[] }> = {
 // ---------------------------------------------------------------------------
 
 const tradeKeywordMap: { keywords: string[]; key: keyof typeof sets }[] = [
+  { keywords: ["pool", "swimming pool", "spa", "hot tub"], key: "pool" },
+  { keywords: ["insulation", "spray foam", "blown-in", "attic insulation", "energy audit"], key: "insulation" },
+  { keywords: ["garage door", "garage"], key: "garage" },
   { keywords: ["plumb", "drain", "pipe", "water heater", "vvs"], key: "plumbing" },
   { keywords: ["electric", "wiring", "wire", "panel", "electrician", "solar", "ev charger"], key: "electrical" },
   { keywords: ["hvac", "heating", "cooling", "air condition", "furnace"], key: "hvac" },
   { keywords: ["roof", "shingle", "gutter", "roofer", "tagdækker"], key: "roofing" },
   { keywords: ["paint", "drywall", "decorator", "maler", "plaster"], key: "painting" },
-  { keywords: ["carpen", "joiner", "timber", "framing", "tømrer", "general contractor", "handyman", "garage door", "insulation"], key: "carpentry" },
-  { keywords: ["mason", "brick", "concrete", "stone", "paving", "murermester", "pool", "spa"], key: "masonry" },
+  { keywords: ["carpen", "joiner", "timber", "framing", "tømrer", "general contractor", "handyman"], key: "carpentry" },
+  { keywords: ["mason", "brick", "concrete", "stone", "paving", "murermester"], key: "masonry" },
   { keywords: ["landscap", "lawn", "garden", "tree", "turf", "fenc"], key: "landscaping" },
   { keywords: ["clean", "janitor", "pressure wash", "pest control", "pest", "exterminator"], key: "cleaning" },
   { keywords: ["floor", "tiling", "tile"], key: "flooring" },
@@ -181,6 +208,35 @@ export function getPhotosForTrade(trade: string): PhotoSet {
 // ---------------------------------------------------------------------------
 
 const servicePhotoMap: { keywords: string[]; key: keyof typeof sets }[] = [
+  // Pool / spa — must be FIRST before any masonry/carpentry catchall
+  {
+    keywords: [
+      "pool", "swimming pool", "pool installation", "pool resurfac",
+      "pool equipment", "pool clean", "pool repair", "pool maintenance",
+      "pool fence", "pool safety", "spa", "hot tub", "water feature",
+      "leak detection", "pool leak",
+    ],
+    key: "pool",
+  },
+  // Insulation — must be FIRST before carpentry catchall
+  {
+    keywords: [
+      "insulation", "spray foam", "blown-in", "blown in", "attic insulation",
+      "basement insulation", "crawl space", "air sealing", "batt insulation",
+      "rigid foam", "insulation removal", "insulation replacement",
+      "energy sealing", "weatherization",
+    ],
+    key: "insulation",
+  },
+  // Garage door — must be FIRST before carpentry catchall
+  {
+    keywords: [
+      "garage door", "spring replacement", "opener repair", "opener installation",
+      "panel replacement", "cable repair", "smart garage", "garage door install",
+      "garage door service",
+    ],
+    key: "garage",
+  },
   // Kitchen
   {
     keywords: [
@@ -318,29 +374,25 @@ const servicePhotoMap: { keywords: string[]; key: keyof typeof sets }[] = [
     ],
     key: "landscaping",
   },
-  // Carpentry / structural / general building / garage door / insulation
+  // Carpentry / structural / general building
   {
     keywords: [
       "carpen", "carpentry", "joiner", "joinery", "timber", "framing",
       "tømrer", "stair", "staircase", "skirting", "architrave", "trim",
       "loft conversion", "attic", "extension", "addition", "new build",
       "structural", "renovation", "remodel", "fit-out", "fitout",
-      "formwork", "pergola build", "shed", "garage", "granny flat",
-      "garage door", "spring replacement", "opener", "panel replacement",
-      "insulation", "spray foam", "blown-in", "crawl space", "air sealing",
+      "formwork", "pergola build", "shed", "granny flat",
       "basement finish", "home addition", "tenant improvement",
       "furniture assembly", "tv mounting", "handyman",
     ],
     key: "carpentry",
   },
-  // Pool / spa / water features
+  // Pool / spa (duplicate catch below top-level entry — maps to pool set)
   {
     keywords: [
-      "pool", "swimming pool", "spa", "hot tub", "pool deck",
-      "pool resurfac", "pool equipment", "pool clean", "water feature",
-      "pool fence", "pool safety", "pool repair",
+      "pool deck", "water feature",
     ],
-    key: "masonry",
+    key: "pool",
   },
   // Solar / energy
   {

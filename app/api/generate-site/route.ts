@@ -34,8 +34,22 @@ function getPexelsQuery(serviceName: string): string {
   if (/hvac|air con|heat pump|ventilat/.test(s)) return "hvac air conditioning unit installation";
   // Extension / building
   if (/extension|conversion|loft|build/.test(s)) return "house extension building construction";
+  // Pool / spa
+  if (/pool|swim|spa|hot tub/.test(s)) return "swimming pool backyard blue water";
+  // Pool leak detection
+  if (/leak detect/.test(s)) return "pool leak detection technician equipment";
+  // Insulation
+  if (/spray foam|blown.in|insulation|attic insul|basement insul|air seal/.test(s)) return "spray foam insulation contractor home";
+  // Pest control
+  if (/pest|termite|rodent|bed bug|mosquito|exterminator/.test(s)) return "pest control exterminator spraying home";
+  // Garage door
+  if (/garage door|spring replac|opener|panel replac|cable repair/.test(s)) return "garage door installation modern home";
+  // Drywall / plastering
+  if (/drywall|plaster|skim coat|popcorn ceil/.test(s)) return "drywall installation professional smooth wall";
+  // Solar
+  if (/solar|battery storage|ev charger|ground.mounted|roof.mounted/.test(s)) return "solar panel installation rooftop residential";
   // Carpentry / joinery
-  if (/carpent|joineri|stair|shed|garage/.test(s)) return "carpentry joinery wood work craftsman";
+  if (/carpent|joineri|stair|shed/.test(s)) return "carpentry joinery wood work craftsman";
   // Driveway / masonry
   if (/drive|block pav|mason|concrete|paving|pathway/.test(s)) return "block paving driveway new stone path";
   // Default: just use the service name
