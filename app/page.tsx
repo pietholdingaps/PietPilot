@@ -298,41 +298,26 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Ad spend table */}
+          {/* Honest expectations */}
           <ScrollReveal>
             <div className="card rounded-2xl p-8">
-              <h3 className="text-lg font-bold text-white mb-2">How many leads can I expect?</h3>
-              <p className="text-white/45 text-sm mb-6 max-w-xl">
-                It depends on your trade, location, and how much you spend on Google Ads. Here's a rough guide based on real results:
-              </p>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-white/[0.08]">
-                      <th className="text-left text-white/40 font-medium pb-3 pr-8">Daily ad spend</th>
-                      <th className="text-left text-white/40 font-medium pb-3 pr-8">Monthly ad budget</th>
-                      <th className="text-left text-white/40 font-medium pb-3">Estimated leads/month</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/[0.05]">
-                    {[
-                      ["$10 / day", "~$300", "2–5 leads"],
-                      ["$20 / day", "~$600", "5–12 leads"],
-                      ["$35 / day", "~$1,050", "10–20 leads"],
-                      ["$50 / day", "~$1,500", "15–30 leads"],
-                    ].map(([spend, budget, leads], i) => (
-                      <tr key={spend}>
-                        <td className="py-3 pr-8 text-white font-medium">{spend}</td>
-                        <td className="py-3 pr-8 text-white/55">{budget}</td>
-                        <td className={`py-3 font-semibold ${i >= 2 ? "text-[#f59e0b]" : "text-white/70"}`}>{leads}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <h3 className="text-lg font-bold text-white mb-4">How many leads will I get?</h3>
+              <div className="space-y-4">
+                <p className="text-white/55 text-sm leading-relaxed">
+                  Honestly? It depends — on your trade, your location, and how competitive your area is. We won't give you a number we can't guarantee.
+                </p>
+                <p className="text-white/55 text-sm leading-relaxed">
+                  What we can tell you is this: the more you invest in Google Ads, the more people see you. But ads are not a tap you turn on and immediately get 20 calls. The first few weeks are about getting in front of the right people — and that takes a little time to build.
+                </p>
+                <p className="text-white/55 text-sm leading-relaxed">
+                  Most of our customers start seeing their first enquiries within the first 2–4 weeks. From there, results improve as the ads learn what works.
+                </p>
+                <div className="mt-2 pt-4 border-t border-white/[0.08]">
+                  <p className="text-white/30 text-xs">
+                    PietPilot's $149/mo covers your website, SEO, and ads management. Google Ads spend is paid directly to Google and is not included — you decide your own budget.
+                  </p>
+                </div>
               </div>
-              <p className="text-white/30 text-xs mt-5">
-                * Estimates vary by trade, location, and competition. PietPilot's $149/mo covers setup and management — Google Ads spend is paid directly to Google and is not included.
-              </p>
             </div>
           </ScrollReveal>
         </div>
