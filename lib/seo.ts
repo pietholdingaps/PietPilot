@@ -112,7 +112,7 @@ export function buildTitle(businessName: string, trade: string, area: string): s
     ? trade.charAt(0).toUpperCase() + trade.slice(1)
     : "Trade Services";
   const title = `${tradeTitle} in ${city} | ${businessName}`;
-  return title.length > 65 ? `${businessName} — ${city}` : title;
+  return title.length > 80 ? `${businessName} — ${city}` : title;
 }
 
 export function buildServiceTitle(serviceName: string, businessName: string, area: string): string {
