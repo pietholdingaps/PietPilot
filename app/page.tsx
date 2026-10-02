@@ -316,10 +316,10 @@ export default function Home() {
                   </thead>
                   <tbody className="divide-y divide-white/[0.05]">
                     {[
-                      ["$10 / day", "~$300", "3–8 leads"],
-                      ["$20 / day", "~$600", "8–18 leads"],
-                      ["$35 / day", "~$1,050", "15–35 leads"],
-                      ["$50 / day", "~$1,500", "25–50 leads"],
+                      ["$10 / day", "~$300", "2–5 leads"],
+                      ["$20 / day", "~$600", "5–12 leads"],
+                      ["$35 / day", "~$1,050", "10–20 leads"],
+                      ["$50 / day", "~$1,500", "15–30 leads"],
                     ].map(([spend, budget, leads], i) => (
                       <tr key={spend}>
                         <td className="py-3 pr-8 text-white font-medium">{spend}</td>
