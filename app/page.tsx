@@ -267,6 +267,77 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── REAL EXPECTATIONS ── */}
+      <section className="py-24 px-6 border-t border-white/[0.06]">
+        <div className="max-w-5xl mx-auto">
+          <ScrollReveal>
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-center mb-3">
+              Honest results — no overnight miracles
+            </h2>
+            <p className="text-white/45 text-base text-center max-w-xl mx-auto mb-14">
+              We'll tell you what most marketing companies won't: results take a little time.
+              Here's what to realistically expect.
+            </p>
+          </ScrollReveal>
+
+          {/* Timeline */}
+          <div className="grid md:grid-cols-4 gap-4 mb-16">
+            {[
+              { week: "Day 1–3", title: "You're live", desc: "Your website is up, SEO is in place, and Google Ads are ready to go." },
+              { week: "Week 1–2", title: "First clicks", desc: "Your ads start showing to locals searching for your service. Traffic begins." },
+              { week: "Week 2–4", title: "First enquiries", desc: "Leads start coming in. You'll hear from your first potential customers." },
+              { week: "Month 2–3", title: "Steady flow", desc: "Ads optimise, SEO kicks in, and enquiries become more consistent." },
+            ].map(({ week, title, desc }, i) => (
+              <ScrollReveal key={week} delay={i * 80}>
+                <div className="card rounded-2xl p-6 h-full">
+                  <div className="text-xs font-bold uppercase tracking-widest text-[#f59e0b] mb-3">{week}</div>
+                  <h3 className="text-base font-bold text-white mb-2">{title}</h3>
+                  <p className="text-white/45 text-sm leading-relaxed">{desc}</p>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+
+          {/* Ad spend table */}
+          <ScrollReveal>
+            <div className="card rounded-2xl p-8">
+              <h3 className="text-lg font-bold text-white mb-2">How many leads can I expect?</h3>
+              <p className="text-white/45 text-sm mb-6 max-w-xl">
+                It depends on your trade, location, and how much you spend on Google Ads. Here's a rough guide based on real results:
+              </p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-white/[0.08]">
+                      <th className="text-left text-white/40 font-medium pb-3 pr-8">Daily ad spend</th>
+                      <th className="text-left text-white/40 font-medium pb-3 pr-8">Monthly ad budget</th>
+                      <th className="text-left text-white/40 font-medium pb-3">Estimated leads/month</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/[0.05]">
+                    {[
+                      ["$10 / day", "~$300", "3–8 leads"],
+                      ["$20 / day", "~$600", "8–18 leads"],
+                      ["$35 / day", "~$1,050", "15–35 leads"],
+                      ["$50 / day", "~$1,500", "25–50 leads"],
+                    ].map(([spend, budget, leads], i) => (
+                      <tr key={spend}>
+                        <td className="py-3 pr-8 text-white font-medium">{spend}</td>
+                        <td className="py-3 pr-8 text-white/55">{budget}</td>
+                        <td className={`py-3 font-semibold ${i >= 2 ? "text-[#f59e0b]" : "text-white/70"}`}>{leads}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-white/30 text-xs mt-5">
+                * Estimates vary by trade, location, and competition. PietPilot's $149/mo covers setup and management — Google Ads spend is paid directly to Google and is not included.
+              </p>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
       {/* ── PRICING — single offer ── */}
       <section id="pricing" className="py-24 px-6 border-t border-white/[0.06]">
         <div className="max-w-2xl mx-auto">
