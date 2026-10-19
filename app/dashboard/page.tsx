@@ -1,8 +1,9 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { createSupabaseClient } from "@/lib/supabase/client";
 
 type Lead = {
   id: string;
@@ -55,6 +56,7 @@ export default function Dashboard() {
 
 function DashboardInner() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [siteId, setSiteId] = useState<string | null>(null);
   const [site, setSite] = useState<SiteInfo | null>(null);
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -118,25 +120,16 @@ function DashboardInner() {
   }
 
   useEffect(() => {
-    const fromUrl = searchParams.get("site");
-    if (fromUrl) {
-      setSiteId(fromUrl);
-      localStorage.setItem("pietpilot_site_id", fromUrl);
-    } else {
-      const stored = localStorage.getItem("pietpilot_site_id");
-      if (stored) setSiteId(stored);
-      else setLoading(false);
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    if (!siteId) return;
+    // Priority: ?site= param > auth session > localStorage (legacy)
+    const siteParam = searchParams.get("site") || localStorage.getItem("pietpilot_site_id");
+    const url = siteParam ? `/api/dashboard?site=${siteParam}` : "/api/dashboard";
     setLoading(true);
-    fetch(`/api/dashboard?site=${siteId}`)
+    fetch(url)
       .then((res) => res.json())
       .then((data) => {
         if (data.site) {
           setSite(data.site);
+          setSiteId(data.site.id);
           if (data.site.generated_ads) {
             setGeneratedAds(data.site.generated_ads);
             setAdFocus(data.site.generated_ads.focusService || "all");
@@ -146,7 +139,7 @@ function DashboardInner() {
         if (data.leads) setLeads(data.leads);
       })
       .finally(() => setLoading(false));
-  }, [siteId]);
+  }, [searchParams]);
 
   async function handleRegenerate() {
     if (!siteId || regenerating) return;
@@ -172,7 +165,16 @@ function DashboardInner() {
           <span className="text-2xl font-extrabold tracking-tight">
             Piet<span className="text-[#f59e0b]">Pilot</span>
           </span>
-          <span className="text-white/40 text-sm">Dashboard</span>
+          <button
+            onClick={async () => {
+              const supabase = createSupabaseClient();
+              await supabase.auth.signOut();
+              router.push("/login");
+            }}
+            className="text-white/30 hover:text-white/60 text-sm transition-colors"
+          >
+            Log out
+          </button>
         </div>
 
         {loading ? (

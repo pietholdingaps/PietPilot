@@ -1,31 +1,48 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase/server";
 
 export async function GET(req: NextRequest) {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
+  const admin = createSupabaseAdmin();
+  const supabase = await createSupabaseServer();
 
-  const siteId = req.nextUrl.searchParams.get("site");
-  if (!siteId) {
-    return NextResponse.json({ error: "Missing site id" }, { status: 400 });
+  // Get authenticated user from session
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // Fall back to ?site= param for admin/testing access
+  const siteIdParam = req.nextUrl.searchParams.get("site");
+
+  let submission = null;
+
+  if (user) {
+    // Look up by authenticated user_id
+    const { data } = await admin
+      .from("onboarding_submissions")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+    submission = data;
   }
 
-  const { data: submission, error: siteError } = await supabase
-    .from("onboarding_submissions")
-    .select("*")
-    .eq("id", siteId)
-    .single();
-
-  if (siteError || !submission) {
-    return NextResponse.json({ error: "Site not found" }, { status: 404 });
+  // Fallback: explicit site ID (admin access or legacy test sites)
+  if (!submission && siteIdParam) {
+    const { data } = await admin
+      .from("onboarding_submissions")
+      .select("*")
+      .eq("id", siteIdParam)
+      .single();
+    submission = data;
   }
 
-  const { data: leads } = await supabase
+  if (!submission) {
+    return NextResponse.json({ error: "No site found" }, { status: 404 });
+  }
+
+  const { data: leads } = await admin
     .from("leads")
     .select("id, name, contact, email, phone, message, created_at, status")
-    .eq("site_id", siteId)
+    .eq("site_id", submission.id)
     .order("created_at", { ascending: false });
 
   return NextResponse.json({ site: submission, leads: leads || [] });

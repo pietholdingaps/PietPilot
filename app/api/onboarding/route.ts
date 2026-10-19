@@ -15,8 +15,22 @@ export async function POST(req: NextRequest) {
     const {
       businessName, trade, area, phone, email, address, license, hours,
       services, experience, about, whyChooseUs, template,
-      accountName, accountEmail, projectPhotos, trustpilotUrl, googleReviewsUrl, domain,
+      accountName, accountEmail, accountPassword, projectPhotos, trustpilotUrl, googleReviewsUrl, domain,
     } = body;
+
+    // Create Supabase Auth user so they can log in later
+    let userId: string | null = null;
+    if (accountEmail && accountPassword) {
+      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+        email: accountEmail,
+        password: accountPassword,
+        email_confirm: true,
+        user_metadata: { full_name: accountName || "" },
+      });
+      if (!authError && authData?.user) {
+        userId = authData.user.id;
+      }
+    }
 
     const { data: inserted, error: dbError } = await supabase.from("onboarding_submissions").insert({
       business_name: businessName || null,
@@ -40,6 +54,7 @@ export async function POST(req: NextRequest) {
       slug: businessName ? generateSlug(businessName) : null,
       template: template || null,
       account_name: accountName || null,
+      user_id: userId,
       created_at: new Date().toISOString(),
     }).select("id").single();
 
@@ -88,11 +103,10 @@ export async function POST(req: NextRequest) {
       `,
     });
 
-    // ── Velkomstmail til kunden ───────────────────────────────────────────────
     if (accountEmail && inserted?.id) {
       const siteSlug = businessName ? generateSlug(businessName) : null;
       const siteUrl = siteSlug ? `https://pietpilot.com/${siteSlug}` : `https://pietpilot.com/site/${inserted.id}`;
-      const dashboardUrl = `https://pietpilot.com/dashboard?site=${inserted.id}`;
+      const dashboardUrl = `https://pietpilot.com/dashboard`;
       await resend.emails.send({
         from: "PietPilot <noreply@pietpilot.com>",
         to: accountEmail,

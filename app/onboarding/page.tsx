@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { createSupabaseClient } from "@/lib/supabase/client";
 import GeneratedSite from "@/app/components/GeneratedSite";
 import { GeneratedSiteCopy } from "@/lib/siteTypes";
 
@@ -209,16 +210,21 @@ function OnboardingInner() {
 
     let siteId: string | null = null;
     try {
-      // 1. Save submission to DB
+      // 1. Save submission to DB + create Supabase Auth user
       const res = await fetch("/api/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, projectPhotos, trustpilotUrl, googleReviewsUrl, domain: domainInput || null, template: id, accountName: account.name, accountEmail: account.email }),
+        body: JSON.stringify({ ...data, projectPhotos, trustpilotUrl, googleReviewsUrl, domain: domainInput || null, template: id, accountName: account.name, accountEmail: account.email, accountPassword: account.password }),
       });
       const json = await res.json();
       siteId = json?.id || null;
       setGeneratedSiteId(siteId);
-      if (siteId) localStorage.setItem("pietpilot_site_id", siteId);
+
+      // 2. Sign in so the session cookie is set — dashboard will read from auth
+      if (account.email && account.password) {
+        const supabase = createSupabaseClient();
+        await supabase.auth.signInWithPassword({ email: account.email, password: account.password });
+      }
 
       // 2. Run AI generation + minimum animation time in parallel — show ready only when BOTH are done
       const minAnimation = new Promise<void>((resolve) =>

@@ -1,41 +1,44 @@
-import { NextRequest, NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
 
-const PIETPILOT_HOSTS = ["pietpilot.com", "www.pietpilot.com", "localhost"];
+const PROTECTED = ["/dashboard", "/leads", "/ads", "/profile"];
 
-export async function middleware(req: NextRequest) {
-  const hostname = req.headers.get("host") || "";
-  const host = hostname.split(":")[0];
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const isProtected = PROTECTED.some((p) => pathname.startsWith(p));
 
-  // Skip PietPilot's own domains
-  if (PIETPILOT_HOSTS.some((h) => host === h || host.endsWith(".vercel.app"))) {
-    return NextResponse.next();
-  }
+  let response = NextResponse.next({ request });
 
-  // Look up site by custom domain
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/onboarding_submissions?custom_domain=eq.${host}&select=id&limit=1`,
-      {
-        headers: {
-          apikey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
-          Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}`,
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() { return request.cookies.getAll(); },
+        setAll(toSet) {
+          toSet.forEach(({ name, value }) => request.cookies.set(name, value));
+          response = NextResponse.next({ request });
+          toSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
         },
-      }
-    );
-
-    const data = await res.json();
-    if (data && data[0]?.id) {
-      const url = req.nextUrl.clone();
-      url.pathname = `/site/${data[0].id}${req.nextUrl.pathname === "/" ? "" : req.nextUrl.pathname}`;
-      return NextResponse.rewrite(url);
+      },
     }
-  } catch {
-    // If lookup fails, just serve normally
+  );
+
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // Only redirect if protected route AND no ?site= fallback AND not authenticated
+  // Remove the siteParam check when ready to enforce mandatory login at go-live
+  const hasSiteParam = request.nextUrl.searchParams.has("site");
+  if (isProtected && !user && !hasSiteParam) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    url.searchParams.set("next", pathname + request.nextUrl.search);
+    return NextResponse.redirect(url);
   }
 
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api).*)"],
 };
