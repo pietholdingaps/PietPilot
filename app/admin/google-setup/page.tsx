@@ -1,8 +1,41 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 
+const CORRECT = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
+
 export default function GoogleSetupPage() {
+  const [input, setInput] = useState("");
+  const [authed, setAuthed] = useState(!CORRECT);
+  const [error, setError] = useState("");
+
+  function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    if (input === CORRECT) { setAuthed(true); }
+    else { setError("Forkert kode."); }
+  }
+
+  if (!authed) {
+    return (
+      <div className="min-h-screen bg-[#080808] text-white flex flex-col items-center justify-center px-6">
+        <div className="mb-8 text-center">
+          <span className="text-2xl font-extrabold tracking-tight">Piet<span className="text-[#f59e0b]">Pilot</span></span>
+          <p className="text-white/30 text-sm mt-2">Google Ads Setup</p>
+        </div>
+        <form onSubmit={handleLogin} className="w-full max-w-xs space-y-4">
+          <input type="password" value={input} onChange={e => setInput(e.target.value)} placeholder="Adgangskode" autoFocus
+            className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/20 text-sm outline-none focus:border-[#f59e0b]/40 transition-all" />
+          {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+          <button type="submit" disabled={!input}
+            className="w-full bg-[#f59e0b] hover:bg-[#fbbf24] disabled:opacity-40 text-[#0b1220] font-bold text-sm py-3.5 rounded-xl transition-colors">
+            Continue →
+          </button>
+        </form>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#080808] text-white px-6 py-12">
       <div className="max-w-2xl mx-auto">
