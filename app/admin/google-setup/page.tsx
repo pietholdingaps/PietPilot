@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 
-const CORRECT = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
+const CORRECT = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "bep55pfk";
 
 export default function GoogleSetupPage() {
   const [input, setInput] = useState("");
