@@ -2,10 +2,13 @@ import { NextResponse } from "next/server";
 import { OAuth2Client } from "google-auth-library";
 
 export async function GET() {
+  const clientId = process.env.GOOGLE_CLIENT_ID || "648637108045-c99q4hrncr3qan594h00hndh9pl3365c.apps.googleusercontent.com";
+  const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL || "https://pietpilot.com"}/api/auth/google-ads/callback`;
+
   const client = new OAuth2Client(
-    process.env.GOOGLE_CLIENT_ID,
+    clientId,
     process.env.GOOGLE_CLIENT_SECRET,
-    `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/google-ads/callback`
+    redirectUri
   );
 
   const url = client.generateAuthUrl({
