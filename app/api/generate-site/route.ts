@@ -258,6 +258,22 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
       copy.headline = copy.headline.replace(/\bservices?\s+services?\b/gi, "services");
     }
 
+    // Fix "[Business Name] stand behind" → "stands behind" (grammar)
+    function fixStandsBehind(obj: unknown): unknown {
+      if (typeof obj === "string") {
+        return obj.replace(/([A-Z][^.!?]{2,60}?)\s+stand behind/g, (_, subj) => {
+          const lower = subj.trim().toLowerCase();
+          if (lower === "we" || lower === "our team" || lower === "the team") return `${subj} stand behind`;
+          return `${subj} stands behind`;
+        });
+      }
+      if (Array.isArray(obj)) return obj.map(fixStandsBehind);
+      if (obj && typeof obj === "object")
+        return Object.fromEntries(Object.entries(obj as Record<string, unknown>).map(([k, v]) => [k, fixStandsBehind(v)]));
+      return obj;
+    }
+    copy = fixStandsBehind(copy) as typeof copy;
+
     // Always enforce the owner's own services — never let AI substitute or invent
     if (parsedServices.length > 0) {
       copy.services = parsedServices;
