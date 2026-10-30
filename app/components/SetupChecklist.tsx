@@ -28,14 +28,14 @@ export default function SetupChecklist({ site }: Props) {
     {
       id: "googlemaps",
       label: "Set up Google Maps to get found locally",
-      done: false,
+      done: !!(site.setup_completed?.googlemaps),
       href: `/dashboard/setup/googlemaps?site=${site.id}`,
       external: false,
     },
     {
       id: "domain",
       label: "Connect your own domain",
-      done: !!(site.custom_domain),
+      done: !!(site.custom_domain) || !!(site.setup_completed?.domain),
       href: `/dashboard/setup/domain?site=${site.id}`,
       external: false,
     },

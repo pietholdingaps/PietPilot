@@ -16,6 +16,7 @@ function Inner() {
   const [currentDomain, setCurrentDomain] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [done, setDone] = useState(false);
   const [result, setResult] = useState<{ isApex: boolean; cname: string; aRecord?: string } | null>(null);
   const [error, setError] = useState("");
 
@@ -28,6 +29,7 @@ function Inner() {
           setCurrentDomain(d.site.custom_domain);
           setDomain(d.site.custom_domain);
         }
+        if (d.site?.setup_completed?.domain) setDone(true);
       })
       .finally(() => setLoading(false));
   }, [siteId]);
@@ -114,6 +116,27 @@ function Inner() {
           <p className="text-white/30 text-xs mt-5">DNS changes take 5–30 minutes to go live. Refresh this page to check.</p>
         </div>
       )}
+
+      <div className="mt-8 pt-6 border-t border-white/[0.06] flex items-center justify-between">
+        <p className="text-white/35 text-sm">Done connecting your domain?</p>
+        {done ? (
+          <div className="flex items-center gap-2 text-emerald-400 text-sm font-bold">✓ Marked as done</div>
+        ) : (
+          <button
+            onClick={async () => {
+              await fetch("/api/setup-complete", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ siteId, step: "domain" }),
+              });
+              setDone(true);
+            }}
+            className="bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] text-sm font-bold px-6 py-2.5 rounded-xl transition-colors"
+          >
+            Done ✓
+          </button>
+        )}
+      </div>
     </Screen>
   );
 }

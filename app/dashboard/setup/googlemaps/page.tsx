@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
@@ -11,6 +11,14 @@ export default function SetupGoogleMaps() {
 function Inner() {
   const params = useSearchParams();
   const siteId = params.get("site");
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    if (!siteId) return;
+    fetch(`/api/dashboard?site=${siteId}`)
+      .then((r) => r.json())
+      .then((d) => { if (d.site?.setup_completed?.googlemaps) setDone(true); });
+  }, [siteId]);
 
   const steps = [
     {
@@ -87,6 +95,27 @@ function Inner() {
           <p className="text-white/50 text-sm leading-relaxed">
             Once you're verified, ask your first few customers to leave a Google review. 5 reviews puts you ahead of 90% of local competitors.
           </p>
+        </div>
+
+        <div className="mt-8 pt-6 border-t border-white/[0.06] flex items-center justify-between">
+          <p className="text-white/35 text-sm">Done setting up Google Maps?</p>
+          {done ? (
+            <div className="flex items-center gap-2 text-emerald-400 text-sm font-bold">✓ Marked as done</div>
+          ) : (
+            <button
+              onClick={async () => {
+                await fetch("/api/setup-complete", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ siteId, step: "googlemaps" }),
+                });
+                setDone(true);
+              }}
+              className="bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] text-sm font-bold px-6 py-2.5 rounded-xl transition-colors"
+            >
+              Done ✓
+            </button>
+          )}
         </div>
       </div>
     </div>
