@@ -30,6 +30,7 @@ function AdsInner() {
   const [customerIdInput, setCustomerIdInput] = useState("");
   const [connecting, setConnecting] = useState(false);
   const [connectError, setConnectError] = useState("");
+  const [connectStep, setConnectStep] = useState(1);
 
   // Setup
   const [step, setStep] = useState(1);
@@ -152,8 +153,6 @@ function AdsInner() {
 
   // ── CONNECT GOOGLE ADS ──────────────────────────────────────────────────
   if (view === "connect") {
-    const [connectStep, setConnectStep] = useState(1);
-
     return (
       <div className="min-h-screen bg-[#0b1220] text-[#eef1f6] flex flex-col">
         <div className="border-b border-white/[0.06]">
