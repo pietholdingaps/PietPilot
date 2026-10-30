@@ -20,6 +20,7 @@ function Inner() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [lightbox, setLightbox] = useState<string | null>(null);
 
   useEffect(() => {
     if (!siteId) return;
@@ -29,15 +30,21 @@ function Inner() {
         const s = d.site;
         if (!s) return;
         setTrade(s.trade || "");
-        // Try generated_copy.services first, fall back to raw services string
-        const fromCopy = s.generated_copy?.services || [];
-        const fromCopyNames = fromCopy.map((x: { title?: string } | string) => (typeof x === "string" ? x : x.title || "")).filter(Boolean);
-        if (fromCopyNames.length > 0) {
-          setServices(fromCopyNames);
-        } else if (s.services) {
-          // Parse raw comma/newline separated string
-          const parsed = s.services.split(/[\n,;•\-–]+/).map((x: string) => x.trim()).filter((x: string) => x.length > 1);
-          setServices(parsed);
+        // Priority: serviceDetails titles > services array > raw services string
+        const details = s.generated_copy?.serviceDetails || [];
+        const detailNames = details.map((x: { title?: string }) => x.title || "").filter(Boolean);
+        if (detailNames.length > 0) {
+          setServices(detailNames);
+        } else {
+          const fromCopy = s.generated_copy?.services || [];
+          const fromCopyNames = fromCopy.map((x: { title?: string } | string) => (typeof x === "string" ? x : x.title || "")).filter(Boolean);
+          if (fromCopyNames.length > 0) {
+            setServices(fromCopyNames);
+          } else if (s.services) {
+            // Raw comma/newline string from onboarding — split carefully
+            const parsed = s.services.split(/[,\n;]+/).map((x: string) => x.trim()).filter((x: string) => x.length > 1 && x.length < 60);
+            setServices(parsed);
+          }
         }
         setExistingCustomImages(s.custom_images || {});
         setCustomImages(s.custom_images?.services || {});
@@ -97,7 +104,11 @@ function Inner() {
           return (
             <div key={slug} className="card rounded-2xl p-5 flex gap-5 items-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={current} alt={name} className="w-20 h-20 rounded-xl object-cover flex-none border border-white/10" />
+              <img
+                src={current} alt={name}
+                onClick={() => setLightbox(current)}
+                className="w-20 h-20 rounded-xl object-cover flex-none border border-white/10 cursor-zoom-in hover:opacity-80 transition-opacity"
+              />
               <div className="flex-1 min-w-0">
                 <p className="font-bold text-white capitalize mb-1">{name}</p>
                 {custom
@@ -124,7 +135,28 @@ function Inner() {
 
       {saved && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-lg">
-          ✓ Photos saved
+          ✓ Photo saved
+        </div>
+      )}
+
+      {/* Lightbox */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-6 cursor-zoom-out"
+          onClick={() => setLightbox(null)}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={lightbox}
+            alt="Preview"
+            className="max-w-full max-h-full rounded-2xl object-contain shadow-2xl"
+          />
+          <button
+            onClick={() => setLightbox(null)}
+            className="absolute top-5 right-5 text-white/60 hover:text-white text-2xl font-bold transition-colors"
+          >
+            ✕
+          </button>
         </div>
       )}
     </Screen>
