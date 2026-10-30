@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { createSupabaseClient } from "@/lib/supabase/client";
+import SetupChecklist from "@/app/components/SetupChecklist";
 
 type Lead = {
   id: string;
@@ -40,9 +41,12 @@ type SiteInfo = {
   logo_url: string;
   template: string;
   owner_name?: string;
+  owner_photo_url?: string;
   account_name?: string;
   slug?: string;
-  generated_copy?: { services?: string[] };
+  custom_domain?: string | null;
+  project_photos?: string[] | null;
+  generated_copy?: { services?: Array<{ photo?: string }>; reviews?: Array<{ text: string }> };
   generated_ads?: GeneratedAds;
 };
 
@@ -221,6 +225,9 @@ function DashboardInner() {
                 </Link>
               </div>
             </div>
+
+            {/* SETUP CHECKLIST */}
+            <SetupChecklist site={site} />
 
             {/* STATS */}
             <div className="grid sm:grid-cols-3 gap-4 mb-10">
