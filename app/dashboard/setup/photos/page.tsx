@@ -16,6 +16,7 @@ function Inner() {
   const [services, setServices] = useState<string[]>([]);
   const [trade, setTrade] = useState("");
   const [customImages, setCustomImages] = useState<Record<string, string>>({});
+  const [existingCustomImages, setExistingCustomImages] = useState<Record<string, unknown>>({});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -28,8 +29,17 @@ function Inner() {
         const s = d.site;
         if (!s) return;
         setTrade(s.trade || "");
-        const raw = s.generated_copy?.services || [];
-        setServices(raw.map((x: { title?: string } | string) => (typeof x === "string" ? x : x.title || "")).filter(Boolean));
+        // Try generated_copy.services first, fall back to raw services string
+        const fromCopy = s.generated_copy?.services || [];
+        const fromCopyNames = fromCopy.map((x: { title?: string } | string) => (typeof x === "string" ? x : x.title || "")).filter(Boolean);
+        if (fromCopyNames.length > 0) {
+          setServices(fromCopyNames);
+        } else if (s.services) {
+          // Parse raw comma/newline separated string
+          const parsed = s.services.split(/[\n,;•\-–]+/).map((x: string) => x.trim()).filter((x: string) => x.length > 1);
+          setServices(parsed);
+        }
+        setExistingCustomImages(s.custom_images || {});
         setCustomImages(s.custom_images?.services || {});
       })
       .finally(() => setLoading(false));
@@ -46,11 +56,11 @@ function Inner() {
     if (!url) return;
     const updated = { ...customImages, [slug]: url };
     setCustomImages(updated);
-    // Save immediately
+    // Save immediately — merge with existing hero/other keys
     await fetch("/api/dashboard/edit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ siteId, customImages: { services: updated } }),
+      body: JSON.stringify({ siteId, customImages: { ...existingCustomImages, services: updated } }),
     });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
