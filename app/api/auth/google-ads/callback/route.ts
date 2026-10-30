@@ -7,13 +7,26 @@ export async function GET(req: NextRequest) {
     return new NextResponse("Missing code parameter", { status: 400 });
   }
 
-  const client = new OAuth2Client(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
-    `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/google-ads/callback`
-  );
+  const clientId = process.env.GOOGLE_CLIENT_ID || "648637108045-c99q4hrncr3qan594h00hndh9pl3365c.apps.googleusercontent.com";
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  const redirectUri = `https://pietpilot.com/api/auth/google-ads/callback`;
 
-  const { tokens } = await client.getToken(code);
+  if (!clientSecret) {
+    return new NextResponse("GOOGLE_CLIENT_SECRET is not set in Vercel env vars", { status: 500 });
+  }
+
+  const client = new OAuth2Client(clientId, clientSecret, redirectUri);
+
+  let tokens;
+  try {
+    const result = await client.getToken(code);
+    tokens = result.tokens;
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return new NextResponse(`Token exchange failed: ${msg}`, { status: 500 });
+  }
+
+  const refreshToken = tokens.refresh_token;
   const refreshToken = tokens.refresh_token;
 
   // Show the refresh token so Emil can copy it to Vercel env vars
