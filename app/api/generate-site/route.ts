@@ -162,7 +162,7 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
   "whyChooseUs": { "title": "Why choose [Business Name]?", "points": ["3 punchy points taken DIRECTLY from what the owner wrote — their actual reasons"] },
   "process": [{ "title": "2-4 word step title", "description": "one sentence" }, { "title": "...", "description": "..." }, { "title": "...", "description": "..." }, { "title": "...", "description": "..." }],
   "stats": [{ "value": "${extractedYears || "5+"}", "label": "Years in Business" }, { "value": "${extractedJobs || "200+"}", "label": "Jobs Completed" }, { "value": "5★", "label": "Average Rating" }, { "value": "100%", "label": "Licensed & Insured" }],
-  "serviceDetails": [{ "title": "exact service name", "slug": "url-slug", "description": "3-4 sentences specific to THIS service — mention the service name, what the customer gets, any relevant specifics from the owner's input. MUST be unique — not the same template repeated.", "faqs": [{ "question": "specific question about this service", "answer": "..." }, { "question": "...", "answer": "..." }, { "question": "...", "answer": "..." }] }]
+  "serviceDetails": [{ "title": "exact service name", "slug": "url-slug", "description": "2-3 sentences specific to THIS service — mention the service name and what the customer gets. MUST be unique — not the same template repeated.", "faqs": [{ "question": "specific question about this service", "answer": "..." }, { "question": "...", "answer": "..." }] }]
 }`;
 
     // Validation function — detects failed/generic generations
@@ -195,7 +195,7 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
       try {
         const message = await anthropic.messages.create({
           model: "claude-sonnet-4-6",
-          max_tokens: 2000,
+          max_tokens: 1500,
           messages: [{ role: "user", content: prompt }],
         });
 
