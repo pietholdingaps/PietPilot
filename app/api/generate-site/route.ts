@@ -90,12 +90,14 @@ export async function POST(req: NextRequest) {
       ? `The owner listed these EXACT services. Your 'services' array must contain ALL of them and NOTHING else:\n${parsedServices.map((s, i) => `${i + 1}. ${s}`).join("\n")}`
       : `Services offered (raw): ${submission.services || "—"}`;
 
-    // Pre-extract numbers from experience/about so AI can't hallucinate defaults
+    // Pre-extract numbers from ALL text fields — so AI can't hallucinate defaults
     const rawExperience = submission.experience || "";
     const rawAbout = submission.about || "";
+    // Search across ALL free-text fields (some owners put years in "why_choose_us" or even "services")
+    const allSearchText = [rawExperience, rawAbout, submission.why_choose_us || "", submission.services || ""].join(" ");
     // Match years in both English ("year", "years") and Danish ("år", "årig")
-    const yearsMatch = (rawExperience + " " + rawAbout).match(/(\d+)\s*\+?\s*(year|years|yr|yrs|år|årig)/i);
-    const jobsMatch = (rawExperience + " " + rawAbout).match(/(\d[\d,\.]+)\s*\+?\s*(?:\w+\s+)?(job|jobs|project|projects|home|homes|roof|roofs|house|houses|property|properties|customer|customers|client|clients|repair|repairs|install|installations|vehicle|vehicles|system|systems|unit|units|call|calls|treatment|treatments|service|fence|pool|opgave|opgaver|kunde|kunder)/i);
+    const yearsMatch = allSearchText.match(/(\d+)\s*\+?\s*(year|years|yr|yrs|år|årig)/i);
+    const jobsMatch = allSearchText.match(/(\d[\d,\.]+)\s*\+?\s*(?:\w+\s+)?(job|jobs|project|projects|home|homes|roof|roofs|house|houses|property|properties|customer|customers|client|clients|repair|repairs|install|installations|vehicle|vehicles|system|systems|unit|units|call|calls|treatment|treatments|service|fence|pool|opgave|opgaver|kunde|kunder)/i);
     const extractedYears = yearsMatch ? `${yearsMatch[1]}+` : null;
     const extractedJobs = jobsMatch ? `${jobsMatch[1].replace(/[,\.]/g, "")}+` : null;
 
