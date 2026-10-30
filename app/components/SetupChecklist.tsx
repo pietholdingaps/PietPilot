@@ -12,7 +12,6 @@ type Props = {
     custom_domain?: string | null;
     generated_copy?: {
       services?: Array<{ photo?: string; customPhoto?: string }>;
-      reviews?: Array<{ text: string }>;
     };
     generated_ads?: object | null;
     custom_images?: Record<string, string> | null;
@@ -47,15 +46,6 @@ export default function SetupChecklist({ site }: Props) {
       done: hasCustomServicePhoto,
       href: `/dashboard/edit?site=${site.id}#services`,
       cta: "Edit photos",
-    },
-    {
-      id: "review",
-      icon: "⭐",
-      title: "Add a customer review",
-      description: "The #1 thing that converts visitors into leads.",
-      done: !!(site.generated_copy?.reviews && site.generated_copy.reviews.length > 0),
-      href: `/dashboard/edit?site=${site.id}#reviews`,
-      cta: "Add review",
     },
     {
       id: "domain",
