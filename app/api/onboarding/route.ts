@@ -29,6 +29,11 @@ export async function POST(req: NextRequest) {
       });
       if (!authError && authData?.user) {
         userId = authData.user.id;
+      } else {
+        // Email already exists — look up the existing user
+        const { data: { users } } = await supabase.auth.admin.listUsers();
+        const existing = users?.find(u => u.email === accountEmail);
+        if (existing) userId = existing.id;
       }
     }
 
@@ -106,7 +111,7 @@ export async function POST(req: NextRequest) {
     if (accountEmail && inserted?.id) {
       const siteSlug = businessName ? generateSlug(businessName) : null;
       const siteUrl = siteSlug ? `https://pietpilot.com/${siteSlug}` : `https://pietpilot.com/site/${inserted.id}`;
-      const dashboardUrl = `https://pietpilot.com/dashboard`;
+      const dashboardUrl = `https://pietpilot.com/dashboard?site=${inserted.id}`;
       await resend.emails.send({
         from: "PietPilot <noreply@pietpilot.com>",
         to: accountEmail,
