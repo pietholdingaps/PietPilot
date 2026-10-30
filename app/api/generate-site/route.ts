@@ -127,42 +127,35 @@ NEVER use generic services like "Repairs & maintenance", "New installations", "I
 
 4. WHY CHOOSE US: Base the 'points' directly on what the owner wrote. Use their actual reasons — do not substitute with generic points unless the owner specifically mentioned those things.
 
-5. FAQ: Each service's FAQ questions must be specific to THAT service. For "Water Heater Repair" ask about tank vs tankless, lifespan, signs it needs replacing. For "Leak Detection" ask about hidden leaks, methods used, damage prevention. Do NOT copy-paste the same 3 questions for every service.
+5. GRAMMAR: Use correct subject-verb agreement. "[Business name] stands behind our work" not "stand behind". Check every sentence.
 
-6. SERVICE DESCRIPTIONS: Each serviceDetails description must mention something specific to that exact service — not a template sentence. "Drain Cleaning" ≠ "Water Heater Repair" ≠ "Leak Detection". Make them clearly different.
-
-7. GRAMMAR: Use correct subject-verb agreement. "[Business name] stands behind our work" not "stand behind". Check every sentence.
-
-8. LOCAL SEO: Mention the area (${submission.area || "local area"}) and specific service combinations naturally.
+6. LOCAL SEO: Mention the area (${submission.area || "local area"}) naturally.
 
 Here is the business information:
 
 Business name: ${submission.business_name || "—"}
 Trade: ${submission.trade || "—"}
 Area covered: ${submission.area || "—"}
-Business address: ${submission.address || "—"}
-Opening hours: ${submission.hours || "—"}
 Experience: ${rawExperience || "—"}
 License/insurance number: ${licenseClean || "—"}
-Why customers should choose them (in the owner's own words): ${submission.why_choose_us || "—"}
-About the business (in the owner's own words): ${rawAbout || "—"}
+Why customers should choose them: ${submission.why_choose_us || "—"}
+About the business: ${rawAbout || "—"}
 
 Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape:
 {
-  "headline": "short punchy hero headline — lead with their exact years of experience if given (e.g. '13 Years of Trusted Plumbing Across Austin'). Max 10 words. NEVER end with 'services you can count on' or any generic suffix. NEVER repeat the word 'services' twice.",
-  "subheadline": "one sentence using the business name, area, and a specific benefit from what they told us — not a generic line",
-  "about": "3-4 sentences in third person using their specific details — years in business, specialties, what they care about, what makes them different. Reference specific things they mentioned (materials, methods, policies). Do NOT use filler like 'local trusted name'.",
-  "servicesIntro": "one short sentence introducing the services — mention their trade and area",
-  "services": ["array of their exact services, 2-5 word names, ALL of them, NOTHING added"],
+  "headline": "short punchy hero headline — lead with their exact years of experience if given (e.g. '13 Years of Trusted Plumbing Across Austin'). Max 10 words. NEVER end with 'services you can count on'. NEVER repeat 'services' twice.",
+  "subheadline": "one sentence using the business name, area, and a specific benefit — not generic",
+  "about": "3-4 sentences using their specific details — years, specialties, what makes them different. No filler.",
+  "servicesIntro": "one short sentence introducing the services",
+  "services": ["their exact services, 2-5 word names, ALL of them, NOTHING added"],
   "allServices": ["identical to services"],
   "ctaText": "short CTA button text",
-  "trustLine": "credibility line leading with their exact years of experience — e.g. '13+ years serving homeowners across Austin and surrounding areas'",
-  "responsePromise": "short reassuring line about getting in touch — NEVER promise a specific time frame like '1 hour' or '24 hours'. Instead use phrases like 'get in touch and we will respond promptly' or 'contact us for a free quote'",
-  "guaranteeLine": "trust line with license if provided — format: 'Fully licensed & insured — License #${licenseClean || "XXXXX"}' — ONE 'License #' only, never doubled",
-  "whyChooseUs": { "title": "Why choose [Business Name]?", "points": ["3 punchy points taken DIRECTLY from what the owner wrote — their actual reasons"] },
-  "process": [{ "title": "2-4 word step title", "description": "one sentence" }, { "title": "...", "description": "..." }, { "title": "...", "description": "..." }, { "title": "...", "description": "..." }],
-  "stats": [{ "value": "${extractedYears || "5+"}", "label": "Years in Business" }, { "value": "${extractedJobs || "200+"}", "label": "Jobs Completed" }, { "value": "5★", "label": "Average Rating" }, { "value": "100%", "label": "Licensed & Insured" }],
-  "serviceDetails": [{ "title": "exact service name", "slug": "url-slug", "description": "2-3 sentences specific to THIS service — mention the service name and what the customer gets. MUST be unique — not the same template repeated.", "faqs": [{ "question": "specific question about this service", "answer": "..." }, { "question": "...", "answer": "..." }] }]
+  "trustLine": "credibility line leading with their exact years of experience",
+  "responsePromise": "short reassuring contact line — no specific time promises like '1 hour' or '24 hours'",
+  "guaranteeLine": "Fully licensed & insured — License #${licenseClean || "XXXXX"}",
+  "whyChooseUs": { "title": "Why choose [Business Name]?", "points": ["3 punchy points from what the owner wrote"] },
+  "process": [{ "title": "2-4 word step", "description": "one sentence" }, { "title": "...", "description": "..." }, { "title": "...", "description": "..." }, { "title": "...", "description": "..." }],
+  "stats": [{ "value": "${extractedYears || "5+"}", "label": "Years in Business" }, { "value": "${extractedJobs || "200+"}", "label": "Jobs Completed" }, { "value": "5★", "label": "Average Rating" }, { "value": "100%", "label": "Licensed & Insured" }]
 }`;
 
     // Validation function — detects failed/generic generations
@@ -195,7 +188,7 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
       try {
         const message = await anthropic.messages.create({
           model: "claude-sonnet-4-6",
-          max_tokens: 1500,
+          max_tokens: 800,
           messages: [{ role: "user", content: prompt }],
         });
 
@@ -274,58 +267,46 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
     }
     copy = fixStandsBehind(copy) as typeof copy;
 
-    // Always enforce the owner's own services — never let AI substitute or invent
+    // Build serviceDetails entirely from code — no AI call needed, no timeout risk
     if (parsedServices.length > 0) {
       copy.services = parsedServices;
       copy.allServices = parsedServices;
 
-      // Match serviceDetails to the real services list.
-      // Strategy: try title match first, then fall back to same index position.
-      // This preserves AI-written descriptions even when AI used slightly different title wording.
-      const existingDetails = Array.isArray(copy.serviceDetails) ? copy.serviceDetails : [];
-
-      function findDetailForService(serviceName: string, idx: number) {
-        const nameKey = serviceName.toLowerCase().replace(/[^a-z0-9]/g, "");
-        const words = serviceName.toLowerCase().split(/\s+/);
-        // 1. Exact title match
-        let found = existingDetails.find((d: {title?: string}) =>
-          (d.title || "").toLowerCase().replace(/[^a-z0-9]/g, "") === nameKey
-        );
-        // 2. Any word in common
-        if (!found) found = existingDetails.find((d: {title?: string}) =>
-          words.some((w) => w.length > 3 && (d.title || "").toLowerCase().includes(w))
-        );
-        // 3. Same index position (AI usually outputs in same order)
-        if (!found && existingDetails[idx]) found = existingDetails[idx];
-        return found;
-      }
-
-      // First pass: build service details using AI-generated copy where available
       const biz = submission.business_name || "We";
       const areaStr = submission.area || "the local area";
-      copy.serviceDetails = parsedServices.map((serviceName, idx) => {
-        const existing = findDetailForService(serviceName, idx);
+      const licLine = licenseClean
+        ? `Yes — ${biz} ${biz !== "We" ? "is" : "are"} fully licensed & insured (License #${licenseClean}).`
+        : `Yes — ${biz} ${biz !== "We" ? "is" : "are"} fully licensed & insured for your peace of mind.`;
+
+      const seenDescriptions = new Set<string>();
+      copy.serviceDetails = parsedServices.map((serviceName) => {
         const slug = serviceName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-        const description = existing?.description || generateServiceDescription(serviceName, biz, areaStr);
+        let description = generateServiceDescription(serviceName, biz, areaStr);
+        // Dedup: if identical to a previous description, generate a simple variant
+        const key = description.slice(0, 100);
+        if (seenDescriptions.has(key)) {
+          description = `${biz} provides professional ${serviceName.toLowerCase()} services across ${areaStr}. Our experienced team delivers quality results tailored to your specific needs. Contact us today for a free quote.`;
+        }
+        seenDescriptions.add(description.slice(0, 100));
         return {
           title: serviceName,
           slug,
           description,
-          faqs: existing?.faqs || [],
+          faqs: [
+            {
+              question: `How much does ${serviceName.toLowerCase()} cost?`,
+              answer: `Pricing depends on the scope of your project. Contact ${biz} for a free, no-obligation quote.`,
+            },
+            {
+              question: "Are you licensed and insured?",
+              answer: licLine,
+            },
+            {
+              question: "How soon can you start?",
+              answer: `Get in touch and we'll work around your schedule to find the earliest available time.`,
+            },
+          ],
         };
-      });
-
-      // Dedup pass: if two services got identical descriptions, replace the duplicate
-      const biz2 = submission.business_name || "We";
-      const areaStr2 = submission.area || "the local area";
-      const seenDescriptions = new Set<string>();
-      copy.serviceDetails = (copy.serviceDetails as { title: string; slug: string; description: string; faqs: unknown[] }[]).map((detail) => {
-        const key = (detail.description || "").slice(0, 100);
-        if (seenDescriptions.has(key)) {
-          return { ...detail, description: generateServiceDescription(detail.title, biz2, areaStr2) };
-        }
-        seenDescriptions.add(key);
-        return detail;
       });
     }
 
