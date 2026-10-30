@@ -3,29 +3,29 @@ import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase/server
 
 export async function GET(req: NextRequest) {
   const admin = createSupabaseAdmin();
-  const supabase = await createSupabaseServer();
-
-  // Get authenticated user from session
-  const { data: { user } } = await supabase.auth.getUser();
-
-  // Fall back to ?site= param for admin/testing access
   const siteIdParam = req.nextUrl.searchParams.get("site");
 
   let submission = null;
 
-  if (user) {
-    // Look up by authenticated user_id
-    const { data } = await admin
-      .from("onboarding_submissions")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single();
-    submission = data;
+  // Try auth-based lookup (may fail if supabase/ssr not available)
+  try {
+    const supabase = await createSupabaseServer();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data } = await admin
+        .from("onboarding_submissions")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+      submission = data;
+    }
+  } catch {
+    // fall through to site ID lookup
   }
 
-  // Fallback: explicit site ID (admin access or legacy test sites)
+  // Fallback: explicit site ID
   if (!submission && siteIdParam) {
     const { data } = await admin
       .from("onboarding_submissions")
