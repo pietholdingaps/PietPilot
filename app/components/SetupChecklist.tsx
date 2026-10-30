@@ -7,139 +7,139 @@ type Props = {
   site: {
     id: string;
     slug?: string;
-    owner_name?: string;
     owner_photo_url?: string;
     project_photos?: string[] | null;
+    custom_domain?: string | null;
     generated_copy?: {
-      services?: Array<{ photo?: string }>;
+      services?: Array<{ photo?: string; customPhoto?: string }>;
       reviews?: Array<{ text: string }>;
     };
     generated_ads?: object | null;
-    custom_domain?: string | null;
+    custom_images?: Record<string, string> | null;
   };
 };
 
 type Step = {
   id: string;
-  label: string;
+  icon: string;
+  title: string;
+  description: string;
   done: boolean;
   href: string;
-  linkLabel: string;
+  cta: string;
 };
 
 export default function SetupChecklist({ site }: Props) {
   const [dismissed, setDismissed] = useState(() => {
-    try { return localStorage.getItem(`setup_dismissed_${site.id}`) === "1"; } catch { return false; }
+    try { return localStorage.getItem(`setup_v2_dismissed_${site.id}`) === "1"; } catch { return false; }
   });
+
+  const hasCustomServicePhoto = !!(
+    site.custom_images && Object.keys(site.custom_images).some((k) => k.startsWith("service_"))
+  );
 
   const steps: Step[] = [
     {
-      id: "live",
-      label: "Your website is live",
-      done: true,
-      href: site.slug ? `/${site.slug}` : `/site/${site.id}`,
-      linkLabel: "View site →",
-    },
-    {
-      id: "service_photos",
-      label: "Add photos to your services",
-      done: !!(
-        site.generated_copy?.services?.some((s) => s.photo && !s.photo.includes("pexels.com") && !s.photo.startsWith("https://images.unsplash"))
-      ),
+      id: "photos",
+      icon: "📸",
+      title: "Update your service photos",
+      description: "AI picks generic stock photos. Upload your own to stand out.",
+      done: hasCustomServicePhoto,
       href: `/dashboard/edit?site=${site.id}#services`,
-      linkLabel: "Add photos →",
-    },
-    {
-      id: "owner_photo",
-      label: "Add a photo of yourself",
-      done: !!(site.owner_name && site.owner_photo_url),
-      href: `/dashboard/edit?site=${site.id}#owner`,
-      linkLabel: "Add photo →",
-    },
-    {
-      id: "project_photos",
-      label: "Add project photos",
-      done: !!(site.project_photos && site.project_photos.length > 0),
-      href: `/dashboard/edit?site=${site.id}#photos`,
-      linkLabel: "Add photos →",
+      cta: "Edit photos",
     },
     {
       id: "review",
-      label: "Add a customer review",
+      icon: "⭐",
+      title: "Add a customer review",
+      description: "The #1 thing that converts visitors into leads.",
       done: !!(site.generated_copy?.reviews && site.generated_copy.reviews.length > 0),
       href: `/dashboard/edit?site=${site.id}#reviews`,
-      linkLabel: "Add review →",
+      cta: "Add review",
     },
     {
       id: "domain",
-      label: "Connect your own domain",
+      icon: "🌐",
+      title: "Connect your own domain",
+      description: "Use yourbusiness.com instead of pietpilot.com/your-name.",
       done: !!(site.custom_domain),
       href: `/dashboard/edit?site=${site.id}#domain`,
-      linkLabel: "Set up domain →",
+      cta: "Set up domain",
     },
     {
       id: "ads",
-      label: "Connect Google Ads",
+      icon: "📢",
+      title: "Start Google Ads",
+      description: "Get in front of people searching for your services today.",
       done: !!(site.generated_ads),
       href: `/ads?site=${site.id}`,
-      linkLabel: "Set up ads →",
+      cta: "Set up ads",
     },
   ];
 
-  const doneCount = steps.filter((s) => s.done).length;
-  const allDone = doneCount === steps.length;
+  const remaining = steps.filter((s) => !s.done);
+  const doneCount = steps.length - remaining.length;
 
-  if (dismissed || allDone) return null;
+  if (dismissed || remaining.length === 0) return null;
 
   return (
-    <div className="card rounded-2xl p-6 mb-8 border border-[#f59e0b]/20">
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <h2 className="text-base font-bold text-white mb-0.5">Finish setting up your website</h2>
-          <p className="text-white/40 text-sm">{doneCount} of {steps.length} steps completed</p>
+    <div className="mb-10">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-3">
+          <h2 className="text-base font-bold text-white">Get ready for customers</h2>
+          <span className="text-xs text-white/40 bg-white/[0.06] px-2.5 py-1 rounded-full">
+            {doneCount}/{steps.length} done
+          </span>
         </div>
         <button
           onClick={() => {
-            try { localStorage.setItem(`setup_dismissed_${site.id}`, "1"); } catch {}
+            try { localStorage.setItem(`setup_v2_dismissed_${site.id}`, "1"); } catch {}
             setDismissed(true);
           }}
-          className="text-white/20 hover:text-white/50 text-xs transition-colors ml-4 mt-0.5"
+          className="text-white/20 hover:text-white/50 text-xs transition-colors"
         >
           Dismiss
         </button>
       </div>
 
       {/* Progress bar */}
-      <div className="h-1.5 bg-white/[0.06] rounded-full mb-5 overflow-hidden">
+      <div className="h-1 bg-white/[0.06] rounded-full mb-5 overflow-hidden">
         <div
           className="h-full bg-[#f59e0b] rounded-full transition-all duration-500"
           style={{ width: `${(doneCount / steps.length) * 100}%` }}
         />
       </div>
 
-      <div className="space-y-2.5">
+      <div className="grid sm:grid-cols-2 gap-3">
         {steps.map((step) => (
-          <div key={step.id} className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <span className={`w-5 h-5 rounded-full flex items-center justify-center flex-none text-xs font-bold transition-colors ${
-                step.done
-                  ? "bg-emerald-500/20 text-emerald-400"
-                  : "bg-white/[0.06] text-white/30"
-              }`}>
-                {step.done ? "✓" : ""}
-              </span>
-              <span className={`text-sm ${step.done ? "text-white/40 line-through" : "text-white/80"}`}>
-                {step.label}
-              </span>
+          <div
+            key={step.id}
+            className={`card rounded-2xl p-5 flex gap-4 items-start transition-all ${
+              step.done ? "opacity-40" : "border border-white/[0.08] hover:border-white/20"
+            }`}
+          >
+            <span className="text-2xl flex-none mt-0.5">{step.icon}</span>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                {step.done && (
+                  <span className="text-emerald-400 text-xs font-bold">✓ Done</span>
+                )}
+                <p className={`text-sm font-bold ${step.done ? "line-through text-white/60" : "text-white"}`}>
+                  {step.title}
+                </p>
+              </div>
+              {!step.done && (
+                <>
+                  <p className="text-white/40 text-xs leading-relaxed mb-3">{step.description}</p>
+                  <Link
+                    href={step.href}
+                    className="inline-block bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] text-xs font-bold px-3.5 py-1.5 rounded-lg transition-colors"
+                  >
+                    {step.cta} →
+                  </Link>
+                </>
+              )}
             </div>
-            {!step.done && (
-              <Link
-                href={step.href}
-                className="text-[#f59e0b] text-xs font-semibold hover:text-[#fbbf24] transition-colors whitespace-nowrap"
-              >
-                {step.linkLabel}
-              </Link>
-            )}
           </div>
         ))}
       </div>

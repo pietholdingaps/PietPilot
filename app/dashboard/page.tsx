@@ -46,7 +46,8 @@ type SiteInfo = {
   slug?: string;
   custom_domain?: string | null;
   project_photos?: string[] | null;
-  generated_copy?: { services?: Array<{ photo?: string }>; reviews?: Array<{ text: string }> };
+  custom_images?: Record<string, string> | null;
+  generated_copy?: { services?: Array<{ photo?: string; customPhoto?: string }>; reviews?: Array<{ text: string }> };
   generated_ads?: GeneratedAds;
 };
 
