@@ -5,6 +5,19 @@ import GeneratedSite from "@/app/components/GeneratedSite";
 import { GeneratedSiteCopy } from "@/lib/siteTypes";
 import { buildSiteMetadata, buildLocalBusinessSchema } from "@/lib/seo";
 
+function extractNumber(text: string, unitPattern: RegExp): string | null {
+  const m = text.match(new RegExp(`(\\d[\\d,\\.]*)[\\s\\+]*(${unitPattern.source})`, "i"));
+  return m ? m[1].replace(/[,\.]/g, "") : null;
+}
+
+function stripDoubleLicense(obj: unknown): unknown {
+  if (typeof obj === "string") return obj.replace(/license\s*#\s*license\s*#\s*/gi, "License #");
+  if (Array.isArray(obj)) return obj.map(stripDoubleLicense);
+  if (obj && typeof obj === "object")
+    return Object.fromEntries(Object.entries(obj as Record<string, unknown>).map(([k, v]) => [k, stripDoubleLicense(v)]));
+  return obj;
+}
+
 export const dynamic = "force-dynamic";
 
 const RESERVED = ["api", "dashboard", "onboarding", "site", "leads", "ads", "profile", "login", "contact", "sitemap", "robots"];
@@ -42,7 +55,34 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
   const submission = await getSiteBySlug(slug);
   if (!submission) notFound();
 
-  const copy = (submission.generated_copy || {}) as GeneratedSiteCopy;
+  const rawCopy = (submission.generated_copy || {}) as GeneratedSiteCopy;
+  const copy = stripDoubleLicense(rawCopy) as GeneratedSiteCopy;
+
+  // Fix headline double-word bug
+  if (typeof copy.headline === "string") {
+    copy.headline = copy.headline.replace(/\bservices?\s+services?\b/gi, "services");
+  }
+
+  // Stats override: search all text fields for real numbers
+  const allSearchText = [submission.experience, submission.about, submission.why_choose_us, submission.services]
+    .filter(Boolean).join(" ");
+  const yearsRaw = extractNumber(allSearchText, /year|years|yr|yrs|år|årig/);
+  const jobsRaw  = extractNumber(allSearchText, /job|jobs|project|projects|home|homes|roof|roofs|house|houses|property|properties|customer|customers|client|clients|repair|repairs|install|installations|vehicle|vehicles|system|systems|unit|units|opgave|opgaver|kunde|kunder/);
+  if (yearsRaw || jobsRaw) {
+    const currentStats: { value: string; label: string }[] = Array.isArray(copy.stats) && copy.stats.length > 0
+      ? [...copy.stats]
+      : [
+          { value: "5+", label: "Years in Business" },
+          { value: "200+", label: "Jobs Completed" },
+          { value: "5★", label: "Average Rating" },
+          { value: "100%", label: "Licensed & Insured" },
+        ];
+    if (yearsRaw) currentStats[0] = { value: `${yearsRaw}+`, label: "Years in Business" };
+    if (jobsRaw)  currentStats[1] = { value: `${jobsRaw}+`,  label: "Jobs Completed" };
+    currentStats[2] = { value: "5★", label: "Average Rating" };
+    currentStats[3] = { value: "100%", label: "Licensed & Insured" };
+    copy.stats = currentStats;
+  }
 
   const localBusinessSchema = buildLocalBusinessSchema({
     businessName: submission.business_name || "Your Business",
