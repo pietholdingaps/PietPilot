@@ -1,6 +1,6 @@
 import { OAuth2Client } from "google-auth-library";
 
-const MCC_ID = (process.env.GOOGLE_ADS_MCC_ID || "3994731141").replace(/-/g, "");
+const MCC_ID = (process.env.GOOGLE_ADS_MCC_ID || "4781206805").replace(/-/g, "");
 const BASE = "https://googleads.googleapis.com/v19";
 
 async function getAccessToken(): Promise<string> {
