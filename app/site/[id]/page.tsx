@@ -140,7 +140,9 @@ export default async function GeneratedSitePage({ params }: { params: Promise<{ 
   // Re-extract real numbers from raw onboarding fields at render time.
   // This guarantees the live site always shows the correct stats even if the
   // AI stored wrong defaults ("5+", "200+") during an earlier generation.
-  const rawExp = (submission.experience || "") + " " + (submission.about || "");
+  // Search ALL free-text fields — owners sometimes put years in why_choose_us or services
+  const rawExp = [submission.experience, submission.about, submission.why_choose_us, submission.services]
+    .filter(Boolean).join(" ");
   const yearsRaw  = extractNumber(rawExp, /year|years|yr|yrs|år|årig/);
   const jobsRaw   = extractNumber(rawExp, /job|jobs|project|projects|home|homes|roof|roofs|house|houses|property|properties|customer|customers|client|clients|repair|repairs|install|installations|vehicle|vehicles|system|systems|unit|units|opgave|opgaver|kunde|kunder/);
   if (yearsRaw || jobsRaw) {
