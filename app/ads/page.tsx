@@ -152,6 +152,8 @@ function AdsInner() {
 
   // ── CONNECT GOOGLE ADS ──────────────────────────────────────────────────
   if (view === "connect") {
+    const [connectStep, setConnectStep] = useState(1);
+
     return (
       <div className="min-h-screen bg-[#0b1220] text-[#eef1f6] flex flex-col">
         <div className="border-b border-white/[0.06]">
@@ -161,61 +163,138 @@ function AdsInner() {
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 py-16">
-          <div className="text-center mb-10">
-            <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-3xl mx-auto mb-6">🔗</div>
-            <h1 className="text-3xl font-extrabold mb-3">Connect Google Ads</h1>
-            <p className="text-white/40 text-base">Before we can run your ads, we need to connect to your Google Ads account.</p>
-          </div>
+        {/* Progress bar */}
+        <div className="h-1 bg-white/5">
+          <div className="h-1 bg-[#f59e0b] transition-all duration-500" style={{ width: `${(connectStep / 3) * 100}%` }} />
+        </div>
 
-          {/* Steps */}
-          <div className="space-y-3 mb-10">
-            <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
-              <div className="flex gap-4 items-start">
-                <span className="w-7 h-7 rounded-full bg-[#f59e0b]/15 text-[#f59e0b] text-xs font-black flex items-center justify-center flex-none mt-0.5">1</span>
-                <div>
-                  <p className="font-bold text-sm mb-1">Create a Google Ads account</p>
-                  <p className="text-white/40 text-sm">Go to <span className="text-[#f59e0b]">ads.google.com</span> and sign in with your Google account. It&apos;s free to create.</p>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
-              <div className="flex gap-4 items-start">
-                <span className="w-7 h-7 rounded-full bg-[#f59e0b]/15 text-[#f59e0b] text-xs font-black flex items-center justify-center flex-none mt-0.5">2</span>
-                <div>
-                  <p className="font-bold text-sm mb-1">Add a payment method</p>
-                  <p className="text-white/40 text-sm">In Google Ads go to <strong className="text-white">Billing → Payment methods</strong> and add your credit card. You only pay Google when people click your ads.</p>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
-              <div className="flex gap-4 items-start">
-                <span className="w-7 h-7 rounded-full bg-[#f59e0b]/15 text-[#f59e0b] text-xs font-black flex items-center justify-center flex-none mt-0.5">3</span>
-                <div>
-                  <p className="font-bold text-sm mb-1">Enter your Customer ID below</p>
-                  <p className="text-white/40 text-sm">In Google Ads, click the question mark ❓ in the top right. Your Customer ID is the 10-digit number shown — e.g. <span className="text-white font-mono">123-456-7890</span></p>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 py-12">
 
-          {/* Input */}
-          <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 space-y-4">
-            <label className="block text-sm font-semibold text-white/60">Your Google Ads Customer ID</label>
-            <input
-              type="text"
-              value={customerIdInput}
-              onChange={e => setCustomerIdInput(e.target.value)}
-              placeholder="123-456-7890"
-              className="w-full bg-[#080e1a] border border-white/10 rounded-xl px-4 py-3.5 text-lg font-mono text-white focus:outline-none focus:border-[#f59e0b]/50 placeholder:text-white/20 tracking-widest"
-            />
-            {connectError && <p className="text-red-400 text-sm">{connectError}</p>}
-            <button onClick={handleConnect} disabled={connecting || !customerIdInput.trim()}
-              className="w-full bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-extrabold text-base py-4 rounded-xl transition-colors disabled:opacity-50">
-              {connecting ? "Connecting…" : "Connect my Google Ads account →"}
-            </button>
-            <p className="text-white/20 text-xs text-center">We&apos;ll use this to run your campaigns. You stay in control of your billing directly with Google.</p>
-          </div>
+          {/* Step 1: Create account */}
+          {connectStep === 1 && (
+            <div className="flex flex-col flex-1">
+              <p className="text-[#f59e0b] text-xs font-bold uppercase tracking-widest mb-6">Step 1 of 3</p>
+              <h1 className="text-3xl font-extrabold mb-3">First, create a free Google Ads account</h1>
+              <p className="text-white/40 text-base mb-8">You need a Google Ads account before we can run your ads. It only takes 2 minutes and it&apos;s completely free to set up.</p>
+
+              <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 mb-6 space-y-4">
+                <div className="flex gap-4 items-start">
+                  <span className="text-2xl flex-none">1️⃣</span>
+                  <p className="text-white/70 text-sm leading-relaxed">Open a new tab and go to <strong className="text-white">ads.google.com</strong></p>
+                </div>
+                <div className="flex gap-4 items-start">
+                  <span className="text-2xl flex-none">2️⃣</span>
+                  <p className="text-white/70 text-sm leading-relaxed">Click <strong className="text-white">&quot;Start now&quot;</strong> and sign in with your Gmail account</p>
+                </div>
+                <div className="flex gap-4 items-start">
+                  <span className="text-2xl flex-none">3️⃣</span>
+                  <p className="text-white/70 text-sm leading-relaxed">Google will ask you to create a campaign — click <strong className="text-white">&quot;Switch to Expert Mode&quot;</strong> at the bottom, then <strong className="text-white">&quot;Create an account without a campaign&quot;</strong></p>
+                </div>
+                <div className="flex gap-4 items-start">
+                  <span className="text-2xl flex-none">4️⃣</span>
+                  <p className="text-white/70 text-sm leading-relaxed">Fill in your country, timezone and currency — then click <strong className="text-white">&quot;Submit&quot;</strong></p>
+                </div>
+              </div>
+
+              <p className="text-white/30 text-sm text-center mb-8">Already have a Google Ads account? Skip this step.</p>
+
+              <button onClick={() => setConnectStep(2)}
+                className="w-full bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-extrabold text-base py-4 rounded-xl transition-colors">
+                I have a Google Ads account →
+              </button>
+            </div>
+          )}
+
+          {/* Step 2: Add payment */}
+          {connectStep === 2 && (
+            <div className="flex flex-col flex-1">
+              <p className="text-[#f59e0b] text-xs font-bold uppercase tracking-widest mb-6">Step 2 of 3</p>
+              <h1 className="text-3xl font-extrabold mb-3">Add your payment method to Google</h1>
+              <p className="text-white/40 text-base mb-2">You pay Google directly for the clicks. We never touch your ad budget — we only charge you the PietPilot subscription.</p>
+              <p className="text-white/30 text-sm mb-8">You won&apos;t be charged until people actually click your ads.</p>
+
+              <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 mb-6 space-y-4">
+                <div className="flex gap-4 items-start">
+                  <span className="text-2xl flex-none">1️⃣</span>
+                  <p className="text-white/70 text-sm leading-relaxed">In Google Ads, click the <strong className="text-white">wrench icon ⚙️</strong> in the top right corner</p>
+                </div>
+                <div className="flex gap-4 items-start">
+                  <span className="text-2xl flex-none">2️⃣</span>
+                  <p className="text-white/70 text-sm leading-relaxed">Click <strong className="text-white">Billing</strong> in the menu that appears</p>
+                </div>
+                <div className="flex gap-4 items-start">
+                  <span className="text-2xl flex-none">3️⃣</span>
+                  <p className="text-white/70 text-sm leading-relaxed">Click <strong className="text-white">Payment methods</strong> and add your credit or debit card</p>
+                </div>
+              </div>
+
+              <button onClick={() => setConnectStep(3)}
+                className="w-full bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-extrabold text-base py-4 rounded-xl transition-colors mb-3">
+                Payment method added →
+              </button>
+              <button onClick={() => setConnectStep(1)} className="text-white/25 text-sm hover:text-white transition-colors text-center">← Back</button>
+            </div>
+          )}
+
+          {/* Step 3: Enter Customer ID */}
+          {connectStep === 3 && (
+            <div className="flex flex-col flex-1">
+              <p className="text-[#f59e0b] text-xs font-bold uppercase tracking-widest mb-6">Step 3 of 3</p>
+              <h1 className="text-3xl font-extrabold mb-3">Enter your Customer ID</h1>
+              <p className="text-white/40 text-base mb-8">This is a 10-digit number that identifies your Google Ads account. Here&apos;s exactly how to find it:</p>
+
+              <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 mb-6 space-y-4">
+                <div className="flex gap-4 items-start">
+                  <span className="text-2xl flex-none">1️⃣</span>
+                  <p className="text-white/70 text-sm leading-relaxed">Go to <strong className="text-white">ads.google.com</strong> and make sure you&apos;re logged in</p>
+                </div>
+                <div className="flex gap-4 items-start">
+                  <span className="text-2xl flex-none">2️⃣</span>
+                  <p className="text-white/70 text-sm leading-relaxed">Look at the <strong className="text-white">top right corner</strong> of the page — you&apos;ll see your name and below it a number that looks like <strong className="text-white font-mono">123-456-7890</strong></p>
+                </div>
+                <div className="flex gap-4 items-start">
+                  <span className="text-2xl flex-none">3️⃣</span>
+                  <p className="text-white/70 text-sm leading-relaxed">Copy that number and paste it in the field below</p>
+                </div>
+
+                {/* Visual mockup of where to find it */}
+                <div className="mt-2 rounded-xl border border-white/10 bg-[#080e1a] p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-sm bg-[#4285f4] flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">G</span>
+                      </div>
+                      <span className="text-white/50 text-xs">Google Ads</span>
+                    </div>
+                    <div className="text-right border-2 border-[#f59e0b] rounded-lg px-3 py-1.5">
+                      <p className="text-white text-xs font-semibold">Your Name</p>
+                      <p className="text-[#f59e0b] text-xs font-mono font-bold">123-456-7890</p>
+                    </div>
+                  </div>
+                  <p className="text-[#f59e0b] text-xs text-right">👆 Your Customer ID is here</p>
+                </div>
+              </div>
+
+              <div className="space-y-3 mb-4">
+                <input
+                  type="text"
+                  value={customerIdInput}
+                  onChange={e => setCustomerIdInput(e.target.value)}
+                  placeholder="123-456-7890"
+                  className="w-full bg-[#080e1a] border border-white/10 rounded-xl px-4 py-4 text-xl font-mono text-white focus:outline-none focus:border-[#f59e0b]/50 placeholder:text-white/20 tracking-widest text-center"
+                />
+                {connectError && <p className="text-red-400 text-sm text-center">{connectError}</p>}
+                <button onClick={handleConnect} disabled={connecting || !customerIdInput.trim()}
+                  className="w-full bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] font-extrabold text-base py-4 rounded-xl transition-colors disabled:opacity-50">
+                  {connecting ? "Connecting…" : "Connect my account →"}
+                </button>
+                <p className="text-white/20 text-xs text-center">We use this to create campaigns on your behalf. You keep full control of your billing.</p>
+              </div>
+
+              <button onClick={() => setConnectStep(2)} className="text-white/25 text-sm hover:text-white transition-colors text-center block">← Back</button>
+            </div>
+          )}
+
         </div>
       </div>
     );
