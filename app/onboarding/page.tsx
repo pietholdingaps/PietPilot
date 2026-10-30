@@ -219,6 +219,9 @@ function OnboardingInner() {
       const json = await res.json();
       siteId = json?.id || null;
       setGeneratedSiteId(siteId);
+      if (siteId) {
+        try { localStorage.setItem("pietpilot_site_id", siteId); } catch {}
+      }
 
       // 2. Sign in so the session cookie is set — dashboard will read from auth
       if (account.email && account.password) {
