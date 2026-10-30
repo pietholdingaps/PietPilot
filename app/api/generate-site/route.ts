@@ -315,6 +315,18 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
         };
       });
 
+      // Dedup pass: if two services got identical descriptions, replace the duplicate
+      const biz2 = submission.business_name || "We";
+      const areaStr2 = submission.area || "the local area";
+      const seenDescriptions = new Set<string>();
+      copy.serviceDetails = (copy.serviceDetails as { title: string; slug: string; description: string; faqs: unknown[] }[]).map((detail) => {
+        const key = (detail.description || "").slice(0, 100);
+        if (seenDescriptions.has(key)) {
+          return { ...detail, description: generateServiceDescription(detail.title, biz2, areaStr2) };
+        }
+        seenDescriptions.add(key);
+        return detail;
+      });
     }
 
     // Pexels: fetch photos for all services in parallel to save time
