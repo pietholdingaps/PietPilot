@@ -195,7 +195,7 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
       try {
         const message = await anthropic.messages.create({
           model: "claude-sonnet-4-6",
-          max_tokens: 4096,
+          max_tokens: 3000,
           messages: [{ role: "user", content: prompt }],
         });
 
@@ -323,7 +323,7 @@ Return ONLY valid JSON with no markdown: {"descriptions": {"exact service name":
 
         const descMsg = await anthropic.messages.create({
           model: "claude-sonnet-4-6",
-          max_tokens: 1500,
+          max_tokens: 800,
           messages: [{ role: "user", content: descPrompt }],
         });
         const descText = descMsg.content.find((b) => b.type === "text");
@@ -348,12 +348,11 @@ Return ONLY valid JSON with no markdown: {"descriptions": {"exact service name":
       }
     }
 
-    // Pexels: fetch a relevant photo for each service if API key is available
+    // Pexels: fetch photos for all services in parallel to save time
     const pexelsKey = process.env.PEXELS_API_KEY;
     if (pexelsKey && Array.isArray(copy.serviceDetails)) {
-      for (const detail of copy.serviceDetails) {
+      await Promise.all(copy.serviceDetails.map(async (detail) => {
         try {
-          // Map common service names to better Pexels search terms
           const serviceQuery = getPexelsQuery(detail.title);
           const query = encodeURIComponent(serviceQuery);
           const pRes = await fetch(
@@ -367,9 +366,9 @@ Return ONLY valid JSON with no markdown: {"descriptions": {"exact service name":
             if (photoUrl) (detail as Record<string, unknown>).photo = photoUrl;
           }
         } catch {
-          // Pexels lookup failed — no problem, falls back to keyword matching
+          // Pexels lookup failed — falls back to keyword matching
         }
-      }
+      }));
     }
 
     const { error: updateError } = await supabase
