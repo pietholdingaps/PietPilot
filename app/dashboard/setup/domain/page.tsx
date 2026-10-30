@@ -61,9 +61,21 @@ function Inner() {
 
   return (
     <Screen siteId={siteId}>
-      <div className="mb-8">
-        <h1 className="text-2xl font-extrabold text-white mb-1">Connect your domain</h1>
-        <p className="text-white/45 text-sm">Use your own domain (e.g. smithplumbing.com) instead of pietpilot.com/smith-plumbing.</p>
+      <div className="flex items-start justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-extrabold text-white mb-1">Connect your domain</h1>
+          <p className="text-white/45 text-sm">Use your own domain instead of pietpilot.com/your-name.</p>
+        </div>
+        {done ? (
+          <div className="flex-none flex items-center gap-1.5 text-emerald-400 text-sm font-bold mt-1">✓ Done</div>
+        ) : (
+          <button onClick={async () => {
+            await fetch("/api/setup-complete", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ siteId, step: "domain" }) });
+            setDone(true);
+          }} className="flex-none bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] text-sm font-bold px-5 py-2.5 rounded-xl transition-colors mt-1">
+            Done ✓
+          </button>
+        )}
       </div>
 
       {currentDomain && !result && (
@@ -117,26 +129,6 @@ function Inner() {
         </div>
       )}
 
-      <div className="mt-8 pt-6 border-t border-white/[0.06] flex items-center justify-between">
-        <p className="text-white/35 text-sm">Done connecting your domain?</p>
-        {done ? (
-          <div className="flex items-center gap-2 text-emerald-400 text-sm font-bold">✓ Marked as done</div>
-        ) : (
-          <button
-            onClick={async () => {
-              await fetch("/api/setup-complete", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ siteId, step: "domain" }),
-              });
-              setDone(true);
-            }}
-            className="bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] text-sm font-bold px-6 py-2.5 rounded-xl transition-colors"
-          >
-            Done ✓
-          </button>
-        )}
-      </div>
     </Screen>
   );
 }
