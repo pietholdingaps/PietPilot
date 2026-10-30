@@ -39,6 +39,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "No site found" }, { status: 404 });
   }
 
+  // Ensure setup_completed is included
+  const setupCompleted = (submission.setup_completed as Record<string, boolean>) || {};
+
   const { data: leads } = await admin
     .from("leads")
     .select("id, name, contact, email, phone, message, created_at, status")

@@ -8,6 +8,7 @@ type Props = {
     custom_domain?: string | null;
     generated_ads?: object | null;
     custom_images?: Record<string, string> | null;
+    setup_completed?: Record<string, boolean> | null;
   };
 };
 
@@ -20,7 +21,7 @@ export default function SetupChecklist({ site }: Props) {
     {
       id: "photos",
       label: "Update service photos with your real work",
-      done: hasCustomServicePhoto,
+      done: hasCustomServicePhoto || !!(site.setup_completed?.photos),
       href: `/dashboard/setup/photos?site=${site.id}`,
       external: false,
     },

@@ -19,6 +19,7 @@ function Inner() {
   const [existingCustomImages, setExistingCustomImages] = useState<Record<string, unknown>>({});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(true);
   const [lightbox, setLightbox] = useState<string | null>(null);
 
@@ -48,6 +49,7 @@ function Inner() {
         }
         setExistingCustomImages(s.custom_images || {});
         setCustomImages(s.custom_images?.services || {});
+        setDone(!!(s.setup_completed?.photos));
       })
       .finally(() => setLoading(false));
   }, [siteId]);
@@ -131,6 +133,31 @@ function Inner() {
 
       {services.length === 0 && (
         <p className="text-white/40 text-sm">No services found. <Link href={`/dashboard/edit?site=${siteId}`} className="text-[#f59e0b]">Edit your website</Link> to add services first.</p>
+      )}
+
+      {services.length > 0 && (
+        <div className="mt-8 pt-6 border-t border-white/[0.06] flex items-center justify-between">
+          <p className="text-white/35 text-sm">Happy with your photos?</p>
+          {done ? (
+            <div className="flex items-center gap-2 text-emerald-400 text-sm font-bold">
+              <span>✓</span> Marked as done
+            </div>
+          ) : (
+            <button
+              onClick={async () => {
+                await fetch("/api/setup-complete", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ siteId, step: "photos" }),
+                });
+                setDone(true);
+              }}
+              className="bg-[#f59e0b] hover:bg-[#fbbf24] text-[#0b1220] text-sm font-bold px-6 py-2.5 rounded-xl transition-colors"
+            >
+              Done ✓
+            </button>
+          )}
+        </div>
       )}
 
       {saved && (
