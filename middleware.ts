@@ -24,7 +24,13 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
+  let user = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch {
+    // Supabase unavailable — fail open for now
+  }
 
   // Only redirect if protected route AND no ?site= fallback AND not authenticated
   // Remove the siteParam check when ready to enforce mandatory login at go-live
