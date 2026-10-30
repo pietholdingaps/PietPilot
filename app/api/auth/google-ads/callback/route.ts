@@ -27,7 +27,6 @@ export async function GET(req: NextRequest) {
   }
 
   const refreshToken = tokens.refresh_token;
-  const refreshToken = tokens.refresh_token;
 
   // Show the refresh token so Emil can copy it to Vercel env vars
   const html = `
