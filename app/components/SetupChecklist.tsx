@@ -75,9 +75,7 @@ export default function SetupChecklist({ site }: Props) {
       <div className="bg-[#0f1a2e] border border-t-0 border-white/[0.06] rounded-b-2xl divide-y divide-white/[0.04]">
         {steps.map((step) => {
           const content = (
-            <div className={`flex items-center gap-3.5 px-5 py-3.5 transition-colors ${
-              !step.done ? "hover:bg-white/[0.03]" : ""
-            }`}>
+            <div className="flex items-center gap-3.5 px-5 py-3.5 transition-colors hover:bg-white/[0.03]">
               <span className={`w-5 h-5 rounded-full flex-none flex items-center justify-center text-[10px] font-bold transition-all ${
                 step.done
                   ? "bg-emerald-500 text-white"
@@ -85,16 +83,13 @@ export default function SetupChecklist({ site }: Props) {
               }`}>
                 {step.done ? "✓" : ""}
               </span>
-              <span className={`text-sm flex-1 ${step.done ? "text-white/30 line-through" : "text-white/75"}`}>
+              <span className={`text-sm flex-1 ${step.done ? "text-white/40 line-through" : "text-white/75"}`}>
                 {step.label}
               </span>
-              {!step.done && (
-                <span className="text-[#f59e0b] text-sm flex-none">→</span>
-              )}
+              <span className="text-[#f59e0b] text-sm flex-none">→</span>
             </div>
           );
 
-          if (step.done) return <div key={step.id}>{content}</div>;
           if (step.external) return (
             <a key={step.id} href={step.href} target="_blank" rel="noopener noreferrer" className="block">
               {content}
