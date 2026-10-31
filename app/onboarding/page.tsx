@@ -61,6 +61,8 @@ const questions = [
   { key: "address", label: "What's your business address?", placeholder: "e.g. 123 Main St, Austin, TX 78701 (optional — leave blank to skip)", type: "text" },
   { key: "license", label: "Do you have a license or insurance number you'd like to display?", placeholder: "e.g. License #TX-48213 (optional — builds trust with customers, leave blank to skip)", type: "text" },
   { key: "hours", label: "What are your opening hours?", placeholder: "e.g. Mon–Fri 7am–6pm, Sat 8am–2pm", type: "text" },
+  { key: "yearsInBusiness", label: "How many years have you been in business?", placeholder: "e.g. 8", type: "text" },
+  { key: "jobsCompleted", label: "Roughly how many jobs have you completed?", placeholder: "e.g. 200", type: "text" },
   { key: "services", label: "What services do you offer?", placeholder: "List as many as you'd like — e.g. drain cleaning, water heater repair, bathroom remodels...", type: "textarea" },
   { key: "about", label: "Tell us about you and your business — the more you write, the better your site will be", placeholder: "How long have you been in business? How many jobs have you done? What makes you different? What do customers say about you? What do you care about on the job?", type: "textarea" },
   { key: "whyChooseUs", label: "Why should customers choose you over the competition?", placeholder: "e.g. fast response times, fair prices, years of experience, guarantees, certifications...", type: "textarea" },

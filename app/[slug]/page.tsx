@@ -63,18 +63,26 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
     copy.headline = copy.headline.replace(/\bservices?\s+services?\b/gi, "services");
   }
 
-  // Stats override: search all text fields for real numbers
-  const allSearchText = [submission.experience, submission.about, submission.why_choose_us, submission.services]
-    .filter(Boolean).join(" ");
-  const yearsRaw = extractNumber(allSearchText, /year|years|yr|yrs|år|årig/);
-  const jobsRaw  = extractNumber(allSearchText, /job|jobs|project|projects|home|homes|roof|roofs|house|houses|property|properties|customer|customers|client|clients|repair|repairs|install|installations|vehicle|vehicles|system|systems|unit|units|opgave|opgaver|kunde|kunder/);
-  // Always override all 4 stats — AI can never set custom labels like "Subcontractors Used"
-  copy.stats = [
-    { value: yearsRaw ? `${yearsRaw}+` : (Array.isArray(copy.stats) && copy.stats[0]?.value) || "5+", label: "Years in Business" },
-    { value: jobsRaw  ? `${jobsRaw}+`  : "200+", label: "Jobs Completed" },
-    { value: "5★", label: "Average Rating" },
-    { value: "100%", label: "Licensed & Insured" },
-  ];
+  // Build stats only from real data — dedicated fields first, fallback to free text
+  const getYears = (): string | null => {
+    if (submission.years_in_business) { const n = submission.years_in_business.match(/\d+/); if (n) return `${n[0]}+`; }
+    const allText = [submission.experience, submission.about, submission.why_choose_us, submission.services].filter(Boolean).join(" ");
+    return extractNumber(allText, /year|years|yr|yrs|år|årig/) ? extractNumber(allText, /year|years|yr|yrs|å|årig/) + "+" : null;
+  };
+  const getJobs = (): string | null => {
+    if (submission.jobs_completed) { const n = submission.jobs_completed.match(/\d+/); if (n) return `${parseInt(n[0]).toLocaleString("en")}+`; }
+    const allText = [submission.experience, submission.about, submission.why_choose_us, submission.services].filter(Boolean).join(" ");
+    const m = allText.match(/(\d[\d,\.]+)\s*\+?\s*(?:\w+\s+)?(job|jobs|project|projects|home|homes|roof|roofs|customer|customers|client|clients)/i);
+    return m ? `${m[1].replace(/[,\.]/g, "")}+` : null;
+  };
+  const yearsVal = getYears();
+  const jobsVal = getJobs();
+  // Only show stats we actually have real data for
+  const realStats: { value: string; label: string }[] = [];
+  if (yearsVal) realStats.push({ value: yearsVal, label: "Years in Business" });
+  if (jobsVal)  realStats.push({ value: jobsVal,  label: "Jobs Completed" });
+  realStats.push({ value: "100%", label: "Licensed & Insured" });
+  copy.stats = realStats;
 
   const localBusinessSchema = buildLocalBusinessSchema({
     businessName: submission.business_name || "Your Business",

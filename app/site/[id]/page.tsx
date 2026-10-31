@@ -145,13 +145,24 @@ export default async function GeneratedSitePage({ params }: { params: Promise<{ 
     .filter(Boolean).join(" ");
   const yearsRaw  = extractNumber(rawExp, /year|years|yr|yrs|år|årig/);
   const jobsRaw   = extractNumber(rawExp, /job|jobs|project|projects|home|homes|roof|roofs|house|houses|property|properties|customer|customers|client|clients|repair|repairs|install|installations|vehicle|vehicles|system|systems|unit|units|opgave|opgaver|kunde|kunder/);
-  // Always override all 4 stats — AI can never set custom labels like "Subcontractors Used"
-  (copy as GeneratedSiteCopy).stats = [
-    { value: yearsRaw ? `${yearsRaw}+` : (Array.isArray(copy.stats) && copy.stats[0]?.value) || "5+", label: "Years in Business" },
-    { value: jobsRaw  ? `${jobsRaw}+`  : "200+", label: "Jobs Completed" },
-    { value: "5★", label: "Average Rating" },
-    { value: "100%", label: "Licensed & Insured" },
-  ];
+  // Build stats only from real data — dedicated fields first, fallback to free text
+  const getYearsId = (): string | null => {
+    if (submission.years_in_business) { const n = (submission.years_in_business as string).match(/\d+/); if (n) return `${n[0]}+`; }
+    const m = rawExp.match(/(\d+)\s*\+?\s*(year|years|yr|yrs|år|årig)/i);
+    return m ? `${m[1]}+` : null;
+  };
+  const getJobsId = (): string | null => {
+    if (submission.jobs_completed) { const n = (submission.jobs_completed as string).match(/\d+/); if (n) return `${parseInt(n[0]).toLocaleString("en")}+`; }
+    const m = rawExp.match(/(\d[\d,\.]+)\s*\+?\s*(?:\w+\s+)?(job|jobs|project|projects|home|homes|roof|roofs|customer|customers|client|clients)/i);
+    return m ? `${m[1].replace(/[,\.]/g, "")}+` : null;
+  };
+  const yearsValId = getYearsId();
+  const jobsValId  = getJobsId();
+  const realStatsId: { value: string; label: string }[] = [];
+  if (yearsValId) realStatsId.push({ value: yearsValId, label: "Years in Business" });
+  if (jobsValId)  realStatsId.push({ value: jobsValId,  label: "Jobs Completed" });
+  realStatsId.push({ value: "100%", label: "Licensed & Insured" });
+  (copy as GeneratedSiteCopy).stats = realStatsId;
 
   // ── SERVICE DESCRIPTION OVERRIDE ─────────────────────────────────────────
   // If any stored serviceDetail description is the old generic template,

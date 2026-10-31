@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const {
       businessName, trade, area, phone, email, address, license, hours,
+      yearsInBusiness, jobsCompleted,
       services, experience, about, whyChooseUs, template,
       accountName, accountEmail, accountPassword, projectPhotos, trustpilotUrl, googleReviewsUrl, domain,
     } = body;
@@ -48,6 +49,8 @@ export async function POST(req: NextRequest) {
       owner_email: accountEmail || null,
       hours: hours || null,
       services: services || null,
+      years_in_business: yearsInBusiness || null,
+      jobs_completed: jobsCompleted || null,
       experience: experience || null,
       about: about || null,
       why_choose_us: whyChooseUs || null,

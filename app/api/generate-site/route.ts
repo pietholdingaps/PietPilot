@@ -90,16 +90,30 @@ export async function POST(req: NextRequest) {
       ? `The owner listed these EXACT services. Your 'services' array must contain ALL of them and NOTHING else:\n${parsedServices.map((s, i) => `${i + 1}. ${s}`).join("\n")}`
       : `Services offered (raw): ${submission.services || "—"}`;
 
-    // Pre-extract numbers from ALL text fields — so AI can't hallucinate defaults
-    const rawExperience = submission.experience || "";
-    const rawAbout = submission.about || "";
-    // Search across ALL free-text fields (some owners put years in "why_choose_us" or even "services")
-    const allSearchText = [rawExperience, rawAbout, submission.why_choose_us || "", submission.services || ""].join(" ");
-    // Match years in both English ("year", "years") and Danish ("år", "årig")
-    const yearsMatch = allSearchText.match(/(\d+)\s*\+?\s*(year|years|yr|yrs|år|årig)/i);
-    const jobsMatch = allSearchText.match(/(\d[\d,\.]+)\s*\+?\s*(?:\w+\s+)?(job|jobs|project|projects|home|homes|roof|roofs|house|houses|property|properties|customer|customers|client|clients|repair|repairs|install|installations|vehicle|vehicles|system|systems|unit|units|call|calls|treatment|treatments|service|fence|pool|opgave|opgaver|kunde|kunder)/i);
-    const extractedYears = yearsMatch ? `${yearsMatch[1]}+` : null;
-    const extractedJobs = jobsMatch ? `${jobsMatch[1].replace(/[,\.]/g, "")}+` : null;
+    // Use direct onboarding fields first — these are always honest
+    // Fall back to extracting from free text if the dedicated fields are empty
+    let extractedYears: string | null = null;
+    let extractedJobs: string | null = null;
+    if (submission.years_in_business) {
+      const n = submission.years_in_business.match(/\d+/);
+      if (n) extractedYears = `${n[0]}+`;
+    }
+    if (submission.jobs_completed) {
+      const n = submission.jobs_completed.match(/\d+/);
+      if (n) extractedJobs = `${parseInt(n[0]).toLocaleString("en")}+`;
+    }
+    // Fallback: extract from free-text fields if dedicated fields are empty
+    if (!extractedYears || !extractedJobs) {
+      const allSearchText = [submission.experience, submission.about, submission.why_choose_us, submission.services].filter(Boolean).join(" ");
+      if (!extractedYears) {
+        const m = allSearchText.match(/(\d+)\s*\+?\s*(year|years|yr|yrs|år|årig)/i);
+        if (m) extractedYears = `${m[1]}+`;
+      }
+      if (!extractedJobs) {
+        const m = allSearchText.match(/(\d[\d,\.]+)\s*\+?\s*(?:\w+\s+)?(job|jobs|project|projects|home|homes|roof|roofs|house|houses|property|properties|customer|customers|client|clients|repair|repairs|install|installations)/i);
+        if (m) extractedJobs = `${m[1].replace(/[,\.]/g, "")}+`;
+      }
+    }
 
     const licenseClean = (submission.license_number || "").replace(/^license\s*#?\s*/i, "").trim();
 
@@ -217,13 +231,12 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
       return NextResponse.json({ error: "Could not generate site copy after 3 attempts" }, { status: 500 });
     }
 
-    // ALWAYS force all 4 stats to fixed labels — AI can never invent "Subcontractors Used" etc.
-    copy.stats = [
-      { value: extractedYears ? `${extractedYears}+` : "5+", label: "Years in Business" },
-      { value: extractedJobs  ? `${extractedJobs}+`  : "200+", label: "Jobs Completed" },
-      { value: "5★", label: "Average Rating" },
-      { value: "100%", label: "Licensed & Insured" },
-    ];
+    // Only include stats we have real data for — never fake numbers
+    const realStats: { value: string; label: string }[] = [];
+    if (extractedYears) realStats.push({ value: extractedYears, label: "Years in Business" });
+    if (extractedJobs)  realStats.push({ value: extractedJobs,  label: "Jobs Completed" });
+    realStats.push({ value: "100%", label: "Licensed & Insured" });
+    copy.stats = realStats;
 
     // Strip double "License #" from ALL string values in the copy (recursively)
     function stripDoubleLicense(obj: unknown): unknown {
