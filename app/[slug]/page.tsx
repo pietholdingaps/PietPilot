@@ -81,7 +81,7 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
   const realStats: { value: string; label: string }[] = [];
   if (yearsVal) realStats.push({ value: yearsVal, label: "Years in Business" });
   if (jobsVal)  realStats.push({ value: jobsVal,  label: "Jobs Completed" });
-  realStats.push({ value: "100%", label: "Licensed & Insured" });
+  if (submission.license_number) realStats.push({ value: "100%", label: "Licensed & Insured" });
   copy.stats = realStats;
 
   const localBusinessSchema = buildLocalBusinessSchema({

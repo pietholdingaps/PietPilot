@@ -235,7 +235,7 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
     const realStats: { value: string; label: string }[] = [];
     if (extractedYears) realStats.push({ value: extractedYears, label: "Years in Business" });
     if (extractedJobs)  realStats.push({ value: extractedJobs,  label: "Jobs Completed" });
-    realStats.push({ value: "100%", label: "Licensed & Insured" });
+    if (licenseClean) realStats.push({ value: "100%", label: "Licensed & Insured" });
     copy.stats = realStats;
 
     // Strip double "License #" from ALL string values in the copy (recursively)

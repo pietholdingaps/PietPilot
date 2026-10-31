@@ -161,7 +161,7 @@ export default async function GeneratedSitePage({ params }: { params: Promise<{ 
   const realStatsId: { value: string; label: string }[] = [];
   if (yearsValId) realStatsId.push({ value: yearsValId, label: "Years in Business" });
   if (jobsValId)  realStatsId.push({ value: jobsValId,  label: "Jobs Completed" });
-  realStatsId.push({ value: "100%", label: "Licensed & Insured" });
+  if (submission.license_number) realStatsId.push({ value: "100%", label: "Licensed & Insured" });
   (copy as GeneratedSiteCopy).stats = realStatsId;
 
   // ── SERVICE DESCRIPTION OVERRIDE ─────────────────────────────────────────
