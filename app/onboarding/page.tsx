@@ -93,6 +93,7 @@ function OnboardingInner() {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
   const [generatedSiteId, setGeneratedSiteId] = useState<string | null>(null);
+  const [generatedSlug, setGeneratedSlug] = useState<string | null>(null);
 
   // If we're returning from Stripe Checkout, restore the saved account info and skip ahead
   useEffect(() => {
@@ -219,6 +220,7 @@ function OnboardingInner() {
       const json = await res.json();
       siteId = json?.id || null;
       setGeneratedSiteId(siteId);
+      setGeneratedSlug(json?.slug || null);
       if (siteId) {
         try { localStorage.setItem("pietpilot_site_id", siteId); } catch {}
       }
@@ -629,12 +631,12 @@ function OnboardingInner() {
                 {data.businessName ? `${data.businessName}'s` : "Your"} new site is live and already optimized to be found locally. You can edit anything, anytime.
               </p>
               <div className="flex items-center justify-center gap-4">
-                {generatedSiteId && (
+                {(generatedSlug || generatedSiteId) && (
                   <a
-                    href={`/site/${generatedSiteId}`}
+                    href={generatedSlug ? `/${generatedSlug}` : `/site/${generatedSiteId}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-white/60 hover:text-white text-sm font-semibold transition-colors"
+                    className="text-white/60 hover:text-white text-sm font-semibold transition-colors underline underline-offset-2"
                   >
                     View my website ↗
                   </a>

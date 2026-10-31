@@ -149,7 +149,8 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    return NextResponse.json({ ok: true, id: inserted?.id || null });
+    const slug = businessName ? generateSlug(businessName) : null;
+    return NextResponse.json({ ok: true, id: inserted?.id || null, slug });
   } catch (err) {
     console.error("Onboarding error:", err);
     return NextResponse.json({ error: "Server error." }, { status: 500 });
