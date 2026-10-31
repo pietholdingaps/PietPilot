@@ -150,10 +150,10 @@ Here is the business information:
 Business name: ${submission.business_name || "—"}
 Trade: ${submission.trade || "—"}
 Area covered: ${submission.area || "—"}
-Experience: ${rawExperience || "—"}
+Experience: ${submission.experience || "—"}
 License/insurance number: ${licenseClean || "—"}
 Why customers should choose them: ${submission.why_choose_us || "—"}
-About the business: ${rawAbout || "—"}
+About the business: ${submission.about || "—"}
 
 Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape:
 {
