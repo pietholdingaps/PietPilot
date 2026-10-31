@@ -145,21 +145,13 @@ export default async function GeneratedSitePage({ params }: { params: Promise<{ 
     .filter(Boolean).join(" ");
   const yearsRaw  = extractNumber(rawExp, /year|years|yr|yrs|år|årig/);
   const jobsRaw   = extractNumber(rawExp, /job|jobs|project|projects|home|homes|roof|roofs|house|houses|property|properties|customer|customers|client|clients|repair|repairs|install|installations|vehicle|vehicles|system|systems|unit|units|opgave|opgaver|kunde|kunder/);
-  if (yearsRaw || jobsRaw) {
-    const currentStats: { value: string; label: string }[] = Array.isArray(copy.stats) && copy.stats.length > 0
-      ? [...copy.stats]
-      : [
-          { value: "5+", label: "Years in Business" },
-          { value: "200+", label: "Jobs Completed" },
-          { value: "5★", label: "Average Rating" },
-          { value: "100%", label: "Licensed & Insured" },
-        ];
-    if (yearsRaw) currentStats[0] = { value: `${yearsRaw}+`, label: "Years in Business" };
-    if (jobsRaw)  currentStats[1] = { value: `${jobsRaw}+`,  label: "Jobs Completed" };
-    currentStats[2] = { value: "5★", label: "Average Rating" };
-    currentStats[3] = { value: "100%", label: "Licensed & Insured" };
-    (copy as GeneratedSiteCopy).stats = currentStats;
-  }
+  // Always override all 4 stats — AI can never set custom labels like "Subcontractors Used"
+  (copy as GeneratedSiteCopy).stats = [
+    { value: yearsRaw ? `${yearsRaw}+` : (Array.isArray(copy.stats) && copy.stats[0]?.value) || "5+", label: "Years in Business" },
+    { value: jobsRaw  ? `${jobsRaw}+`  : "200+", label: "Jobs Completed" },
+    { value: "5★", label: "Average Rating" },
+    { value: "100%", label: "Licensed & Insured" },
+  ];
 
   // ── SERVICE DESCRIPTION OVERRIDE ─────────────────────────────────────────
   // If any stored serviceDetail description is the old generic template,

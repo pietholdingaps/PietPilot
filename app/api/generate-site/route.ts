@@ -217,23 +217,13 @@ Respond with ONLY valid JSON (no markdown, no code fences) in exactly this shape
       return NextResponse.json({ error: "Could not generate site copy after 3 attempts" }, { status: 500 });
     }
 
-    // FORCE the extracted stats values — never let AI use default placeholders when we have real numbers
-    if (extractedYears || extractedJobs) {
-      if (!Array.isArray(copy.stats)) {
-        copy.stats = [
-          { value: extractedYears || "5+", label: "Years in Business" },
-          { value: extractedJobs || "200+", label: "Jobs Completed" },
-          { value: "5★", label: "Average Rating" },
-          { value: "100%", label: "Licensed & Insured" },
-        ];
-      } else {
-        if (extractedYears) copy.stats[0] = { ...copy.stats[0], value: extractedYears, label: "Years in Business" };
-        if (extractedJobs) copy.stats[1] = { ...copy.stats[1], value: extractedJobs, label: "Jobs Completed" };
-        // Always fix stats 3 and 4
-        copy.stats[2] = { value: "5★", label: "Average Rating" };
-        copy.stats[3] = { value: "100%", label: "Licensed & Insured" };
-      }
-    }
+    // ALWAYS force all 4 stats to fixed labels — AI can never invent "Subcontractors Used" etc.
+    copy.stats = [
+      { value: extractedYears ? `${extractedYears}+` : "5+", label: "Years in Business" },
+      { value: extractedJobs  ? `${extractedJobs}+`  : "200+", label: "Jobs Completed" },
+      { value: "5★", label: "Average Rating" },
+      { value: "100%", label: "Licensed & Insured" },
+    ];
 
     // Strip double "License #" from ALL string values in the copy (recursively)
     function stripDoubleLicense(obj: unknown): unknown {
