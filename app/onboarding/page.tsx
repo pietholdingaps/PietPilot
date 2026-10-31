@@ -63,7 +63,7 @@ const questions = [
   { key: "hours", label: "What are your opening hours?", placeholder: "e.g. Mon–Fri 7am–6pm, Sat 8am–2pm", type: "text" },
   { key: "yearsInBusiness", label: "How many years have you been in business?", placeholder: "e.g. 8", type: "text" },
   { key: "jobsCompleted", label: "Roughly how many jobs have you completed?", placeholder: "e.g. 200", type: "text" },
-  { key: "services", label: "What services do you offer?", placeholder: "List as many as you'd like — e.g. drain cleaning, water heater repair, bathroom remodels...", type: "textarea" },
+  { key: "services", label: "What services do you offer?", placeholder: "Type a service and press Enter — e.g. Roof replacement", type: "tags" },
   { key: "about", label: "Tell us about you and your business — the more you write, the better your site will be", placeholder: "How long have you been in business? How many jobs have you done? What makes you different? What do customers say about you? What do you care about on the job?", type: "textarea" },
   { key: "whyChooseUs", label: "Why should customers choose you over the competition?", placeholder: "e.g. fast response times, fair prices, years of experience, guarantees, certifications...", type: "textarea" },
   { key: "reviews", label: "Do you have a Trustpilot or Google Business profile with reviews?", placeholder: "", type: "reviews" },
@@ -135,6 +135,8 @@ function OnboardingInner() {
   const [submitting, setSubmitting] = useState(false);
   const [previewCopy, setPreviewCopy] = useState<GeneratedSiteCopy | null>(null);
   const [generatingPreview, setGeneratingPreview] = useState(false);
+  const [servicesList, setServicesList] = useState<string[]>([]);
+  const [serviceInput, setServiceInput] = useState("");
   const [projectPhotos, setProjectPhotos] = useState<string[]>([]);
   const [photosUploading, setPhotosUploading] = useState(false);
   const [trustpilotUrl, setTrustpilotUrl] = useState("");
@@ -171,6 +173,16 @@ function OnboardingInner() {
   }
 
   function next() {
+    // For the tags step, sync servicesList into data before advancing
+    if (current?.type === "tags") {
+      // Also add whatever is currently typed but not yet added
+      const final = serviceInput.trim()
+        ? [...servicesList, serviceInput.trim()]
+        : servicesList;
+      setServicesList(final);
+      setServiceInput("");
+      setData((d) => ({ ...d, services: final.join("\n") }));
+    }
     if (step < questions.length - 1) {
       setStep(step + 1);
     } else {
@@ -378,6 +390,54 @@ function OnboardingInner() {
                   className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 text-sm outline-none focus:border-[#f59e0b]/50 focus:bg-white/[0.08] transition-all"
                   placeholder="Type your answer here..."
                 />
+              )}
+              {current.type === "tags" && (
+                <div>
+                  {/* chips */}
+                  {servicesList.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {servicesList.map((s, i) => (
+                        <span key={i} className="flex items-center gap-1.5 bg-[#f59e0b]/15 border border-[#f59e0b]/30 text-[#f59e0b] text-sm font-medium px-3 py-1.5 rounded-full">
+                          {s}
+                          <button
+                            type="button"
+                            onClick={() => setServicesList((l) => l.filter((_, j) => j !== i))}
+                            className="text-[#f59e0b]/60 hover:text-[#f59e0b] leading-none text-base"
+                          >×</button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {/* input */}
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={serviceInput}
+                      onChange={(e) => setServiceInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && serviceInput.trim()) {
+                          e.preventDefault();
+                          setServicesList((l) => [...l, serviceInput.trim()]);
+                          setServiceInput("");
+                        }
+                      }}
+                      className="flex-1 bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 text-sm outline-none focus:border-[#f59e0b]/50 focus:bg-white/[0.08] transition-all"
+                      placeholder="e.g. Roof replacement"
+                      autoFocus
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (serviceInput.trim()) {
+                          setServicesList((l) => [...l, serviceInput.trim()]);
+                          setServiceInput("");
+                        }
+                      }}
+                      className="bg-white/[0.07] hover:bg-white/[0.12] border border-white/10 text-white/70 text-sm font-semibold px-4 py-3 rounded-xl transition-all"
+                    >+ Add</button>
+                  </div>
+                  <p className="text-white/25 text-xs mt-2">Press Enter to add each service</p>
+                </div>
               )}
               {current.type === "file" && (
                 <div className="border-2 border-dashed border-white/15 rounded-xl px-4 py-8 text-center">
